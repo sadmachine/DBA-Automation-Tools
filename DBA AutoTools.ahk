@@ -12,6 +12,8 @@
 ; === Revision History =========================================================
 ; Revision 1 (09/02/2022)
 ; * Initial creation
+; * Add basic structure of file
+; * Setup prototype of main hub gui overlay
 ; ==============================================================================
 
 #NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
