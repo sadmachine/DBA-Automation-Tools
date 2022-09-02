@@ -14,6 +14,7 @@
 ; * Initial creation
 ; * Add basic structure of file
 ; * Setup prototype of main hub gui overlay
+; * Initial prototype of module loading system
 ; ==============================================================================
 
 #NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
