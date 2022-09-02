@@ -3,7 +3,7 @@
 ; Description ..: Set of general automation tools for DBA Manufacturing
 ; AHK Version ..: 1.1.32.00 (Unicode 64-bit)
 ; Start Date ...: 09/02/2022
-; OS Version ...: Windows 10
+; OS Version ...: DBA.Windows 10
 ; Language .....: English - United States (en-US)
 ; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
 ; Filename .....: DBA AutoTools.ahk
@@ -16,19 +16,21 @@
 ; * Setup prototype of main hub gui overlay
 ; ==============================================================================
 
-#NoEnv  ; Recommended for performance and compatibility with future AutoHotkey releases.
-#Warn  ; Enable warnings to assist with detecting common errors.
-SendMode Input  ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir%  ; Ensures a consistent starting directory.
+#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
+#Warn ; Enable warnings to assist with detecting common errors.
+SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
+SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #Persistent
 
 ; --- Includes -----------------------------------------------------------------
-#Include <windows>
+#Include <DBA>
 
 ; --- Global var setup ---------------------------------------------------------
 
 ; Whether or not debug mode is active
 DEBUG_MODE     := false
+; The folder where modules can be found
+MODS_FOLDER    := A_ScriptDir "/modules"
 ; Will be used to hold a list of available modules to load
 AVAILABLE_MODS := []
 
@@ -36,13 +38,21 @@ AVAILABLE_MODS := []
 
 for n, param in A_Args
 {
-    if (param == "DEBUG") 
+    if (param == "-d") 
     {
-        
+        DEBUG_MODE := true
+    }
+
+    if (InStr(param, "--module-location=")) 
+    {
+        parts       := StrSplit(param, "=")
+        location    := Trim(parts[2], OmitChars = "/")
+        MODS_FOLDER := "/" parts[2]
     }
 }
 
-initialize_hub_gui()
+load_modules()
+;initialize_hub_gui()
 
 Return
 
@@ -52,8 +62,18 @@ RunUtility:
 
 return
 
-
 ; --- Functions ----------------------------------------------------------------  
+
+load_modules() 
+{
+    Global
+    Loop, Files, % MODS_FOLDER "/*"
+    {
+        parts       := StrSplit(A_LoopFileName, ".")
+        module_name := StrReplace(parts[1], "-", " ")
+        MsgBox % module_name
+    }
+}
 
 /**
  *  Creates an overlay GUI when the "Closed Job Cost Summary" window is found.
@@ -64,8 +84,8 @@ initialize_hub_gui()
 {
     Global
     ; Wait for the "Sub-Assy Jobs" screen to be active
-    WinActivate, % Windows.main
-    WinWaitActive, % Windows.main
+    WinActivate, % DBA.Windows.Main
+    WinWaitActive, % DBA.Windows.Main
 
     width := 500
     height := 320
@@ -73,8 +93,8 @@ initialize_hub_gui()
     padding := 20
 
     ; Get a reference to the "parent" window 
-    hParent := WinExist(Windows.main)
-    WinGetPos,,,main_width, main_height, % Windows.main
+    hParent := WinExist(DBA.Windows.Main)
+    WinGetPos,,,main_width, main_height, % DBA.Windows.Main
 
     display_x := 234 + padding
     display_y := 74
@@ -90,3 +110,4 @@ initialize_hub_gui()
     ; This makes it so our overlay moves with the parent window, and acts like its part of the program
     DllCall("SetParent", Ptr, hChild, Ptr, hParent)
 }
+
