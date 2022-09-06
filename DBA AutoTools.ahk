@@ -3,7 +3,7 @@
 ; Description ..: Set of general automation tools for DBA Manufacturing
 ; AHK Version ..: 1.1.32.00 (Unicode 64-bit)
 ; Start Date ...: 09/02/2022
-; OS Version ...: DBA.Windows 10
+; OS Version ...: cDBA.cWindows 10
 ; Language .....: English - United States (en-US)
 ; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
 ; Filename .....: DBA AutoTools.ahk
@@ -24,7 +24,8 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #Persistent
 
 ; --- Includes -----------------------------------------------------------------
-#Include <DBA>
+#Include <cDBA>
+#Include <Modules>
 
 ; --- Global var setup ---------------------------------------------------------
 
@@ -52,7 +53,7 @@ for n, param in A_Args
     }
 }
 
-load_modules()
+MODULES := new cModuleLoader(MODS_FOLDER)
 ;initialize_hub_gui()
 
 Return
@@ -65,16 +66,6 @@ return
 
 ; --- Functions ----------------------------------------------------------------  
 
-load_modules() 
-{
-    Global
-    Loop, Files, % MODS_FOLDER "/*"
-    {
-        parts       := StrSplit(A_LoopFileName, ".")
-        module_name := StrReplace(parts[1], "-", " ")
-        MsgBox % module_name
-    }
-}
 
 /**
  *  Creates an overlay GUI when the "Closed Job Cost Summary" window is found.
@@ -85,8 +76,8 @@ initialize_hub_gui()
 {
     Global
     ; Wait for the "Sub-Assy Jobs" screen to be active
-    WinActivate, % DBA.Windows.Main
-    WinWaitActive, % DBA.Windows.Main
+    WinActivate, % cDBA.cWindows.Main
+    WinWaitActive, % cDBA.cWindows.Main
 
     width := 500
     height := 320
@@ -94,8 +85,8 @@ initialize_hub_gui()
     padding := 20
 
     ; Get a reference to the "parent" window 
-    hParent := WinExist(DBA.Windows.Main)
-    WinGetPos,,,main_width, main_height, % DBA.Windows.Main
+    hParent := WinExist(cDBA.cWindows.Main)
+    WinGetPos,,,main_width, main_height, % cDBA.cWindows.Main
 
     display_x := 234 + padding
     display_y := 74

@@ -1,3 +1,3 @@
-class DBA {
+class cDBA {
     #Include <DBA/Windows>
 }
