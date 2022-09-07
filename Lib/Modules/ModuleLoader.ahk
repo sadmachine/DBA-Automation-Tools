@@ -1,37 +1,51 @@
-class cModuleLoader
+class ModuleLoader
 {
-    modules         := []
-    sections        := []
-    module_titles   := []
-    section_titles  := []
-    module_location := ""
+    static modules         := {}
+    static sections        := {}
+    static module_titles   := [] 
+    static section_titles  := [] 
+    static module_location := ""
 
     __New(mods_location)
     {
+        this.boot(mods_location)
+    }
+
+    boot(mods_location)
+    {
+        Global DEBUG_MODE
         this.module_location := mods_location
         IniRead, mod_sections, % this.module_location "/mods.ini"
         Loop, Parse, % mod_sections, "`n"
         {
             cur_section := StrReplace(A_LoopField, "_", " ")
-            this.sections[cur_section] := []
+            this.sections[cur_section] := {}
             this.section_titles.push(cur_section)
-            MsgBox % cur_section
             IniRead, mod_keys, % this.module_location "/mods.ini", % cur_section
             Loop, Parse, % mod_keys, "`n" 
             {
                 ini_parts := StrSplit(A_LoopField, "=")
                 key := StrReplace(ini_parts[1], "_" , " ")
                 value := ini_parts[2]
-                module := new cModule(value, cur_section, value)
-                MsgBox % key " " value
+                module := new ModuleObj(key, cur_section, value)
                 this.modules[key] := module
                 this.sections[cur_section][key] := module
                 this.module_titles.push(key)
             }
         }
+
+        if (DEBUG_MODE)
+        {
+            output := "Loaded modules: `n"
+            for _n, _mod in this.modules
+            {
+                output := output "[" _mod.section_title "] " _mod.title " => " _mod.file "`n"
+            }
+            MsgBox % output
+        }
     }
 
-    getModule(module)
+    get(module)
     {
         return this.modules[module]
     }
