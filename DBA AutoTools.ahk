@@ -26,7 +26,7 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 
 ; --- Includes -----------------------------------------------------------------
 #Include <DBA>
-#Include <Modules>
+#Include <ModuleLoader>
 #Include <UI>
 
 ; --- Global var setup ---------------------------------------------------------

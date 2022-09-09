@@ -1,3 +1,5 @@
+#Include <ModuleObj>
+
 class ModuleLoader
 {
     static modules         := {}
