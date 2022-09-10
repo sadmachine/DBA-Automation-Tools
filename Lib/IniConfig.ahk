@@ -1,8 +1,8 @@
-class Config
+class IniConfig
 {
     config_name := ""
     filename := ""
-    base_path := %A_ScriptDir% "/config"
+    base_path := A_ScriptDir "/config"
 
     __New(config_name, base_path := 0)
     {
@@ -11,8 +11,8 @@ class Config
             this.base_path := base_path
         }
         this.config_name := config_name
-        dotpath := StrReplace(config_name, ".", "/")
-        this.filename := config_name ".ini"
+        ;dotpath := StrReplace(config_name, ".", "/")
+        this.filename := this.config_name ".ini"
     }
 
     exists()
@@ -33,6 +33,10 @@ class Config
 
     getConfigPath()
     {
+        if (FileExist(this.base_path) != "D")
+        {
+            FileCreateDir, % this.base_path
+        }
         return this.base_path "/" this.filename
     }
 

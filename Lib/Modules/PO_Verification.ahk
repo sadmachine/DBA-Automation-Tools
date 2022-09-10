@@ -2,20 +2,25 @@
 SendMode Input
 SetWorkingDir, %A_ScriptDir%
 
-#Include ../Config.ahk
+#Include ../IniConfig.ahk
 
-config := Config("receiving.po_verification")
+config := new IniConfig("po_verification")
 
 if !(config.exists()) {
-    config.set()
+    SetupBasicConfig(config)
 }
 
 
-
+return
 
 ; Functions
 
 SetupBasicConfig(config)
 {
-    config.set("po_num", "1", "items")
+    MsgBox % config.getConfigPath()
+    config.set("purchase_order_number", "1", "inputs")
+    config.set("part_number", "1", "inputs")
+    config.set("quantity", "1", "inputs")
+
+    config.set("verify", true, "general")
 }
