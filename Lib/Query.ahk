@@ -1,154 +1,120 @@
-Class Query {
-  baseConnectStr := "DSN=DBA NG;UID=SYSDBA;PWD=masterkey;ReadOnly=YES;"
-  __New(qStr, delim:="|")
-  {
-    this.delim := delim
-    this.connectStr := Query.baseConnectStr "coldelim=" this.delim
-    this.qStr := qStr
-    this.hasResults := false
-    this.rows := Array()
-  }
+#include <ADOSQL>
 
-  Run()
-  {
-    this.rawAnswer := ADOSQL(this.connectStr, this.qStr)
-    this.answer := StrSplit(this.rawAnswer, "`n")
-    this.LV_headers := this.answer[1]
-    columnHeaders := StrSplit(this.answer[1], this.delim)
-    this.columnHeaders := columnHeaders
-    this.colCount := columnheaders.Count()
-    this.rows := Array()
-    currentRow := 2
-    maxRow := this.answer.MaxIndex()
-    Loop % maxRow - 1
+class DBConnection
+{
+    DSN := "DBA NG"
+    UID := "SYSDBA"
+    PWD := "masterkey"
+    RO := true
+    coldelim := "|"
+    connectionStr := ""
+    __New(DSN := "DBA", UID := "SYSDBA", PWD := "masterkey", coldelim := "")
     {
-      rowData := StrSplit(this.answer[currentRow], this.delim)
-      current := {}
-      for n, header in this.columnHeaders
-      {
-        MsgBox % header ": " rowData[n]
-        current[header] = rowData[n]
-      }
-      this.rows.Push(current)
-      currentRow++
-    }
-    this.hasResults := true
-    return this.rows
-  }
+        this.DSN := DSN
+        this.UID := UID
+        this.PWD := PWD
 
-  Raw()
-  {
-    if (!this.hasResults)
-      return ""
-    return this.rawAnswer
-  }
+        if (coldelim != "") {
+            this.coldelim := coldelim
+        }
 
-  Display()
-  {
-    Gui queryDisplay:New, +AlwaysOnTop 
-    Gui queryDisplay:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.LV_headers
-    
-    old_DefaultGui := A_DefaultGui
-    Gui queryDisplay:Default
-    for index,row in this.rows
-    {
-      data := []
-      for key,value in row.data
-      {
-        data.Insert(value)
-      }
-      LV_Add("", data*)
     }
 
-    Loop % this.colCount
+    ReadOnly(is_ro)
     {
-      LV_ModifyCol(A_Index, "AutoHdr")
+        this.RO := is_ro
     }
 
-    Gui %old_DefaultGui%:Default
-    Gui queryDisplay:Show
-  }
+    _buildConnectionStr()
+    {
+        ro_str := (this.RO ? "READONLY=YES" : "")
+        coldelim := this.coldelim
+        this.connectionStr := "DSN=" this.DSN ";UID=" this.UID ";PWD=" this.PWD ";" ro_str ";coldelim=" coldelim
+    }
 
-  Data()
-  {
-    return this.rows
-  }
+    query(qStr)
+    {
+        this._buildConnectionStr()
+        qStr := RTrim(qStr)
+        if (SubStr(qStr, 0) != ";")
+            qStr .= ";"
+        return new Results(ADOSQL(this.connectionStr, qStr), this.coldelim)
+    }
 }
 
-Class QueryRow {
-  __New(columnHeaders, rowData)
-  {
-    this.data := Object()
-    for index,header in columnHeaders
+class Results
+{
+    answer := ""
+    rawAnswer := ""
+    delim := "|"
+    __New(queryOutput, coldelim := "|")
     {
-      StringLower, header, header
-      this.Set(header, rowData[index]) 
+        this.delim := coldelim
+        this.rawAnswer := queryOutput
+        this.answer := StrSplit(this.rawAnswer, "`n")
+        this.LV_headers := this.answer[1]
+        columnHeaders := StrSplit(this.answer[1], this.delim)
+        this.columnHeaders := columnHeaders
+        this.colCount := columnheaders.Length()
+        this.rows := []
+        currentRow := 2
+        maxRow := this.answer.Length()
+        Loop % maxRow - 1
+        {
+            rowData := StrSplit(this.answer[currentRow], this.delim)
+            current := []
+            count := 1
+            for index,header in columnHeaders
+            {
+                current[header] := rowData[count]
+                count := count + 1
+            }
+            this.rows.Push(current)
+            currentRow++
+        }
     }
-  }
 
-  Get(key)
-  {
-    StringLower, key, key
-    return this.data[key]
-  }
-
-  Set(key, value)
-  {
-    StringLower, key, key
-    this.data[key] := value
-    return this.data[key]
-  }
-}
-
-Class Query_VerifyPO extends Query {
-  __New(ponum)
-  {
-    qStr := "SELECT STATUS FROM PORDER WHERE PONUM='PO" ponum "';"
-    base.__New(qStr)
-  }
-
-  IsPrinted()
-  {
-    ret := false
-    if (this.hasResults)
+    row(row_num)
     {
-      ret := (this.rows[1].Get("status") == "Printed")
+        return this.rows[row_num]
     }
-    return ret
-  }
-}
 
-Class Query_PODetails extends Query {
-  __New(ponum)
-  {
-    qStr := "SELECT LINE, REFERENCE, QTY, QTYR, MANUPARTNO FROM PODETL WHERE PONUM='PO" ponum "';"
-    base.__New(qStr)
-  }
-
-  Run()
-  {
-    base.Run()
-    this.FormatData()
-    return this.rows
-  }
-
-  FormatData()
-  {
-    if (this.hasResults) {
-      for index,row in this.rows
-      {
-        line := this.rows[index].Get("line")
-        line := Format("{:d}", line)
-        this.rows[index].Set("line", line)
-      }
+    raw()
+    {
+        return this.rawAnswer
     }
-  }
-}
 
-Class Query_VerifyReceived extends Query {
-  __New(partNum, lotNum, qty)
-  {
-    qStr := "SELECT itemcode, lotno, qty FROM itemh WHERE itemcode='" partNum "' AND lotno='" lotnum "' AND qty=" qty ";"
-    base.__New(qStr)
-  }
+    empty()
+    {
+        return this.rows.length() == 0
+    }
+
+    data()
+    {
+        return this.rows
+    }
+
+    display()
+    {
+        Gui, 1:New, +AlwaysOnTop
+        Gui, 1:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.LV_Headers
+        Gui, 1:Default
+        
+        for index,row in this.rows
+        {
+            data := []
+            for index,record in row
+            {
+                data.push(record)
+            }
+            LV_Add("", data*)
+        }
+
+        Loop % this.colCount
+        {
+            LV_ModifyCol(A_Index, "AutoHdr")
+        }
+
+        Gui, 1:Show
+    }
 }

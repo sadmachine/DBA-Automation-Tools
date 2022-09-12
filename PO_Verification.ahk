@@ -18,8 +18,8 @@ values      := {}
 
 GetAllInitialValues()
 
-verifyPO := new Query("SELECT status FROM porder WHERE ponum='" values["purchase_order_number"] "';")
-results := verifyPO.run()
+DB := new DBConnection()
+results := DB.query("SELECT status FROM porder WHERE ponum='" values["purchase_order_number"] "';").data()
 
 MsgBox % results.rawAnswer
 MsgBox % ADOSQL_LastError ": " ADOSQL_LastQuery
