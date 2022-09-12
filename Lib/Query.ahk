@@ -40,7 +40,7 @@ Class Query {
 
   Display()
   {
-    Gui queryDisplay:New, +AlwaysOnTop +Ownermain
+    Gui queryDisplay:New, +AlwaysOnTop 
     Gui queryDisplay:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.LV_headers
     
     old_DefaultGui := A_DefaultGui
