@@ -26,6 +26,7 @@ Class Query {
       current := {}
       for n, header in this.columnHeaders
       {
+        MsgBox % header ": " rowData[n]
         current[header] = rowData[n]
       }
       this.rows.Push(current)
