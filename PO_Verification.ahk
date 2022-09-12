@@ -2,7 +2,9 @@
 SendMode Input
 SetWorkingDir, %A_ScriptDir%
 
-#Include ../IniConfig.ahk
+#Include <IniConfig>
+#Include <ADOSQL>
+#Include <Query>
 
 config := new IniConfig("po_verification")
 
@@ -15,6 +17,14 @@ prompts     := config.getSection("prompts")
 values      := {}
 
 GetAllInitialValues()
+
+verifyPO := new Query("SELECT status FROM porder WHERE ponum=" values["purchase_order_number"])
+results := verifyPO.run()
+
+if (results.length() == 0)
+{
+    MsgBox % "There is no PO with number " values["purchase_order_number"]
+}
 
 return
 
