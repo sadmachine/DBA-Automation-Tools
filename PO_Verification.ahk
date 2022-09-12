@@ -21,6 +21,8 @@ GetAllInitialValues()
 verifyPO := new Query("SELECT status FROM porder WHERE ponum='" values["purchase_order_number"] "';")
 results := verifyPO.run()
 
+MsgBox % results.rawAnswer
+
 for n, row in results
 {
     output := ""
