@@ -18,7 +18,7 @@ values      := {}
 
 GetAllInitialValues()
 
-verifyPO := new Query("SELECT status FROM porder WHERE ponum=" values["purchase_order_number"])
+verifyPO := new Query("SELECT status FROM porder WHERE ponum='" values["purchase_order_number"] "'")
 verifyPO.display()
 
 if (results.length() == 0)
