@@ -20,11 +20,15 @@ GetAllInitialValues()
 
 verifyPO := new Query("SELECT status FROM porder WHERE ponum='" values["purchase_order_number"] "'")
 results := verifyPO.run()
-verifyPO.display()
 
-if (results.length() == 0)
+for n, row, in results
 {
-    MsgBox % "There is no PO with number " values["purchase_order_number"]
+    output := ""
+    for column, value in row
+    {
+        output .= column ": " value "`n"
+    }
+    MsgBox %output%
 }
 
 return

@@ -23,7 +23,11 @@ Class Query {
     Loop % maxRow - 1
     {
       rowData := StrSplit(this.answer[currentRow], this.delim)
-      current := new QueryRow(columnHeaders, rowData)
+      current := {}
+      for n, header in this.columnHeaders
+      {
+        current[header] = rowData[n]
+      }
       this.rows.Push(current)
       currentRow++
     }
