@@ -81,8 +81,6 @@ LaunchModule(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "")
 {
     Global
     GuiControlGet, module_title,, % CtrlHwnd
-    MsgBox % module_title
     mod := ModuleLoader.get(module_title)
-    MsgBox % mod.title " " mod.section_title " " mod.file
     Run % MODS_FOLDER "/" ModuleLoader.get(module_title).file
 }
