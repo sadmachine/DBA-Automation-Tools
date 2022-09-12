@@ -22,6 +22,7 @@ verifyPO := new Query("SELECT status FROM porder WHERE ponum='" values["purchase
 results := verifyPO.run()
 
 MsgBox % results.rawAnswer
+MsgBox % ADOSQL_LastError ": " ADOSQL_LastQuery
 
 for n, row in results
 {
