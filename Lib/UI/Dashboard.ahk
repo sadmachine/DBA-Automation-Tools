@@ -3,8 +3,8 @@ class Dashboard
 
     static initialized  := false
     static vertical_fix := 65
-    static height       := 500
-    static width        := 500
+    static height       := 200
+    static width        := 300
     static padding      := 20
     static hwnd         := []
     static display_x    := 0
