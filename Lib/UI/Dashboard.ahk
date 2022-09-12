@@ -74,11 +74,11 @@ class Dashboard
             {
                 if (A_Index == 1)
                 {
-                    Gui, dashboard:Add, Button, % UI.Utils.opts({"hwnd": "module_hwnd", "x": "s+5", "y": "s+20", "Center": ""}), % module_title
+                    Gui, dashboard:Add, Button, % UI.Utils.opts({"hwnd": "module_hwnd", "x": "s+5", "y": "s+20", "Center": "", g: "LaunchModule"}), % module_title
                 } 
                 else
                 {
-                    Gui, dashboard:Add, Button, % UI.Utils.opts({"hwnd": "module_hwnd", "x": "p", "y": "+5", "Center": ""}), % module_title
+                    Gui, dashboard:Add, Button, % UI.Utils.opts({"hwnd": "module_hwnd", "x": "p", "y": "+5", "Center": "", g: "LaunchModule"}), % module_title
                 }
                 module_hwnds.push(module_hwnd)
                 section_module_hwnds[last_section_hwnd].push(module_hwnd)
