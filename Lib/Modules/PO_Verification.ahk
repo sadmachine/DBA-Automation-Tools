@@ -16,11 +16,6 @@ values      := {}
 
 GetAllInitialValues()
 
-if (config.get("general.verify") == true)
-{
-    DisplayVerifyScreen()
-}
-
 return
 
 ; Functions
