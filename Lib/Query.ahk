@@ -2,7 +2,7 @@
 
 class DBConnection
 {
-    DSN := "DBA NG"
+    DSN := "DBA"
     UID := "SYSDBA"
     PWD := "masterkey"
     RO := true
@@ -49,12 +49,21 @@ class Results
     delim := "|"
     __New(queryOutput, coldelim := "|")
     {
+        if (ADOSQL_LastError)
+        {
+            throw Exception("Query error:`n" ADOSQL_LastError)
+        }
         this.delim := coldelim
         this.rawAnswer := queryOutput
         this.answer := StrSplit(this.rawAnswer, "`n")
         this.LV_headers := this.answer[1]
         columnHeaders := StrSplit(this.answer[1], this.delim)
         this.columnHeaders := columnHeaders
+        this.headerIndex := {}
+        for index,header in columnHeaders
+        {
+            this.headerIndex[header] := index
+        }
         this.colCount := columnheaders.Length()
         this.rows := []
         currentRow := 2
@@ -72,6 +81,11 @@ class Results
             this.rows.Push(current)
             currentRow++
         }
+    }
+
+    count()
+    {
+        return this.rows.length()
     }
 
     row(row_num)
@@ -96,16 +110,16 @@ class Results
 
     display()
     {
-        Gui, 1:New, +AlwaysOnTop
-        Gui, 1:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.LV_Headers
-        Gui, 1:Default
-        
+        Gui, New, hwndDisplaySQL +AlwaysOnTop, 
+        Gui, %DisplaySQL%:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.LV_Headers
+        Gui, %DisplaySQL%:Default
+
         for index,row in this.rows
         {
             data := []
-            for index,record in row
+            for header,record in row
             {
-                data.push(record)
+                data[this.headerIndex[header]] := record
             }
             LV_Add("", data*)
         }
@@ -115,6 +129,7 @@ class Results
             LV_ModifyCol(A_Index, "AutoHdr")
         }
 
-        Gui, 1:Show
+        Gui, %DisplaySQL%:Show
+        return DisplaySQL
     }
 }

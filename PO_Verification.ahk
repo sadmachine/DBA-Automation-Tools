@@ -19,22 +19,40 @@ values      := {}
 GetAllInitialValues()
 
 DB := new DBConnection()
-results := DB.query("SELECT status FROM porder WHERE ponum='" values["purchase_order_number"] "';").data()
+results := DB.query("SELECT status FROM porder WHERE ponum='" values["purchase_order_number"] "';")
 
-MsgBox % results.rawAnswer
-MsgBox % ADOSQL_LastError ": " ADOSQL_LastQuery
-
-for n, row in results
+if (results.count() > 1)
 {
-    output := ""
-    for column, value in row
-    {
-        output .= column ": " value "`n"
-    }
-    MsgBox %output%
+    MsgBox % "More than 1 PO matches the PO # number entered, this must be an error."
+    ExitApp
+} 
+
+if (!InStr("Open,Printed", results.row(0)["status"]))
+{
+    MsgBox % "The PO '" values["purchase_order_number"] "' has status '" results.row(0)["status"] "'. Status should be either 'Open' or 'Printed'"
+    ExitApp
 }
 
-return
+results := DB.query("SELECT line, reference, qty, qtyr FROM podetl WHERE ponum='" values["purchase_order_number"] "' AND reference='" values["part_number"] "' AND qty-qtyr>='" values["quantity"] "';")
+
+if (results.empty()) 
+{
+    MsgBox % "No parts matched the given criteria."
+    ExitApp
+}
+else
+{
+    matching_lines := ""
+    for n, row in results.rows
+    {
+        matching_lines .= Floor(row["line"]) ","
+    }
+    matching_lines := RTrim(matching_lines, ",")
+    winId := results.display()
+    WinWaitClose, % "ahk_id " winId
+}
+
+ExitApp
 
 ; Functions
 
