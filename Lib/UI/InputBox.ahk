@@ -1,14 +1,42 @@
 class InputBox
 {
-    __New(label, prompt, title := "", options := "")
+    static output := {}
+    static minWidth := 240
+
+    Submit()
     {
+        Global
+        Gui, InputBoxLabel:Submit
+        InputBox.output := {value: InputBoxOutput, canceled: false}
+    }
+
+    Cancel()
+    {
+        Global
+        Gui, InputBoxLabel:Destroy
+        InputBox.output := {value: "", canceled: true}
+    }
+
+    prompt(prompt, title := "")
+    {
+        Global
         if (title == "") 
         {
             title := prompt
         }
-        Gui, %label%:New, % options, % title
-        Gui, %label%:Add, Text, % UI.Utils.opts({r: "1"}), % prompt
-        Gui, %label%:Add, Edit, % UI.Utils.opts({r: "1"}) 
-        Gui, %label%:Add, Button, % UI.Utils.opts({g: "h: "20", default: ""}), Submit
+        Gui, InputBoxLabel:New, % "-Sysmenu +AlwaysOnTop", % title
+        Gui, InputBoxLabel:Add, Text, % "r1", % prompt
+        Gui, InputBoxLabel:Add, Edit, % "r1 w" InputBox.minWidth " vInputBoxOutput"
+        Gui, InputBoxLabel:Add, Button, % "hwndSubmitButton w60 xm+10 Default", OK
+        Gui, InputBoxLabel:Add, Button, % "hwndCancelButton w60 yp x+100", Cancel
+        bindSubmitButton := ObjBindMethod(InputBox, "Submit")
+        bindCancelButton := ObjBindMethod(InputBox, "Cancel")
+        GuiControl, +g, % SubmitButton, % bindSubmitButton
+        GuiControl, +g, % CancelButton, % bindCancelButton
+            
+        Gui, InputBoxLabel:Show
+
+        WinWaitClose, % title
+        return % InputBox.output
     }
 }
