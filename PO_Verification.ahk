@@ -5,6 +5,7 @@ SetWorkingDir, %A_ScriptDir%
 #Include <IniConfig>
 #Include <ADOSQL>
 #Include <Query>
+#include <UI/InputBox>
 
 config := new IniConfig("po_verification")
 
@@ -42,14 +43,7 @@ if (results.empty())
 }
 else
 {
-    matching_lines := ""
-    for n, row in results.rows
-    {
-        matching_lines .= Floor(row["line"]) ","
-    }
-    matching_lines := RTrim(matching_lines, ",")
-    winId := results.display()
-    WinWaitClose, % "ahk_id " winId
+    DisplayResults(results)
 }
 
 ExitApp
@@ -76,8 +70,13 @@ GetAllInitialValues()
     Global
     for n, input_name in input_order
     {
-        InputBox, output, % "Enter " prompts[input_name], % "Enter " prompts[input_name],,260,130
-        values[input_name] := output
+        result := InputBox.prompt("Enter " prompts[input_name])
+        if (result.canceled)
+        {
+            MsgBox % "You must supply a " prompts[input_name] " to continue. Exiting..."
+            ExitApp
+        }
+        values[input_name] := result.value
     }
 }
 
@@ -92,4 +91,40 @@ DisplayVerifyScreen()
     }
     Gui, verify:Add, Button, gVerify Default, 
     Gui, verify:Show
+}
+
+DisplayResults(results)
+{
+    Global
+    Gui, New, hwndDisplayResults +AlwaysOnTop, PO Verification Results
+    Gui, %DisplayResults%:Add, GroupBox, Section w400, Scanned Items
+    Gui, %DisplayResults%:Add, Text, xs+8 ys+26, PO#:
+    Gui, %DisplayResults%:Add, Edit, ReadOnly x+5 yp-4 w62, % values["purchase_order_number"]
+    Gui, %DisplayResults%:Add, Text, x+10 ys+26, Part #:
+    Gui, %DisplayResults%:Add, Edit, ReadOnly x+5 yp-4 w120, % values["part_number"]
+    Gui, %DisplayResults%:Add, Text, x+10 ys+26, Quantity:
+    Gui, %DisplayResults%:Add, Edit, ReadOnly x+5 yp-4 w62, % values["quantity"]
+    Gui, %DisplayResults%:Add, GroupBox, xm w400 r11 Section, Matching Lines:
+    Gui, %DisplayResults%:Add, ListView, xs+4 ys+20 w392 r10 hwndResultsListView +LV0x4000i, % results.LV_Headers
+    Gui, %DisplayResults%:Default
+
+    for index,row in results.rows
+    {
+        data := []
+        for header,record in row
+        {
+            data[results.headerIndex[header]] := Floor(record)
+        }
+        LV_Add("", data*)
+    }
+
+    Loop % results.colCount
+    {
+        LV_ModifyCol(A_Index, "AutoHdr")
+    }
+
+    Gui, %DisplayResults%:Show
+    GuiControl, Focus, % ResultsListView
+    WinWaitClose, % "PO Verification Results"
+    return DisplayResults
 }
