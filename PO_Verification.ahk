@@ -139,7 +139,9 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     lot_numbers := []
     quantities := []
     locations := []
-    has_cert := UI.MsgBox.YesNo("Does lot # " values["lot_number"] " have certification?", "", FONT_OPTIONS)
+    mb := new UI.MsgBox("Does lot # " values["lot_number"] " have certification?") 
+    mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
+    has_cert := mb.YesNo()
     if (has_cert.value == "Yes")
     {
         location := "Received"
@@ -196,7 +198,9 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     quantities.push(values["quantity"])
     locations.push(location)
 
-    another_lot := UI.MsgBox.YesNo("Add another lot/qty?", "", FONT_OPTIONS)
+    mb := new UI.MsgBox("Add another lot/qty?") 
+    mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
+    another_lot := mb.YesNo()
     while (another_lot.value == "Yes")
     {
         ib := new UI.InputBox(prompts["lot_number"])
@@ -215,7 +219,9 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
             MsgBox % "You must supply another qty, exiting..."
             ExitApp
         }
-        has_cert := UI.MsgBox.YesNo("Does lot # " lot_number.value " have certification?", "", FONT_OPTIONS)
+        mb := new UI.MsgBox("Does lot # " values["lot_number"] " have certification?") 
+        mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
+        has_cert := mb.YesNo()
         if (has_cert.value == "Yes")
         {
             location := "Received"
