@@ -5,8 +5,7 @@ SetWorkingDir, %A_ScriptDir%
 #Include <IniConfig>
 #Include <ADOSQL>
 #Include <Query>
-#Include <UI/InputBox>
-#Include <UI/MsgBox>
+#include <UI>
 #Include <Utils>
 #Include <DBA>
 
@@ -62,7 +61,9 @@ SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
     values := {}
     for n, input_name in input_order
     {
-        result := InputBox.prompt(prompts[input_name], "", FONT_OPTIONS)
+        ib := new UI.InputBox(prompts[input_name])
+        ib.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
+        result := ib.prompt()
         if (result.canceled)
         {
             MsgBox % "You must supply a " readable_fields[input_name] " to continue. Exiting..."
@@ -138,7 +139,7 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     lot_numbers := []
     quantities := []
     locations := []
-    has_cert := MsgBox.YesNo("Does lot # " values["lot_number"] " have certification?", "", FONT_OPTIONS)
+    has_cert := UI.MsgBox.YesNo("Does lot # " values["lot_number"] " have certification?", "", FONT_OPTIONS)
     if (has_cert.value == "Yes")
     {
         location := "Received"
@@ -195,22 +196,26 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     quantities.push(values["quantity"])
     locations.push(location)
 
-    another_lot := MsgBox.YesNo("Add another lot/qty?", "", FONT_OPTIONS)
+    another_lot := UI.MsgBox.YesNo("Add another lot/qty?", "", FONT_OPTIONS)
     while (another_lot.value == "Yes")
     {
-        lot_number := InputBox.prompt(prompts["lot_number"], "", FONT_OPTIONS)
+        ib := new UI.InputBox(prompts["lot_number"])
+        ib.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
+        lot_number := ib.prompt()
         if (lot_number.canceled) 
         {
             MsgBox % "You must supply another lot #, exiting..."
             ExitApp
         }
-        qty := InputBox.prompt(prompts["quantity"], "", FONT_OPTIONS)
+        ib := new UI.InputBox(prompts["quantity"])
+        ib.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
+        qty := ib.prompt()
         if (qty.canceled) 
         {
             MsgBox % "You must supply another qty, exiting..."
             ExitApp
         }
-        has_cert := MsgBox.YesNo("Does lot # " lot_number.value " have certification?", "", FONT_OPTIONS)
+        has_cert := UI.MsgBox.YesNo("Does lot # " lot_number.value " have certification?", "", FONT_OPTIONS)
         if (has_cert.value == "Yes")
         {
             location := "Received"
@@ -230,7 +235,7 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
         lot_numbers.push(lot_number.value)
         quantities.push(qty.value)
         locations.push(location)
-        another_lot := MsgBox.YesNo("Add another lot/qty?", "", FONT_OPTIONS)
+        another_lot := UI.MsgBox.YesNo("Add another lot/qty?", "", FONT_OPTIONS)
     }
 
     WinActivate, % DBA.Windows.POReceipts
