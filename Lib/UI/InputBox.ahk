@@ -17,14 +17,19 @@ class InputBox
         InputBox.output := {value: "", canceled: true}
     }
 
-    prompt(prompt, title := "")
+    prompt(prompt, title := "", font_info := "")
     {
         Global
         if (title == "") 
         {
             title := prompt
         }
+
         Gui, InputBoxLabel:New, % "-Sysmenu +AlwaysOnTop", % title
+        if (font_info != "")
+        {
+            Gui, InputBoxLabel:Font, % font_info.options, % font_info.face
+        }
         Gui, InputBoxLabel:Add, Text, % "r1", % prompt
         Gui, InputBoxLabel:Add, Edit, % "r1 w" InputBox.minWidth " vInputBoxOutput"
         Gui, InputBoxLabel:Add, Button, % "hwndSubmitButton w60 xm+10 Default", OK

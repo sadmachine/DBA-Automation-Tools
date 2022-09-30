@@ -56,7 +56,7 @@ class Results
         this.delim := coldelim
         this.rawAnswer := queryOutput
         this.answer := StrSplit(this.rawAnswer, "`n")
-        this.LV_headers := this.answer[1]
+        this.LV_headers := StrReplace(this.answer[1], "_", " ")
         columnHeaders := StrSplit(this.answer[1], this.delim)
         this.columnHeaders := columnHeaders
         this.headerIndex := {}

@@ -20,6 +20,11 @@ class IniConfig
         return FileExist(this.getConfigPath())
     }
 
+    copyFrom(filename)
+    {
+        FileCopy, % this.getBasePath(filename), % this.getConfigPath()
+    }    
+
     get(identifier)
     {
         parts := StrSplit(identifier, ".")
@@ -89,6 +94,12 @@ class IniConfig
 
     setBasePath(path)
     {
-        this.base_path:= RTrim(location, "\/")
+        this.base_path:= RTrim(path, "\/")
+    }
+
+    getBasePath(additional:="")
+    {
+        this.base_path := RTrim(this.base_path, "\/")
+        return this.base_path "/" additional
     }
 }

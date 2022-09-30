@@ -28,7 +28,7 @@ class Dashboard
 
         ; Build the dashboard
         Gui, dashboard:Margin, 0, 0
-        Gui, dashboard:Font, S10
+        Gui, dashboard:Font, s12
         this._buildModuleSections()
         Gui, dashboard: +OwnDialogs +AlwaysOnTop HWNDhChild
 
