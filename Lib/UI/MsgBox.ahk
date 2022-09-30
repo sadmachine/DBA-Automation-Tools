@@ -1,7 +1,21 @@
-class MsgBox
+; UI.MsgBox
+class MsgBox extends UI.Base
 {
-    static output := {}
+    output := {}
     static minWidth := 240
+
+    __New(prompt, title := "", guiOptions := "-SysMenu +AlwaysOnTop")
+    {
+        this.promptMsg := prompt
+        if (this.title == "") 
+        {
+            return base.__New(prompt, guiOptions)
+        }
+        else
+        {
+            return base.__New(prompt, guiOptions)
+        }
+    }
 
     YesEvent()
     {
@@ -17,26 +31,21 @@ class MsgBox
         MsgBox.output := {value: "No", canceled: false}
     }
 
-    YesNo(prompt, title := "", font_info := "")
+    YesNo()
     {
         Global
-        if (title == "") 
-        {
-            title := prompt
-        }
 
-        Gui, MsgBoxLabel:New, % "-Sysmenu +AlwaysOnTop", % title
-        if (font_info != "")
+        Gui, MsgBoxLabel:New, % this.guiOptions, % this.title
+        if (this.fontSettings != "")
         {
-            Gui, MsgBoxLabel:Font, % font_info.options, % font_info.face
+            Gui, MsgBoxLabel:Font, % this.fontSettings["options"], % this.fontSettings["fontName"]
         }
-        Gui, MsgBoxLabel:Add, Text, % "r1", % prompt
+        Gui, MsgBoxLabel:Add, Text, % "r1", % this.promptMsg
         Gui, MsgBoxLabel:Add, Button, % "hwndYesButton w60 xm+10 Default", Yes
         Gui, MsgBoxLabel:Add, Button, % "hwndNoButton w60 yp x+100", No
-        bindYesButton := ObjBindMethod(MsgBox, "YesEvent")
-        bindNoButton := ObjBindMethod(MsgBox, "NoEvent")
-        GuiControl, +g, % YesButton, % bindYesButton
-        GuiControl, +g, % NoButton, % bindNoButton
+
+        this.bind(YesButton, "YesEvent")
+        this.bind(NoButton, "NoEvent")
             
         Gui, MsgBoxLabel:Show
 
