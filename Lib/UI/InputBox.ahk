@@ -1,5 +1,4 @@
-#Include <UI>
-
+; UI.InputBox
 class InputBox extends UI.Base
 {
     output := {}
@@ -18,14 +17,14 @@ class InputBox extends UI.Base
         }
     }
 
-    Submit()
+    SubmitEvent()
     {
         Global
         Gui, InputBoxLabel:Submit
         this.output := {value: InputBoxOutput, canceled: false}
     }
 
-    Cancel()
+    CancelEvent()
     {
         Global
         Gui, InputBoxLabel:Destroy
@@ -45,8 +44,8 @@ class InputBox extends UI.Base
         Gui, InputBoxLabel:Add, Button, % "hwndSubmitButton w60 xm+10 Default", OK
         Gui, InputBoxLabel:Add, Button, % "hwndCancelButton w60 yp x+100", Cancel
 
-        this.bind(SubmitButton, "Submit")
-        this.bind(CancelButton, "Cancel")
+        this.bind(SubmitButton, "SubmitEvent")
+        this.bind(CancelButton, "CancelEvent")
             
         Gui, InputBoxLabel:Show
 
