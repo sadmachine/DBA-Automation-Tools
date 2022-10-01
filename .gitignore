@@ -1,1 +1,3 @@
 *.exe
+modules/config/*.ini
+!modules/config/*.default.ini
