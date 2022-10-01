@@ -74,19 +74,6 @@ SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
     return values
 }
 
-DisplayVerifyScreen()
-{
-    Global
-    Gui, verify:New, AlwaysOnTop, Verify Inputs
-    for n, input_name in input_order
-    {
-        Gui, verify:Add, Text, w50 xm, % prompts[input_name]
-        Gui, verify:Add, Edit, ReadOnly yp-4 x+5, % values[input_name]
-    }
-    Gui, verify:Add, Button, gVerify Default, 
-    Gui, verify:Show
-}
-
 DisplayResults(results)
 {
     Global
