@@ -4,6 +4,8 @@ class Base
     guiOptions := ""
     fontSettings := ""
 
+    static defaultFontSettings := ""
+
 
     __New(title := "", guiOptions := "")
     {
