@@ -88,8 +88,8 @@ class Excel
 
     __New(filepath, isVisible := false)
     {
-        this._visible := isVisible
-        this._filepath := filepath
+        this.visible := isVisible
+        this.filepath := filepath
     }
 
     __Delete()
