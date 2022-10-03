@@ -302,7 +302,10 @@ CreateNewInspectionReport()
     inspection_number := (inspectionConfig.get("file.last_num") + 1)
     inspectionConfig.set("file.last_num", inspection_number)
     filepath := RTrim(destination, "/") "/" inspection_number ".xlsx"
+    MsgBox % template " " filepath
     FileCopy, % template, % filepath
 
-    iReport := new Excel(filepath, true)
+    iReport := new Excel(FullPathFromRelativePath(filepath), true)
+
+    MsgBox % "Wait"
 }
