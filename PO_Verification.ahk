@@ -9,6 +9,7 @@ SetWorkingDir, %A_ScriptDir%
 #Include <UI/MsgBox>
 #Include <Utils>
 #Include <DBA>
+#Include <Excel>
 
 FONT_OPTIONS := {options: "s12", face: ""}
 
@@ -18,10 +19,10 @@ if !(config.exists()) {
     config.copyFrom("po_verification.default.ini")
 }
 
-input_order     := config.getSection("input_order")
-prompts         := config.getSection("prompts")
+input_order := config.getSection("input_order")
+prompts := config.getSection("prompts")
 readable_fields := config.getSection("readable_fields")
-values          := {}
+values := {}
 
 values := SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
 
@@ -32,7 +33,7 @@ if (results.count() > 1)
 {
     MsgBox % "More than 1 PO matches the PO # number entered, this must be an error."
     ExitApp
-} 
+}
 
 if (!InStr("Open,Printed", results.row(0)["status"]))
 {
@@ -42,7 +43,7 @@ if (!InStr("Open,Printed", results.row(0)["status"]))
 
 results := DB.query("SELECT line, reference AS part_number, qty, qtyr AS qty_received FROM podetl WHERE ponum='" values["purchase_order_number"] "' AND reference='" values["part_number"] "' AND qty-qtyr>='" values["quantity"] "';")
 
-if (results.empty()) 
+if (results.empty())
 {
     MsgBox % "No parts matched the given criteria."
     ExitApp
@@ -55,7 +56,6 @@ else
 ExitApp
 
 ; Functions
-
 
 SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
 {
@@ -82,7 +82,7 @@ DisplayVerifyScreen()
         Gui, verify:Add, Text, w50 xm, % prompts[input_name]
         Gui, verify:Add, Edit, ReadOnly yp-4 x+5, % values[input_name]
     }
-    Gui, verify:Add, Button, gVerify Default, 
+    Gui, verify:Add, Button, gVerify Default,
     Gui, verify:Show
 }
 
@@ -129,7 +129,6 @@ DisplayResults(results)
     WinWaitClose, % "PO Verification Results"
     return DisplayResults
 }
-
 
 ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
 {
@@ -199,13 +198,13 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     while (another_lot.value == "Yes")
     {
         lot_number := InputBox.prompt(prompts["lot_number"], "", FONT_OPTIONS)
-        if (lot_number.canceled) 
+        if (lot_number.canceled)
         {
             MsgBox % "You must supply another lot #, exiting..."
             ExitApp
         }
         qty := InputBox.prompt(prompts["quantity"], "", FONT_OPTIONS)
-        if (qty.canceled) 
+        if (qty.canceled)
         {
             MsgBox % "You must supply another qty, exiting..."
             ExitApp
@@ -247,7 +246,7 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     if (!exists)
     {
         file.WriteLine("Date,Time,PO#,Part#,Lot#,Qty,Location,Inspection#")
-    } 
+    }
     for n, quantity in quantities
     {
         FormatTime, datestr,, MM/dd/yyyy
@@ -281,7 +280,7 @@ GetLineNumberIndex(line_to_find)
     Global
     open_lines := DB.query("SELECT line FROM podetl WHERE ponum='" values["purchase_order_number"] "' AND qty-qtyr>='" values["quantity"] "' AND closed IS NULL ORDER BY line ASC;")
     ; TODO: Error message if empty
-    for n, row in open_lines.data() 
+    for n, row in open_lines.data()
     {
         cur_line := Floor(row["LINE"])
         if (line_to_find == cur_line)
@@ -289,4 +288,21 @@ GetLineNumberIndex(line_to_find)
             return n
         }
     }
+}
+
+CreateNewInspectionReport()
+{
+    inspectionConfig := new IniConfig("inspection_report")
+    if (!inspectionConfig.exists()) {
+        inspectionConfig.copyFrom("inspection_report.default.ini")
+    }
+    template := inspectionConfig.get("file.template")
+    fields := inspectionConfig.getSection("fields")
+    destination := inspectionConfig.get("file.destination")
+    inspection_number := (inspectionConfig.get("file.last_num") + 1)
+    inspectionConfig.set("file.last_num", inspection_number)
+    filepath := RTrim(destination, "/") "/" inspection_number ".xlsx"
+    FileCopy, % template, % filepath
+
+    iReport := new Excel(filepath, true)
 }
