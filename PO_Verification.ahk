@@ -7,7 +7,8 @@ SetWorkingDir, %A_ScriptDir%
 #Include <Query>
 #Include <UI/InputBox>
 #Include <UI/MsgBox>
-#Include <Utils>
+#Include <File>
+#Include <String>
 #Include <DBA>
 #Include <Excel>
 
@@ -27,7 +28,7 @@ values := {}
 values := SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
 
 DB := new DBConnection()
-results := DB.query("SELECT status FROM porder WHERE ponum='" ToUpper(values["purchase_order_number"]) "';")
+results := DB.query("SELECT status FROM porder WHERE ponum='" String.toUpper(values["purchase_order_number"]) "';")
 
 if (results.count() > 1)
 {
@@ -305,7 +306,7 @@ CreateNewInspectionReport()
     MsgBox % template " " filepath
     FileCopy, % template, % filepath
 
-    iReport := new Excel(FullPathFromRelativePath(filepath), true)
+    iReport := new Excel(File.getFullPath(filepath), true)
 
     MsgBox % "Wait"
 }
