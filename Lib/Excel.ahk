@@ -80,7 +80,7 @@ class Excel
             if (sheetName == "") {
                 sheetName := this.defaultSheet
             }
-            this.do.Sheets(sheetName).Range(rangeReg)
+            this.do.Sheets(sheetName).Range(rangeRef)
         }
     }
 
