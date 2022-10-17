@@ -291,7 +291,7 @@ GetLineNumberIndex(line_to_find)
     }
 }
 
-CreateNewInspectionReport()
+CreateNewInspectionReport(part_number, lot_number, part_description, po_number, vendor_name, quantity, quantity_received)
 {
     inspectionConfig := new IniConfig("inspection_report")
     if (!inspectionConfig.exists()) {
@@ -307,6 +307,17 @@ CreateNewInspectionReport()
     FileCopy, % template, % filepath
 
     iReport := new Excel(File.getFullPath(filepath), true)
+
+    iReport.range["C2"].Value := inspection_number
+    iReport.range["C4"].Value := part_number
+    iReport.range["C5"].Value := part_description
+    iReport.range["C6"].Value := lot_number
+    iReport.range["H3"].Value := po_number
+    iReport.range["H4"].Value := vendor_name
+    iReport.range["C10"].Value := quantity
+    iReport.range["H10"].Value := quantity_received
+    iReport.Save()
+    iReport.Quit()
 
     MsgBox % "Wait"
 }
