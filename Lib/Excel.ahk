@@ -7,7 +7,7 @@ class Excel
     _filepath := ""
     _visible := false
     _xlApp := false
-    _defaultSheet := "Sheet1"
+    _defaultSheet := 1
 
     ; --- Properties  ----------------------------------------------------------
 
@@ -61,13 +61,13 @@ class Excel
     {
         get {
             if (sheetName == "") {
-                sheetName := this.defaultSheet
+                sheetName := this._defaultSheet
             }
-            this.do.Sheets(sheetName).Shapes(textBoxName).TextFrame.Characters.Text
+            return this.do.Sheets(sheetName).Shapes(textBoxName).TextFrame.Characters.Text
         }
         set {
             if (sheetName == "") {
-                sheetName := this.defaultSheet
+                sheetName := this._defaultSheet
             }
             this.do.Sheets(sheetName).Shapes(textBoxName).TextFrame.Characters.Text = value
             return value
@@ -78,9 +78,9 @@ class Excel
     {
         get {
             if (sheetName == "") {
-                sheetName := this.defaultSheet
+                sheetName := this._defaultSheet
             }
-            this.do.Sheets(sheetName).Range(rangeRef)
+            return this.do.Sheets(sheetName).Range(rangeRef)
         }
     }
 
@@ -98,6 +98,16 @@ class Excel
     }
 
     ; --- "Public" Methods -----------------------------------------------------
+
+    Save()
+    {
+        return this.do.Save()
+    }
+
+    Quit()
+    {
+        return this._Cleanup()
+    }
 
     ; --- "Private" Methods ----------------------------------------------------
 
