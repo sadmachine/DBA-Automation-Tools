@@ -6,8 +6,10 @@ SetWorkingDir, %A_ScriptDir%
 #Include <ADOSQL>
 #Include <Query>
 #include <UI>
-#Include <Utils>
+#Include <File>
+#Include <String>
 #Include <DBA>
+#Include <Excel>
 
 FONT_OPTIONS := {options: "s12", face: ""}
 
@@ -17,21 +19,21 @@ if !(config.exists()) {
     config.copyFrom("po_verification.default.ini")
 }
 
-input_order     := config.getSection("input_order")
-prompts         := config.getSection("prompts")
+input_order := config.getSection("input_order")
+prompts := config.getSection("prompts")
 readable_fields := config.getSection("readable_fields")
-values          := {}
+values := {}
 
 values := SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
 
 DB := new DBConnection()
-results := DB.query("SELECT status FROM porder WHERE ponum='" ToUpper(values["purchase_order_number"]) "';")
+results := DB.query("SELECT status FROM porder WHERE ponum='" String.toUpper(values["purchase_order_number"]) "';")
 
 if (results.count() > 1)
 {
     MsgBox % "More than 1 PO matches the PO # number entered, this must be an error."
     ExitApp
-} 
+}
 
 if (!InStr("Open,Printed", results.row(0)["status"]))
 {
@@ -41,7 +43,7 @@ if (!InStr("Open,Printed", results.row(0)["status"]))
 
 results := DB.query("SELECT line, reference AS part_number, qty, qtyr AS qty_received FROM podetl WHERE ponum='" values["purchase_order_number"] "' AND reference='" values["part_number"] "' AND qty-qtyr>='" values["quantity"] "';")
 
-if (results.empty()) 
+if (results.empty())
 {
     MsgBox % "No parts matched the given criteria."
     ExitApp
@@ -54,7 +56,6 @@ else
 ExitApp
 
 ; Functions
-
 
 SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
 {
@@ -72,6 +73,19 @@ SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
         values[input_name] := result.value
     }
     return values
+}
+
+DisplayVerifyScreen()
+{
+    Global
+    Gui, verify:New, AlwaysOnTop, Verify Inputs
+    for n, input_name in input_order
+    {
+        Gui, verify:Add, Text, w50 xm, % prompts[input_name]
+        Gui, verify:Add, Edit, ReadOnly yp-4 x+5, % values[input_name]
+    }
+    Gui, verify:Add, Button, gVerify Default,
+    Gui, verify:Show
 }
 
 DisplayResults(results)
@@ -118,7 +132,6 @@ DisplayResults(results)
     return DisplayResults
 }
 
-
 ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
 {
     Global
@@ -126,7 +139,7 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     lot_numbers := []
     quantities := []
     locations := []
-    mb := new UI.MsgBox("Does lot # " values["lot_number"] " have certification?") 
+    mb := new UI.MsgBox("Does lot # " values["lot_number"] " have certification?")
     mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
     has_cert := mb.YesNo()
     if (has_cert.value == "Yes")
@@ -185,7 +198,7 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     quantities.push(values["quantity"])
     locations.push(location)
 
-    mb := new UI.MsgBox("Add another lot/qty?") 
+    mb := new UI.MsgBox("Add another lot/qty?")
     mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
     another_lot := mb.YesNo()
     while (another_lot.value == "Yes")
@@ -193,7 +206,7 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
         ib := new UI.InputBox(prompts["lot_number"])
         ib.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
         lot_number := ib.prompt()
-        if (lot_number.canceled) 
+        if (lot_number.canceled)
         {
             MsgBox % "You must supply another lot #, exiting..."
             ExitApp
@@ -201,12 +214,12 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
         ib := new UI.InputBox(prompts["quantity"])
         ib.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
         qty := ib.prompt()
-        if (qty.canceled) 
+        if (qty.canceled)
         {
             MsgBox % "You must supply another qty, exiting..."
             ExitApp
         }
-        mb := new UI.MsgBox("Does lot # " values["lot_number"] " have certification?") 
+        mb := new UI.MsgBox("Does lot # " values["lot_number"] " have certification?")
         mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
         has_cert := mb.YesNo()
         if (has_cert.value == "Yes")
@@ -245,7 +258,7 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     if (!exists)
     {
         file.WriteLine("Date,Time,PO#,Part#,Lot#,Qty,Location,Inspection#")
-    } 
+    }
     for n, quantity in quantities
     {
         FormatTime, datestr,, MM/dd/yyyy
@@ -279,7 +292,7 @@ GetLineNumberIndex(line_to_find)
     Global
     open_lines := DB.query("SELECT line FROM podetl WHERE ponum='" values["purchase_order_number"] "' AND qty-qtyr>='" values["quantity"] "' AND closed IS NULL ORDER BY line ASC;")
     ; TODO: Error message if empty
-    for n, row in open_lines.data() 
+    for n, row in open_lines.data()
     {
         cur_line := Floor(row["LINE"])
         if (line_to_find == cur_line)
@@ -287,4 +300,35 @@ GetLineNumberIndex(line_to_find)
             return n
         }
     }
+}
+
+CreateNewInspectionReport(part_number, lot_number, part_description, po_number, vendor_name, quantity, quantity_received)
+{
+    inspectionConfig := new IniConfig("inspection_report")
+    if (!inspectionConfig.exists()) {
+        inspectionConfig.copyFrom("inspection_report.default.ini")
+    }
+    template := inspectionConfig.get("file.template")
+    fields := inspectionConfig.getSection("fields")
+    destination := inspectionConfig.get("file.destination")
+    inspection_number := (inspectionConfig.get("file.last_num") + 1)
+    inspectionConfig.set("file.last_num", inspection_number)
+    filepath := RTrim(destination, "/") "/" inspection_number ".xlsx"
+    MsgBox % template " " filepath
+    FileCopy, % template, % filepath
+
+    iReport := new Excel(File.getFullPath(filepath), true)
+
+    iReport.range["C2"].Value := inspection_number
+    iReport.range["C4"].Value := part_number
+    iReport.range["C5"].Value := part_description
+    iReport.range["C6"].Value := lot_number
+    iReport.range["H3"].Value := po_number
+    iReport.range["H4"].Value := vendor_name
+    iReport.range["C10"].Value := quantity
+    iReport.range["H10"].Value := quantity_received
+    iReport.Save()
+    iReport.Quit()
+
+    MsgBox % "Wait"
 }
