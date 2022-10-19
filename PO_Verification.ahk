@@ -39,35 +39,6 @@ ExitApp
 
 ; --- Functions ----------------------------------------------------------------
 
-SolicitValues(input_order, prompts, readable_fields)
-{
-    values := {}
-    for n, input_name in input_order
-    {
-        result := UI.InputBox(prompts[input_name])
-        if (result.canceled)
-        {
-            MsgBox % "You must supply a " readable_fields[input_name] " to continue. Exiting..."
-            ExitApp
-        }
-        values[input_name] := result.value
-    }
-    return values
-}
-
-DisplayVerifyScreen()
-{
-    Global
-    Gui, verify:New, AlwaysOnTop, Verify Inputs
-    for n, input_name in input_order
-    {
-        Gui, verify:Add, Text, w50 xm, % prompts[input_name]
-        Gui, verify:Add, Edit, ReadOnly yp-4 x+5, % values[input_name]
-    }
-    Gui, verify:Add, Button, gVerify Default,
-    Gui, verify:Show
-}
-
 DisplayResults(results)
 {
     Global
