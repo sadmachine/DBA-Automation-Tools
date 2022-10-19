@@ -1,19 +1,19 @@
 ; UI.InputBox
-class InputBox extends UI.Base
+class InputBoxObj extends UI.Base
 {
     output := {}
-    static minWidth := 240
+    __instance := true
 
     __New(prompt, title := "", guiOptions := "-SysMenu +AlwaysOnTop")
     {
         this.promptMsg := prompt
-        if (this.title == "") 
+        if (this.title == "")
         {
             return base.__New(prompt, guiOptions)
         }
         else
         {
-            return base.__New(prompt, guiOptions)
+            return base.__New(title, guiOptions)
         }
     }
 
@@ -35,19 +35,20 @@ class InputBox extends UI.Base
     {
         Global
         Gui, InputBoxLabel:New, % this.guiOptions, % this.title
-        if (this.fontSettings != "")
+        if (this.Font != "")
         {
-            Gui, InputBoxLabel:Font, % this.fontSettings["options"], % this.fontSettings["fontName"]
+            Gui, InputBoxLabel:Font, % this.Font["options"], % this.Font["fontName"]
         }
         Gui, InputBoxLabel:Add, Text, % "r1", % this.promptMsg
-        Gui, InputBoxLabel:Add, Edit, % "r1 w" this.minWidth " vInputBoxOutput"
+        Gui, InputBoxLabel:Add, Edit, % "r1 w" this.width - (this.margin*2) " vInputBoxOutput"
+        posFromRight := this.width - 60 - 10 - this.margin
         Gui, InputBoxLabel:Add, Button, % "hwndSubmitButton w60 xm+10 Default", OK
-        Gui, InputBoxLabel:Add, Button, % "hwndCancelButton w60 yp x+100", Cancel
+        Gui, InputBoxLabel:Add, Button, % "hwndCancelButton w60 yp x" posFromRight, Cancel
 
         this.bind(SubmitButton, "SubmitEvent")
         this.bind(CancelButton, "CancelEvent")
-            
-        Gui, InputBoxLabel:Show
+
+        Gui, InputBoxLabel:Show, % "w" this.width
 
         WinWaitClose, % this.title
         return % this.output

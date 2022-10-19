@@ -3,9 +3,35 @@ class Base
     title := ""
     guiOptions := ""
     fontSettings := ""
+    _width := ""
+    _margin := 10
+    static _defaultWidth := 240
 
-    static defaultFontSettings :=
-    static defaultGuiOptions :=
+    static defaultFontSettings := ""
+    static defaultGuiOptions := ""
+
+    width[] {
+        get {
+            if (this._width == "") {
+                return this._defaultWidth
+            }
+            return this._width
+        }
+        set {
+            this._width := value
+            return this._width
+        }
+    }
+
+    margin[] {
+        get {
+            return this._margin
+        }
+        set {
+            this._margin := value
+            return this._margin
+        }
+    }
 
     Font[key := ""] {
         get {

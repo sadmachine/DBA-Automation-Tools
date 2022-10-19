@@ -1,9 +1,30 @@
 class UI
 {
     #Include <UI/Base>
-    #Include <UI/InputBox>
-    #Include <UI/MsgBox>
+    #Include <UI/InputBoxObj>
+    #Include <UI/MsgBoxObj>
     #Include <UI/Dashboard>
+
+    ; --- Class Functions --------------------------------------------------------
+
+    InputBox(prompt, title := "")
+    {
+        ib := new UI.InputBoxObj(prompt, title)
+        MsgBox % ib.Font["options"]
+        return ib.prompt(prompt, title)
+    }
+
+    MsgBox(prompt, title := "")
+    {
+        mb := new UI.MsgBoxObj(prompt, title)
+        return ib.MsgBox.OK()
+    }
+
+    YesNoBox(prompt, title := "")
+    {
+        mb := new UI.MsgBoxObj(prompt, title)
+        return mb.MsgBox.YesNo()
+    }
 
     ; --- Utility methods --------------------------------------------------------
 

@@ -10,8 +10,11 @@ SetWorkingDir, %A_ScriptDir%
 #Include <String>
 #Include <DBA>
 #Include <Excel>
+#Include src/Receiving.ahk
 
-FONT_OPTIONS := {options: "s12", face: ""}
+FONT_OPTIONS := {options: "s12", fontName: ""}
+
+UI.InputBox.defaultFontSettings := FONT_OPTIONS
 
 config := new IniConfig("po_verification")
 
@@ -19,52 +22,29 @@ if !(config.exists()) {
     config.copyFrom("po_verification.default.ini")
 }
 
-input_order := config.getSection("input_order")
-prompts := config.getSection("prompts")
-readable_fields := config.getSection("readable_fields")
-values := {}
+receiver := new Receiving.Receiver()
 
-values := SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
+receiver.RequestPONumber()
+receiver.RequestPartNumber()
+receiver.RequestLotNumber()
+receiver.RequestQuantity()
 
-DB := new DBConnection()
-results := DB.query("SELECT status FROM porder WHERE ponum='" String.toUpper(values["purchase_order_number"]) "';")
+verifier := new Receiving.Verify()
 
-if (results.count() > 1)
-{
-    MsgBox % "More than 1 PO matches the PO # number entered, this must be an error."
-    ExitApp
-}
+results := verifier.GetResults()
 
-if (!InStr("Open,Printed", results.row(0)["status"]))
-{
-    MsgBox % "The PO '" values["purchase_order_number"] "' has status '" results.row(0)["status"] "'. Status should be either 'Open' or 'Printed'"
-    ExitApp
-}
-
-results := DB.query("SELECT line, reference AS part_number, qty, qtyr AS qty_received FROM podetl WHERE ponum='" values["purchase_order_number"] "' AND reference='" values["part_number"] "' AND qty-qtyr>='" values["quantity"] "';")
-
-if (results.empty())
-{
-    MsgBox % "No parts matched the given criteria."
-    ExitApp
-}
-else
-{
-    DisplayResults(results)
-}
+DisplayResults(results)
 
 ExitApp
 
-; Functions
+; --- Functions ----------------------------------------------------------------
 
-SolicitValues(input_order, prompts, readable_fields, FONT_OPTIONS)
+SolicitValues(input_order, prompts, readable_fields)
 {
     values := {}
     for n, input_name in input_order
     {
-        ib := new UI.InputBox(prompts[input_name])
-        ib.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
-        result := ib.prompt()
+        result := UI.InputBox(prompts[input_name])
         if (result.canceled)
         {
             MsgBox % "You must supply a " readable_fields[input_name] " to continue. Exiting..."
@@ -92,7 +72,7 @@ DisplayResults(results)
 {
     Global
     Gui, New, hwndDisplayResults +AlwaysOnTop, PO Verification Results
-    Gui, %DisplayResults%:Font, % FONT_OPTIONS.options, % FONT_OPTIONS.face
+    Gui, %DisplayResults%:Font, % FONT_OPTIONS.options, % FONT_OPTIONS.fontName
     Gui, %DisplayResults%:Add, GroupBox, Section h70 w800, Scanned Items
     Gui, %DisplayResults%:Add, Text, xs+8 ys+30, PO #:
     Gui, %DisplayResults%:Add, Edit, ReadOnly x+5 yp-4 w102, % values["purchase_order_number"]
@@ -140,7 +120,6 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     quantities := []
     locations := []
     mb := new UI.MsgBox("Does lot # " values["lot_number"] " have certification?")
-    mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
     has_cert := mb.YesNo()
     if (has_cert.value == "Yes")
     {
@@ -199,12 +178,10 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
     locations.push(location)
 
     mb := new UI.MsgBox("Add another lot/qty?")
-    mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
     another_lot := mb.YesNo()
     while (another_lot.value == "Yes")
     {
         ib := new UI.InputBox(prompts["lot_number"])
-        ib.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
         lot_number := ib.prompt()
         if (lot_number.canceled)
         {
@@ -212,7 +189,6 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
             ExitApp
         }
         ib := new UI.InputBox(prompts["quantity"])
-        ib.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
         qty := ib.prompt()
         if (qty.canceled)
         {
@@ -220,7 +196,6 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
             ExitApp
         }
         mb := new UI.MsgBox("Does lot # " values["lot_number"] " have certification?")
-        mb.setFont(FONT_OPTIONS["options"], FONT_OPTIONS["face"])
         has_cert := mb.YesNo()
         if (has_cert.value == "Yes")
         {
@@ -241,7 +216,8 @@ ReceiveSelectedLine(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
         lot_numbers.push(lot_number.value)
         quantities.push(qty.value)
         locations.push(location)
-        another_lot := UI.MsgBox.YesNo("Add another lot/qty?", "", FONT_OPTIONS)
+        mb := new UI.MsgBox("Add another lot/qty?")
+        another_lot := mb.YesNo()
     }
 
     WinActivate, % DBA.Windows.POReceipts
