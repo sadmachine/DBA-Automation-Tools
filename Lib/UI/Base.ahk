@@ -78,7 +78,31 @@ class Base
     {
         this.title := title
         this.guiOptions := guiOptions
+        foundPos := RegExMatch(this.guiOptions, "\s?hwnd([a-zA-Z0-9_]+)", hwnd)
+        if (foundPos) {
+            MsgBox % hwnd
+            this.hwnd := hwnd
+        }
         return this
+    }
+
+    New(title := -1, guiOptions := -1)
+    {
+        Global
+        Gui, New, % this.guiOptions, % this.title
+    }
+
+    Font(options := -1, fontName := -1)
+    {
+        Global
+        if (options != -1) {
+            this.Font["options"] := options
+        }
+
+        if (fontName != -1) {
+            this.Font["fontName"] := fontName
+        }
+        Gui, %DisplayResults%:Font, % this.Font.options, % this.Font.fontName
     }
 
     bind(hwnd, method)
