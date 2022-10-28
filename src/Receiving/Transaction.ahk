@@ -7,16 +7,47 @@ class Transaction
         this.DB := new DBConnection()
         indexNumber := this.GetLineNumberIndex(lineNumber)
 
-        lot_numbers := []
-        quantities := []
-        locations := []
-        hasCert := UI.YesNoBox("Does lot # " this.receiver.lotNumbers[this.receiver.currentIndex] " have certification?")
-        if (hasCert.value == "Yes") {
-            location := "Received"
-        } else {
-            location := "QA Hold"
+        this.PreparePOScreen(indexNumber)
+
+        loopAgain := true
+        while (loopAgain)
+        {
+            if (A_Index != 1) {
+                Send {Down}
+                this.receiver.RequestLotNumber()
+                this.receiver.RequestQuantity()
+            }
+            this.receiver.RequestCertInfo()
+            this.receiver.RequestLocation()
+
+            this.ReceiveLotInfo()
+
+            loopAgain := (UI.YesNoBox("Add another lot/qty?").value == "Yes")
         }
 
+        this.SaveAndExitPOScreen()
+
+        this.LogInformation()
+    }
+
+    GetLineNumberIndex(lineNumber)
+    {
+        Global
+        openLines := DB.query("SELECT line FROM podetl WHERE ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.GetCurrentLotInfo("quantity") "' AND closed IS NULL ORDER BY line ASC;")
+        ; TODO: Error message if empty
+        for n, row in openLines.data()
+        {
+            curLine := Floor(row["LINE"])
+            if (lineNumber == curLine)
+            {
+                return n
+            }
+        }
+    }
+
+    PreparePOScreen(indexNumber)
+    {
+        global
         WinActivate, % DBA.Windows.Main
         WinWaitActive, % DBA.Windows.Main,, 5
         if ErrorLevel
@@ -50,34 +81,11 @@ class Transaction
         Send {Tab}
         Sleep 100
         Send {Tab}
-        this.ReceiveQtyAndLot(this.receiver.quantities[this.receiver.currentIndex], this.receiver.lotNumbers[this.receiver.currentIndex], location)
+    }
 
-        locations.push(location)
-
-        anotherLot := UI.YesNoBox("Add another lot/qty?")
-        while (anotherLot.value == "Yes")
-        {
-            this.receiver.RequestLotNumber()
-            this.receiver.RequestQuantity()
-            this.receiver.currentIndex += 1
-            hasCert := UI.YesNoBox("Does lot # " this.receiver.lotNumbers[this.receiver.currentIndex] " have certification?")
-            if (hasCert.value == "Yes") {
-                location := "Received"
-            } else {
-                location := "QA Hold"
-            }
-            WinActivate, % DBA.Windows.POReceipts
-            WinWaitActive, % DBA.Windows.POReceipts,, 5
-            if ErrorLevel
-            {
-                MsgBox % "PO Receipts never became active"
-            }
-            Send {Down}
-            this.ReceiveQtyAndLot(this.receiver.quantities[this.receiver.currentIndex], this.receiver.lotNumbers[this.receiver.currentIndex], location)
-            locations.push(location)
-            anotherLot := UI.YesNoBox("Add another lot/qty?")
-        }
-
+    SaveAndExitPOScreen()
+    {
+        global
         WinActivate, % DBA.Windows.POReceipts
         WinWaitActive, % DBA.Windows.POReceipts,, 5
         if ErrorLevel
@@ -87,6 +95,55 @@ class Transaction
         }
         Send {Alt Down}u{Alt Up}
 
+        WinClose, % DBA.Windows.POReceipts
+        WinWaitClose, % DBA.Windows.POReceipts,, 5
+        if ErrorLevel
+        {
+            MsgBox % "PO Receipts never closed, exiting"
+            ExitApp
+        }
+    }
+
+    ReceiveLotInfo()
+    {
+        global
+        WinActivate, % DBA.Windows.POReceipts
+        WinWaitActive, % DBA.Windows.POReceipts,, 5
+        if ErrorLevel
+        {
+            MsgBox % "PO Receipts never became active"
+        }
+        Send {Home}
+        Send % this.receiver.GetCurrentLotInfo("quantity")
+        Send {Enter}
+        Send {End}
+        Send % this.receiver.GetCurrentLotInfo("number")
+        Send {Shift Down}{Tab}{Shift Up}
+        Send {Shift Down}{Tab}{Shift Up}
+        Send {Enter}
+        Sleep 100
+        Send % "\"
+        WinWaitActive, % "FrmPopDrpLocationLook_sub",, 5
+        if ErrorLevel
+        {
+            MsgBox % "Location submenu never became active."
+            ExitApp
+        }
+        Sleep 200
+        ControlClick, TCheckBox1, % "FrmPopDrpLocationLook_sub",,,,NA
+        Sleep 200
+        ControlSend, TdxButtonEdit1, % this.receiver.GetCurrentLotInfo("location"), % "FrmPopDrpLocationLook_sub"
+        Sleep 100
+        ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
+        Sleep 100
+        ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
+        Sleep 100
+        Send {Enter}
+    }
+
+    LogInformation()
+    {
+        global
         Logfile := A_ScriptDir "/data/Receiving Log.csv"
         exists := FileExist(Logfile)
         file := FileOpen(Logfile, "a")
@@ -99,41 +156,9 @@ class Transaction
             FormatTime, datestr,, MM/dd/yyyy
             FormatTime, timestr,, HH:mm:ss
             inspectionNumber := config.get("inspection.last_number") + 1
-            file.WriteLine(datestr "," timestr "," this.receiver.poNumber "," this.receiver.partNumber "," this.receiver.lotNumbers[n] "," this.receiver.quantities[n] "," locations[n] "," inspectionNumber)
+            file.WriteLine(datestr "," timestr "," this.receiver.poNumber "," this.receiver.partNumber "," this.receiver.lotNumbers[n] "," this.receiver.quantities[n] "," this.receiver.locations[n] "," inspectionNumber)
             config.set("inspection.last_number", inspectionNumber)
         }
         file.Close()
-
-        WinClose, % DBA.Windows.POReceipts
-        WinWaitClose, % DBA.Windows.POReceipts,, 5
-        if ErrorLevel
-        {
-            MsgBox % "PO Receipts never closed, exiting"
-            ExitApp
-        }
-    }
-
-    GetLineNumberIndex(lineNumber)
-    {
-        Global
-        openLines := DB.query("SELECT line FROM podetl WHERE ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.quantities[this.receiver.currentIndex] "' AND closed IS NULL ORDER BY line ASC;")
-        ; TODO: Error message if empty
-        for n, row in openLines.data()
-        {
-            curLine := Floor(row["LINE"])
-            if (lineNumber == curLine)
-            {
-                return n
-            }
-        }
-    }
-
-    ReceiveQtyAndLot(qty, lot_number, location)
-    {
-        Send {Home}
-        Send % qty
-        Send {Enter}
-        Send {End}
-        Send % lot_number
     }
 }

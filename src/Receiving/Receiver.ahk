@@ -5,7 +5,7 @@ class Receiver
     lotNumbers := []
     quantities := []
     locations := []
-    currentIndex := 1
+    hasCert := []
 
     __New()
     {
@@ -33,6 +33,31 @@ class Receiver
     {
         result := this._Request("Quantity")
         this.quantities.Push(result.value)
+    }
+
+    RequestLocation()
+    {
+        result := this._Request("Location")
+        this.locations.Push(result.value)
+    }
+
+    RequestCertInfo()
+    {
+        result := UI.YesNoBox("Does lot # " this.GetCurrentLotInfo("number") " have certification?")
+        this.hasCert.push(result.value)
+    }
+
+    GetCurrentLotInfo(key := "")
+    {
+        lotInfo := {}
+        index := this.lotNumbers.MaxIndex()
+        lotInfo["number"] := this.lotNumbers[index]
+        lotInfo["quantity"] := this.quantities[index]
+        lotInfo["location"] := this.locations[index]
+        lotInfo["hasCert"] := this.hasCert[index]
+        if (key == "" || !lotInfo.HasKey(key))
+            return lotInfo
+        return lotInfo[key]
     }
 
     _Request(field_name)
