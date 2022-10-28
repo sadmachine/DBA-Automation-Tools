@@ -14,7 +14,7 @@ class Verify
 
     FindMatchingPO()
     {
-        results := this.DB.query("SELECT status FROM porder WHERE ponum='" String.toUpper(this.receiver["po_number"]) "';")
+        results := this.DB.query("SELECT status FROM porder WHERE ponum='" String.toUpper(this.receiver.poNumber) "';")
 
         if (results.count() > 1)
         {
@@ -24,14 +24,14 @@ class Verify
 
         if (!InStr("Open,Printed", results.row(0)["status"]))
         {
-            MsgBox % "The PO '" this.receiver["po_number"] "' has status '" results.row(0)["status"] "'. Status should be either 'Open' or 'Printed'"
+            MsgBox % "The PO '" this.receiver.poNumber "' has status '" results.row(0)["status"] "'. Status should be either 'Open' or 'Printed'"
             ExitApp
         }
     }
 
     FindMatchingLines()
     {
-        results := this.DB.query("SELECT line, reference AS part_number, qty, qtyr AS qty_received FROM podetl WHERE ponum='" this.receiver["po_number"] "' AND reference='" this.receiver["part_number"] "' AND qty-qtyr>='" this.receiver["quantity"] "';")
+        results := this.DB.query("SELECT line, reference AS part_number, qty, qtyr AS qty_received FROM podetl WHERE ponum='" this.receiver.poNumber "' AND reference='" this.receiver.partNumber "' AND qty-qtyr>='" this.receiver.quantities[1] "';")
 
         if (results.empty())
         {

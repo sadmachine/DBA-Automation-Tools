@@ -1,14 +1,83 @@
 class Base
 {
-    title := ""
-    guiOptions := ""
-    fontSettings := ""
-    _width := ""
-    _margin := 10
-    static _defaultWidth := 240
+    ; --- Variables ------------------------------------------------------------
 
-    static defaultFontSettings := ""
-    static defaultGuiOptions := ""
+    _title := ""
+    _options := ""
+    _font := ""
+    _width := ""
+    _margin := ""
+    _color := ""
+    _hwnd := ""
+
+    static _defaultOptions := ""
+    static _defaultFont := {"options": "", "fontName": ""}
+    static _defaultWidth := 240
+    static _defaultMargin := 10
+    static _defaultColor := {"windowColor": "", "controlColor": ""}
+
+    ; --- Properties -----------------------------------------------------------
+
+    title[] {
+        get {
+            return this._title
+        }
+        set {
+            this._title := value
+            return this._title
+        }
+    }
+
+    options[init := false] {
+        get {
+            if (this._options == "") {
+                return this._defaultOptions
+            }
+            return this._options
+        }
+        set {
+            this._options := value
+            hwnd := this.hwnd
+            options := this._options " hwnd" hwnd
+            if (!init) {
+                Gui, %hwnd%:%options%
+            }
+            return this._options
+        }
+    }
+
+    font[key := ""] {
+        get {
+            font := this._font
+            if (this._font == "") {
+                font := this._defaultFont
+            }
+            if (key == "") {
+                return font
+            }
+            if (font.HasKey(key)) {
+                return font[key]
+            }
+            throw Exception("Invalid key for font options: " key)
+        }
+        set {
+            if (key == "") {
+                if (!IsObject(value)) {
+                    throw Exception("You must supply an object(keys: options, fontName) if you're setting font without a key.")
+                }
+                this._font := value
+            }
+            if (!InStr("options fontName", key)) {
+                throw Exception("Key supplied for Font should be either ""options"" or ""fontName""")
+            }
+
+            this._font[key] := value
+
+            hwnd := this._hwnd
+            Gui, %hwnd%:Font, % this.font["options"], % this.font["fontName"]
+            return this._font
+        }
+    }
 
     width[] {
         get {
@@ -25,89 +94,210 @@ class Base
 
     margin[] {
         get {
+            if (this._margin == "") {
+                return this._defaultMargin
+            }
             return this._margin
         }
         set {
             this._margin := value
+            hwnd := this._hwnd
+            Gui, %hwnd%:Margin, % this.margin, % this.margin
             return this._margin
         }
     }
 
-    Font[key := ""] {
+    color[key := ""] {
         get {
-            fontSettings := this.fontSettings
-            if (this.fontSettings == "") {
-                fontSettings := this.defaultFontSettings
+            color := this._color
+            if (this._color == "") {
+                color := this._defaultColor
             }
             if (key == "") {
-                return fontSettings
+                return color
             }
-            if (fontSettings.HasKey(key)) {
-                return fontSettings[key]
+            if (color.HasKey(key)) {
+                return color[key]
             }
-            throw Exception("Invalid key for font options: " key)
+            throw Exception("Invalid key for color: " key)
         }
         set {
             if (key == "") {
                 if (!IsObject(value)) {
-                    throw Exception("You must supply an object(keys: options, fontName) if you're setting font without a key.")
+                    throw Exception("You must supply an object(keys: windowColor, controlColor) if you're setting color without a key.")
                 }
-                this.fontSettings := value
-                return this.fontSettings
+                this._color := value
             }
-            if (!InStr("options fontName", key)) {
-                throw Exception("Key supplied for Font should be either ""options"" or ""fontName""")
+            if (!InStr("windowColor controlColor", key)) {
+                throw Exception("Key supplied for color should be either ""windowColor"" or ""controlColor""")
             }
 
-            this.fontSettings := value
-            return this.fontSettings
+            this._color[key] := value
+
+            hwnd := this._hwnd
+            Gui, %hwnd%:Color, % this.color["windowColor"], % this.font["controlColor"]
+            return this._color
         }
     }
 
-    Options[] {
+    hwnd[] {
         get {
-            return this.guiOptions
+            if (this._hwnd == "") {
+                topLevelClass := StrSplit(this.__Class, ".")[2]
+                Random, rand
+                this._hwnd := topLevelClass "" A_TickCount "" rand
+            }
+            return this._hwnd
         }
         set {
-            this.guiOptions := value
-            return value
+            this._hwnd := value
+            return this._hwnd
         }
     }
 
-    __New(title := "", guiOptions := "")
-    {
-        this.title := title
-        this.guiOptions := guiOptions
-        foundPos := RegExMatch(this.guiOptions, "\s?hwnd([a-zA-Z0-9_]+)", hwnd)
-        if (foundPos) {
-            MsgBox % hwnd
-            this.hwnd := hwnd
+    defaultOptions[] {
+        get {
+            return this._defaultOptions
         }
+
+        set {
+            this._defaultOptions := value
+            return this._defaultOptions
+        }
+    }
+
+    defaultFont[] {
+        get {
+            return this._defaultFont
+        }
+
+        set {
+            this._defaultFont := value
+            Gui Font, % this._defaultFont["options"], % this._defaultFont["fontName"]
+            return this._defaultFont
+        }
+    }
+
+    defaultWidth[] {
+        get {
+            return this._defaultWidth
+        }
+
+        set {
+            this._defaultWidth := value
+            return this._defaultWidth
+        }
+    }
+
+    defaultMargin[] {
+        get {
+            return this._defaultMargin
+        }
+
+        set {
+            this._defaultMargin := value
+            Gui Margin, % this._defaultMargin, % this._defaultMargin
+            return this._defaultMargin
+        }
+    }
+
+    ; --- Meta Methods ---------------------------------------------------------
+
+    __New(title := "", options := "")
+    {
+        Global
+        this.title := title
+        this.options[true] := options
+        hwnd := this.hwnd
+        Gui, %hwnd%:New, % this.options, % this.title
         return this
     }
 
-    New(title := -1, guiOptions := -1)
+    ; --- Methods --------------------------------------------------------------
+
+    Add(ControlType, cOptions := "", text := "")
     {
-        Global
-        Gui, New, % this.guiOptions, % this.title
+        global
+        hwnd := this.hwnd
+
+        Random, rand
+        cHwnd := ControlType "" A_TickCount "" rand
+        cOptions .= " hwnd" cHwnd
+
+        Gui %hwnd%:Add, % ControlType, % cOptions, % text
+        return % %cHwnd%
     }
 
-    Font(options := -1, fontName := -1)
+    Show(options := "", title := -1)
+    {
+        global
+        hwnd := this.hwnd
+        if (title != -1) {
+            this.title := title
+        }
+        Gui %hwnd%:Show, % options, % this.title
+    }
+
+    Submit(NoHide := false)
+    {
+        global
+        hwnd := this.hwnd
+        if (NoHide) {
+            Gui %hwnd%:Submit, NoHide
+        }
+        Gui %hwnd%:Submit
+    }
+
+    Cancel()
+    {
+        global
+        hwnd := this.hwnd
+        Gui %hwnd%:Cancel
+    }
+
+    Hide()
+    {
+        global
+        hwnd := this.hwnd
+        Gui %hwnd%:Hide
+    }
+
+    Destroy()
+    {
+        global
+        hwnd := this.hwnd
+        Gui %hwnd%:Destroy
+    }
+
+    Default()
+    {
+        global
+        hwnd := this.hwnd
+        Gui %hwnd%:Default
+    }
+
+    ApplyFont()
+    {
+        global
+        hwnd := this.hwnd
+        Gui %hwnd%:Font, % this.font["options"], % this.font["fontName"]
+    }
+
+    FocusControl(CtrlHwnd)
     {
         Global
-        if (options != -1) {
-            this.Font["options"] := options
-        }
+        GuiControl, Focus, % CtrlHwnd
+    }
 
-        if (fontName != -1) {
-            this.Font["fontName"] := fontName
-        }
-        Gui, %DisplayResults%:Font, % this.Font.options, % this.Font.fontName
+    WaitClose()
+    {
+        WinWaitClose, % this.title
     }
 
     bind(hwnd, method)
     {
+        global
         bindObj := ObjBindMethod(this, method)
-        GuiControl, +g, % hwnd, % bindObj
+        GuiControl, +g, % %hwnd%, % bindObj
     }
 }

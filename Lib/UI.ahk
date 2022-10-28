@@ -10,20 +10,22 @@ class UI
     InputBox(prompt, title := "")
     {
         ib := new UI.InputBoxObj(prompt, title)
-        MsgBox % ib.Font["options"]
+        ib.widht := 280
         return ib.prompt(prompt, title)
     }
 
     MsgBox(prompt, title := "")
     {
         mb := new UI.MsgBoxObj(prompt, title)
-        return ib.MsgBox.OK()
+        mb.width := 280
+        return mb.OK()
     }
 
     YesNoBox(prompt, title := "")
     {
         mb := new UI.MsgBoxObj(prompt, title)
-        return mb.MsgBox.YesNo()
+        mb.width := 280
+        return mb.YesNo()
     }
 
     ; --- Utility methods --------------------------------------------------------

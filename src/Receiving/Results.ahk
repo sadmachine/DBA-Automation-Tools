@@ -3,40 +3,41 @@ class Results extends UI.Base
 {
     __New()
     {
-        base.__New("PO Verification Results", "hwndDisplayResults +AlwaysOnTop")
+        base.__New("PO Verification Results", "+AlwaysOnTop")
     }
 
-    Show()
+    Display(receiver, poResults)
     {
         Global
-        this.New()
-        this.Font()
-        Gui, %DisplayResults%:Add, GroupBox, Section h70 w800, Scanned Items
-        Gui, %DisplayResults%:Add, Text, xs+8 ys+30, PO #:
-        Gui, %DisplayResults%:Add, Edit, ReadOnly x+5 yp-4 w102, % values["purchase_order_number"]
-        Gui, %DisplayResults%:Add, Text, x+10 ys+30, Part #:
-        Gui, %DisplayResults%:Add, Edit, ReadOnly x+5 yp-4 w180, % values["part_number"]
-        Gui, %DisplayResults%:Add, Text, x+10 ys+30, Lot #:
-        Gui, %DisplayResults%:Add, Edit, ReadOnly x+5 yp-4 w180, % values["lot_number"]
-        Gui, %DisplayResults%:Add, Text, x+10 ys+30, Quantity:
-        Gui, %DisplayResults%:Add, Edit, ReadOnly x+5 yp-4 w82, % values["quantity"]
-        Gui, %DisplayResults%:Add, GroupBox, xm w650 h436 Section, Matching Lines:
-        Gui, %DisplayResults%:Add, ListView, xs+4 ys+26 w642 h400 hwndResultsListView, % results.LV_Headers
-        Gui, %DisplayResults%:Add, GroupBox, xs+654 ys+0 w146 h436 Section, Actions
-        Gui, %DisplayResults%:Add, Button, gReceiveSelectedLine xs+6 ys+26 w132 Default, Receive
-        Gui, %DisplayResults%:Default
+        this.receiver := receiver
+        this.ApplyFont()
+        this.Add("GroupBox", "Section h70 w800", "Scanned Items")
+        this.Add("Text", "xs+8 ys+30", "PO #:")
+        this.Add("Edit", "ReadOnly x+5 yp-4 w102", receiver.poNumber)
+        this.Add("Text", "x+10 ys+30", "Part #:")
+        this.Add("Edit", "ReadOnly x+5 yp-4 w180", receiver.partNumber)
+        this.Add("Text", "x+10 ys+30", "Lot #:")
+        this.Add("Edit", "ReadOnly x+5 yp-4 w180", receiver.lotNumbers[1])
+        this.Add("Text", "x+10 ys+30", "Quantity:")
+        this.Add("Edit", "ReadOnly x+5 yp-4 w82", receiver.quantities[1])
+        this.Add("GroupBox", "xm w650 h436 Section", "Matching Lines:")
+        ResultsListView := this.Add("ListView", "xs+4 ys+26 w642 h400", poResults.LV_headers)
+        this.Add("GroupBox", "xs+654 ys+0 w146 h436 Section", "Actions")
+        ReceiveButton := this.Add("Button", "xs+6 ys+26 w132 Default", "Receive")
+        this.bind(ReceiveButton, "NewTransaction")
+        this.Default()
 
-        for index,row in results.rows
+        for index,row in poResults.rows
         {
             data := []
             for header,record in row
             {
-                data[results.headerIndex[header]] := Floor(record)
+                data[poResults.headerIndex[header]] := Floor(record)
             }
             LV_Add("", data*)
         }
 
-        Loop % results.colCount
+        Loop % poResults.colCount
         {
             LV_ModifyCol(A_Index, "AutoHdr")
         }
@@ -44,9 +45,21 @@ class Results extends UI.Base
         ; Make sure first row is selected
         LV_Modify(1, "Select")
 
-        Gui, %DisplayResults%:Show
-        GuiControl, Focus, % ResultsListView
-        WinWaitClose, % "PO Verification Results"
+        this.Show()
+        this.FocusControl(ResultsListView)
+        this.WaitClose()
         return DisplayResults
+    }
+
+    NewTransaction()
+    {
+        global
+        this.Default()
+
+        selected_row := LV_GetNext()
+        LV_GetText(lineNumber, selected_row)
+        this.Destroy()
+
+        new Receiving.Transaction(lineNumber, this.receiver)
     }
 }

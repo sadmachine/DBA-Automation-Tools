@@ -1,13 +1,11 @@
 class Receiver
 {
-    po_number := ""
-    part_number := ""
-    lot_numbers := []
+    poNumber := ""
+    partNumber := ""
+    lotNumbers := []
     quantities := []
-
-    input_order := []
-    prompts := {}
-    readable_fields := {}
+    locations := []
+    currentIndex := 1
 
     __New()
     {
@@ -16,25 +14,25 @@ class Receiver
     RequestPONumber()
     {
         result := this._Request("PO #")
-        this.po_number := result.value
+        this.poNumber := result.value
     }
 
     RequestPartNumber()
     {
         result := this._Request("Part #")
-        this.part_number := result.value
+        this.partNumber := result.value
     }
 
     RequestLotNumber()
     {
         result := this._Request("Lot #")
-        this.lot_number := result.value
+        this.lotNumbers.push(result.value)
     }
 
     RequestQuantity()
     {
         result := this._Request("Quantity")
-        this.quantity := result.value
+        this.quantities.Push(result.value)
     }
 
     _Request(field_name)

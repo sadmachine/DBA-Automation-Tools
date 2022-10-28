@@ -2,13 +2,13 @@
 
 class DBConnection
 {
-    DSN := "DBA"
+    DSN := "DBA NG"
     UID := "SYSDBA"
     PWD := "masterkey"
     RO := true
     coldelim := "|"
     connectionStr := ""
-    __New(DSN := "DBA", UID := "SYSDBA", PWD := "masterkey", coldelim := "")
+    __New(DSN := "DBA NG", UID := "SYSDBA", PWD := "masterkey", coldelim := "")
     {
         this.DSN := DSN
         this.UID := UID
@@ -110,7 +110,7 @@ class Results
 
     display()
     {
-        Gui, New, hwndDisplaySQL +AlwaysOnTop, 
+        Gui, New, hwndDisplaySQL +AlwaysOnTop,
         Gui, %DisplaySQL%:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.LV_Headers
         Gui, %DisplaySQL%:Default
 
