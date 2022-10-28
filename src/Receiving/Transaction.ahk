@@ -1,11 +1,11 @@
 class Transaction
 {
-    __New(lineNumber, receiver)
+    __New(receiver)
     {
         Global
         this.receiver := receiver
         this.DB := new DBConnection()
-        indexNumber := this.GetLineNumberIndex(lineNumber)
+        indexNumber := this.GetLineNumberIndex()
 
         this.PreparePOScreen(indexNumber)
 
@@ -28,11 +28,13 @@ class Transaction
         this.SaveAndExitPOScreen()
 
         this.LogInformation()
+        inspReport := new Receiving.InspectionReport(this.receiver)
     }
 
-    GetLineNumberIndex(lineNumber)
+    GetLineNumberIndex()
     {
         Global
+        lineNumber := this.receiver.lineReceived
         openLines := DB.query("SELECT line FROM podetl WHERE ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.GetCurrentLotInfo("quantity") "' AND closed IS NULL ORDER BY line ASC;")
         ; TODO: Error message if empty
         for n, row in openLines.data()
@@ -93,7 +95,9 @@ class Transaction
             MsgBox % "PO Receipts never became active, exiting"
             ExitApp
         }
+        Sleep 100
         Send {Alt Down}u{Alt Up}
+        Sleep 100
 
         WinClose, % DBA.Windows.POReceipts
         WinWaitClose, % DBA.Windows.POReceipts,, 5
@@ -149,14 +153,14 @@ class Transaction
         file := FileOpen(Logfile, "a")
         if (!exists)
         {
-            file.WriteLine("Date,Time,PO#,Part#,Lot#,Qty,Location,Inspection#")
+            file.WriteLine("Date,Time,PO#,Part#,Lot#,Qty,Location,Inspection#,Has Cert")
         }
         for n, quantity in this.receiver.quantities
         {
             FormatTime, datestr,, MM/dd/yyyy
             FormatTime, timestr,, HH:mm:ss
             inspectionNumber := config.get("inspection.last_number") + 1
-            file.WriteLine(datestr "," timestr "," this.receiver.poNumber "," this.receiver.partNumber "," this.receiver.lotNumbers[n] "," this.receiver.quantities[n] "," this.receiver.locations[n] "," inspectionNumber)
+            file.WriteLine(datestr "," timestr "," this.receiver.poNumber "," this.receiver.partNumber "," this.receiver.lotNumbers[n] "," this.receiver.quantities[n] "," this.receiver.locations[n] "," inspectionNumber "," this.receiver.hasCert[n])
             config.set("inspection.last_number", inspectionNumber)
         }
         file.Close()

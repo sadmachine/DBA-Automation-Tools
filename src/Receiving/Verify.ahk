@@ -22,9 +22,9 @@ class Verify
             ExitApp
         }
 
-        if (!InStr("Open,Printed", results.row(0)["status"]))
+        if (!InStr("Open,Printed", results.row(1)["status"]))
         {
-            MsgBox % "The PO '" this.receiver.poNumber "' has status '" results.row(0)["status"] "'. Status should be either 'Open' or 'Printed'"
+            MsgBox % "The PO '" this.receiver.poNumber "' has status '" results.row(1)["status"] "'. Status should be either 'Open' or 'Printed'"
             ExitApp
         }
     }

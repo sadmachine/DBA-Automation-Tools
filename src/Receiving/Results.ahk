@@ -58,8 +58,10 @@ class Results extends UI.Base
 
         selected_row := LV_GetNext()
         LV_GetText(lineNumber, selected_row)
+        this.receiver.lineReceived := lineNumber
+        this.receiver.PullAdditionalInfo()
         this.Destroy()
 
-        new Receiving.Transaction(lineNumber, this.receiver)
+        transaction := new Receiving.Transaction(this.receiver)
     }
 }

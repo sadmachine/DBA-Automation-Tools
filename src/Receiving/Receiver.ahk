@@ -2,6 +2,10 @@ class Receiver
 {
     poNumber := ""
     partNumber := ""
+    lineReceived := ""
+    partDescription := ""
+    lineQuantity := ""
+    supplier := ""
     lotNumbers := []
     quantities := []
     locations := []
@@ -58,6 +62,19 @@ class Receiver
         if (key == "" || !lotInfo.HasKey(key))
             return lotInfo
         return lotInfo[key]
+    }
+
+    PullAdditionalInfo()
+    {
+        DB := new DBConnection()
+        query := "SELECT p.qty, i.supplier, i.descript FROM podetl p LEFT JOIN item i ON p.reference = i.itemcode WHERE p.line='" this.lineReceived "' AND p.ponum='" this.poNumber "' AND p.reference='" this.partNumber "';"
+        res := DB.query(query)
+        if (res.empty()) {
+            throw Exception("Could not pull in additional receiving details from PO")
+        }
+        this.supplier := res.row(1)["supplier"]
+        this.lineQuantity := res.row(1)["qty"]
+        this.partDescription := res.row(1)["descript"]
     }
 
     _Request(field_name)
