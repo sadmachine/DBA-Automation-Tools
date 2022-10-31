@@ -32,9 +32,9 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 ; --- Global var setup ---------------------------------------------------------
 
 ; Whether or not debug mode is active
-DEBUG_MODE     := false
+DEBUG_MODE := false
 ; The folder where modules can be found
-MODS_FOLDER    := A_ScriptDir "/modules"
+MODS_FOLDER := A_ScriptDir "/modules"
 ; Will be used to hold a list of available modules to load
 AVAILABLE_MODS := []
 
@@ -42,15 +42,15 @@ AVAILABLE_MODS := []
 
 for n, param in A_Args
 {
-    if (param == "-d") 
+    if (param == "-d")
     {
         DEBUG_MODE := true
     }
 
-    if (InStr(param, "--module-location=")) 
+    if (InStr(param, "--module-location="))
     {
-        parts       := StrSplit(param, "=")
-        location    := Trim(parts[2], OmitChars = "/")
+        parts := StrSplit(param, "=")
+        location := Trim(parts[2], OmitChars = "/")
         MODS_FOLDER := "/" parts[2]
     }
 }
@@ -68,8 +68,7 @@ RunUtility:
 
 return
 
-; --- Functions ----------------------------------------------------------------  
-
+; --- Functions ----------------------------------------------------------------
 
 /**
  *  Creates an overlay GUI when the "Closed Job Cost Summary" window is found.
