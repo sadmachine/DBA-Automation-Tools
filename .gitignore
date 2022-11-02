@@ -1,4 +1,7 @@
-*.exe
-/modules/config/*.ini
-!/modules/config/*.default.ini
 .vscode/
+*.exe
+modules/config/*.ini
+modules/data/*.xlsx
+modules/data/*.csv
+
+!modules/config/*.default.ini
