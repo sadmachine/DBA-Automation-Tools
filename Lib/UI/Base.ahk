@@ -36,9 +36,9 @@ class Base
             return this._options
         }
         set {
+            local thisHwnd := this.hwnd
             this._options := value
-            thisHwnd := this.hwnd
-            options := this._options " hwnd" hwnd
+            options := this._options " hwnd" thisHwnd
             if (!init) {
                 Gui, %thisHwnd%:%options%
             }
@@ -61,6 +61,7 @@ class Base
             throw Exception("Invalid key for font options: " key)
         }
         set {
+            local thisHwnd := this.hwnd
             if (key == "") {
                 if (!IsObject(value)) {
                     throw Exception("You must supply an object(keys: options, fontName) if you're setting font without a key.")
@@ -73,7 +74,6 @@ class Base
 
             this._font[key] := value
 
-            thisHwnd := this.hwnd
             Gui, %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
             return this._font
         }
@@ -100,8 +100,8 @@ class Base
             return this._margin
         }
         set {
+            local thisHwnd := this.hwnd
             this._margin := value
-            thisHwnd := this.hwnd
             Gui, %thisHwnd%:Margin, % this.margin, % this.margin
             return this._margin
         }
@@ -122,6 +122,7 @@ class Base
             throw Exception("Invalid key for color: " key)
         }
         set {
+            local thisHwnd := this.hwnd
             if (key == "") {
                 if (!IsObject(value)) {
                     throw Exception("You must supply an object(keys: windowColor, controlColor) if you're setting color without a key.")
@@ -134,7 +135,6 @@ class Base
 
             this._color[key] := value
 
-            thisHwnd := this.hwnd
             Gui, %thisHwnd%:Color, % this.color["windowColor"], % this.font["controlColor"]
             return this._color
         }
@@ -206,6 +206,7 @@ class Base
     __New(title := "", options := "")
     {
         Global
+        local thisHwnd := this.hwnd
         this.title := title
         this.options[true] := options
         thisHwnd := this.hwnd
@@ -218,7 +219,7 @@ class Base
     Add(ControlType, cOptions := "", text := "")
     {
         global
-        thisHwnd := this.hwnd
+        local thisHwnd := this.hwnd
 
         Random, rand
         cHwnd := ControlType "" A_TickCount "" rand
@@ -241,7 +242,7 @@ class Base
     Submit(NoHide := false)
     {
         global
-        thisHwnd := this.hwnd
+        local thisHwnd := this.hwnd
         if (NoHide) {
             Gui %thisHwnd%:Submit, NoHide
         }
@@ -251,35 +252,35 @@ class Base
     Cancel()
     {
         global
-        thisHwnd := this.hwnd
+        local thisHwnd := this.hwnd
         Gui %thisHwnd%:Cancel
     }
 
     Hide()
     {
         global
-        thisHwnd := this.hwnd
+        local thisHwnd := this.hwnd
         Gui %thisHwnd%:Hide
     }
 
     Destroy()
     {
         global
-        thisHwnd := this.hwnd
+        local thisHwnd := this.hwnd
         Gui %thisHwnd%:Destroy
     }
 
     Default()
     {
         global
-        thisHwnd := this.hwnd
+        local thisHwnd := this.hwnd
         Gui %thisHwnd%:Default
     }
 
     ApplyFont()
     {
         global
-        thisHwnd := this.hwnd
+        local thisHwnd := this.hwnd
         Gui %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
     }
 
