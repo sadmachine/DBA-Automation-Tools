@@ -15,8 +15,8 @@ class ModuleLoader
 
     boot(mods_location)
     {
-        Global DEBUG_MODE
-        local module
+        Global
+        local value, key, module, ini_parts, mod_sections, mod_keys, cur_section, output
         this.module_location := mods_location
         IniRead, mod_sections, % this.module_location "/mods.ini"
         Loop, Parse, % mod_sections, "`n"
@@ -31,8 +31,8 @@ class ModuleLoader
                 key := StrReplace(ini_parts[1], "_" , " ")
                 value := ini_parts[2]
                 module := new ModuleObj(key, cur_section, value)
-                this.modules[key] := curModule
-                this.sections[cur_section][key] := curModule
+                this.modules[key] := module
+                this.sections[cur_section][key] := module
                 this.module_titles.push(key)
             }
         }
