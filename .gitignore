@@ -1,7 +1,7 @@
 .vscode/
 *.exe
-modules/config/*.ini
-modules/data/*.xlsx
-modules/data/*.csv
+**/modules/config/*.ini
+**/modules/data/*.xlsx
+**/modules/data/*.csv
 
-!modules/config/*.default.ini
+!**/modules/config/*.default.ini
