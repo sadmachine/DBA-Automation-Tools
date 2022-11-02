@@ -3,7 +3,6 @@ class UI
     #Include <UI/Base>
     #Include <UI/InputBoxObj>
     #Include <UI/MsgBoxObj>
-    #Include <UI/Dashboard>
 
     ; --- Class Functions --------------------------------------------------------
 

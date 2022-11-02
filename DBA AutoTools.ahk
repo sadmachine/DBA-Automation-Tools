@@ -29,6 +29,7 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #Include <UI>
 
 #Include src\ModuleLoader.ahk
+#Include src\Dashboard.ahk
 
 ; --- Global var setup ---------------------------------------------------------
 
@@ -57,8 +58,8 @@ for n, param in A_Args
 }
 
 ModuleLoader.boot(MODS_FOLDER)
-UI.Dashboard.initialize()
-UI.Dashboard.show()
+Dashboard.initialize()
+Dashboard.show()
 ;initialize_hub_gui()
 
 Return
