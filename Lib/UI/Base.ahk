@@ -295,10 +295,10 @@ class Base
         WinWaitClose, % this.title
     }
 
-    bind(hwnd, method)
+    bind(ctrlHwnd, method)
     {
         global
         bindObj := ObjBindMethod(this, method)
-        GuiControl, +g, % %hwnd%, % bindObj
+        GuiControl, +g, % %ctrlHwnd%, % bindObj
     }
 }
