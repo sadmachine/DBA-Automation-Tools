@@ -15,16 +15,18 @@ class InspectionReport
         template := inspectionConfig.get("file.template")
         fields := inspectionConfig.getSection("fields")
         destination := inspectionConfig.get("file.destination")
+        FormatTime, dateOfGeneration,, ShortDate
 
         for n, lotNumber in this.receiver.lotNumbers {
-            inspection_number := (inspectionConfig.get("file.last_num") + 1)
-            inspectionConfig.set("file.last_num", inspection_number)
-            filepath := RTrim(destination, "/") "/" inspection_number ".xlsx"
+            inspectionNumber := (inspectionConfig.get("file.last_num") + 1)
+            inspectionConfig.set("file.last_num", inspectionNumber)
+            filepath := RTrim(destination, "/") "/" inspectionNumber ".xlsx"
             FileCopy, % template, % filepath
 
             iReport := new Excel(this.getFullPath(filepath))
 
-            iReport.range["C2"].Value := inspection_number
+            iReport.range["C2"].Value := inspectionNumber
+            iReport.range["C3"].Value := dateOfGeneration
             iReport.range["C4"].Value := this.receiver.partNumber
             iReport.range["C5"].Value := this.receiver.partDescription
             iReport.range["C6"].Value := lotNumber
