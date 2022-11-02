@@ -81,10 +81,10 @@ class MsgBoxObj extends UI.Base
     {
         this._Setup()
 
-        posFromRight := (this.width - (this.margin*2)) - 60 - 20
+        noButtonPosFromRight := (this.width - (this.margin*2)) - 60 - 20
 
         YesButton := this.Add("Button", "w60 xm+10 Default", "Yes")
-        NoButton := this.Add("Button", "w60 yp x" posFromRight, "No")
+        NoButton := this.Add("Button", "w60 yp x" noButtonPosFromRight, "No")
 
         this.bind(YesButton, "YesEvent")
         this.bind(NoButton, "NoEvent")

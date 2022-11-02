@@ -37,10 +37,10 @@ class Base
         }
         set {
             this._options := value
-            hwnd := this.hwnd
+            thisHwnd := this.hwnd
             options := this._options " hwnd" hwnd
             if (!init) {
-                Gui, %hwnd%:%options%
+                Gui, %thisHwnd%:%options%
             }
             return this._options
         }
@@ -73,8 +73,8 @@ class Base
 
             this._font[key] := value
 
-            hwnd := this._hwnd
-            Gui, %hwnd%:Font, % this.font["options"], % this.font["fontName"]
+            thisHwnd := this.hwnd
+            Gui, %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
             return this._font
         }
     }
@@ -101,8 +101,8 @@ class Base
         }
         set {
             this._margin := value
-            hwnd := this._hwnd
-            Gui, %hwnd%:Margin, % this.margin, % this.margin
+            thisHwnd := this.hwnd
+            Gui, %thisHwnd%:Margin, % this.margin, % this.margin
             return this._margin
         }
     }
@@ -134,8 +134,8 @@ class Base
 
             this._color[key] := value
 
-            hwnd := this._hwnd
-            Gui, %hwnd%:Color, % this.color["windowColor"], % this.font["controlColor"]
+            thisHwnd := this.hwnd
+            Gui, %thisHwnd%:Color, % this.color["windowColor"], % this.font["controlColor"]
             return this._color
         }
     }
@@ -144,8 +144,8 @@ class Base
         get {
             if (this._hwnd == "") {
                 topLevelClass := StrSplit(this.__Class, ".")[2]
-                Random, rand
-                this._hwnd := topLevelClass "" A_TickCount "" rand
+                Random, randomNum
+                this._hwnd := topLevelClass "" A_TickCount "" randomNum
             }
             return this._hwnd
         }
@@ -208,8 +208,8 @@ class Base
         Global
         this.title := title
         this.options[true] := options
-        hwnd := this.hwnd
-        Gui, %hwnd%:New, % this.options, % this.title
+        thisHwnd := this.hwnd
+        Gui, %thisHwnd%:New, % this.options, % this.title
         return this
     }
 
@@ -218,69 +218,69 @@ class Base
     Add(ControlType, cOptions := "", text := "")
     {
         global
-        hwnd := this.hwnd
+        thisHwnd := this.hwnd
 
         Random, rand
         cHwnd := ControlType "" A_TickCount "" rand
         cOptions .= " hwnd" cHwnd
 
-        Gui %hwnd%:Add, % ControlType, % cOptions, % text
+        Gui %thisHwnd%:Add, % ControlType, % cOptions, % text
         return % %cHwnd%
     }
 
     Show(options := "", title := -1)
     {
         global
-        hwnd := this.hwnd
+        thisHwnd := this.hwnd
         if (title != -1) {
             this.title := title
         }
-        Gui %hwnd%:Show, % options, % this.title
+        Gui %thisHwnd%:Show, % options, % this.title
     }
 
     Submit(NoHide := false)
     {
         global
-        hwnd := this.hwnd
+        thisHwnd := this.hwnd
         if (NoHide) {
-            Gui %hwnd%:Submit, NoHide
+            Gui %thisHwnd%:Submit, NoHide
         }
-        Gui %hwnd%:Submit
+        Gui %thisHwnd%:Submit
     }
 
     Cancel()
     {
         global
-        hwnd := this.hwnd
-        Gui %hwnd%:Cancel
+        thisHwnd := this.hwnd
+        Gui %thisHwnd%:Cancel
     }
 
     Hide()
     {
         global
-        hwnd := this.hwnd
-        Gui %hwnd%:Hide
+        thisHwnd := this.hwnd
+        Gui %thisHwnd%:Hide
     }
 
     Destroy()
     {
         global
-        hwnd := this.hwnd
-        Gui %hwnd%:Destroy
+        thisHwnd := this.hwnd
+        Gui %thisHwnd%:Destroy
     }
 
     Default()
     {
         global
-        hwnd := this.hwnd
-        Gui %hwnd%:Default
+        thisHwnd := this.hwnd
+        Gui %thisHwnd%:Default
     }
 
     ApplyFont()
     {
         global
-        hwnd := this.hwnd
-        Gui %hwnd%:Font, % this.font["options"], % this.font["fontName"]
+        thisHwnd := this.hwnd
+        Gui %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
     }
 
     FocusControl(CtrlHwnd)

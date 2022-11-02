@@ -1,11 +1,11 @@
-#Include <ModuleObj>
+#Include src\ModuleObj.ahk
 
 class ModuleLoader
 {
-    static modules         := {}
-    static sections        := {}
-    static module_titles   := [] 
-    static section_titles  := [] 
+    static modules := {}
+    static sections := {}
+    static module_titles := []
+    static section_titles := []
     static module_location := ""
 
     __New(mods_location)
@@ -24,14 +24,14 @@ class ModuleLoader
             this.sections[cur_section] := {}
             this.section_titles.push(cur_section)
             IniRead, mod_keys, % this.module_location "/mods.ini", % cur_section
-            Loop, Parse, % mod_keys, "`n" 
+            Loop, Parse, % mod_keys, "`n"
             {
                 ini_parts := StrSplit(A_LoopField, "=")
                 key := StrReplace(ini_parts[1], "_" , " ")
                 value := ini_parts[2]
-                module := new ModuleObj(key, cur_section, value)
-                this.modules[key] := module
-                this.sections[cur_section][key] := module
+                curModule := new ModuleObj(key, cur_section, value)
+                this.modules[key] := curModule
+                this.sections[cur_section][key] := curModule
                 this.module_titles.push(key)
             }
         }
@@ -52,7 +52,7 @@ class ModuleLoader
         return this.modules[module]
     }
 
-    getSectionModules(section_title) 
+    getSectionModules(section_title)
     {
         return this.modules_by_section[section_title]
     }
