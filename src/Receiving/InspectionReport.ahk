@@ -6,7 +6,10 @@ class InspectionReport
         this.receiver := receiver
         this.reportCount := this.receiver.lotNumbers.Count()
 
-        this.buildGui()
+        this.progressGui := new UI.ProgressBoxObj("Creating Inspection Reports, please wait...", "Creating Inspection Reports")
+        this.progressGui.SetRange(0, this.reportCount)
+        this.progressGui.SetStartValue(1)
+        this.progressGui.Show()
 
         inspectionConfig := new IniConfig("inspection_report")
         if (!inspectionConfig.exists()) {
@@ -38,10 +41,10 @@ class InspectionReport
             iReport.Save()
             iReport.Quit()
 
-            this.updateGui(A_Index)
+            this.progressGui.Increment()
         }
 
-        this.destroyGui()
+        this.progressGui.Destroy()
     }
 
     getFullPath(path)
@@ -51,28 +54,4 @@ class InspectionReport
         DllCall("GetFullPathName", "str", path, "uint", cc, "str", buf, "ptr", 0, "uint")
         return buf
     }
-
-    buildGui()
-    {
-        this.CreatingReports := new UI.Base("Creating Inspection Reports", "-SysMenu +AlwaysOnTop")
-        this.CreatingReports.ApplyFont()
-        this.CreatingReports.Add("Text", "Center w200 r2", "Creating inspection reports, please wait")
-        this.ProgressBar := this.CreatingReports.Add("Progress", "w200 h20 backgroundSilver cLime range0-" this.reportCount, 1)
-        this.ProgressText := this.CreatingReports.Add("Text", "Center w200 r1", "1 / " this.reportCount)
-        this.CreatingReports.Show()
-    }
-
-    updateGui(currentCount)
-    {
-        progressBar := this.ProgressBar
-        progressText := this.ProgressText
-        GuiControl,, % %progressBar%, % currentCount+1
-        GuiControl,, % %progressText%, % currentCount+1 " / " this.reportCount
-    }
-
-    destroyGui()
-    {
-        this.CreatingReports.Destroy()
-    }
-
 }
