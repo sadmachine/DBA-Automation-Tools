@@ -1,8 +1,11 @@
+#Include <Helpers>
+
 class UI
 {
     #Include <UI/Base>
     #Include <UI/InputBoxObj>
     #Include <UI/MsgBoxObj>
+    #Include <UI/ProgressBoxObj>
 
     ; --- Class Functions --------------------------------------------------------
 
