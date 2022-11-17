@@ -1,20 +1,42 @@
 class String
 {
-    toUpper(string)
+    toUpper(str)
     {
-        StringUpper, output, string
+        StringUpper, output, str
         return output
     }
 
-    toTitleCase(string)
+    toTitleCase(str)
     {
-        StringUpper, output, string, T
+        StringUpper, output, str, T
         return output
     }
 
-    toLower(string)
+    toLower(str)
     {
-        StringLower, output, string
+        StringLower, output, str
         return output
+    }
+
+    toSlug(str)
+    {
+        str := String.toLower(str)
+        str := RegExReplace(str, "[^a-z0-9 -]+", "")
+        str := StrReplace(str, " ", "-")
+        return Trim(str, "-")
+    }
+
+    toCamelCase(str)
+    {
+        str := String.toSlug(str)
+        parts := StrSplit(str, "-")
+        str := parts[1]
+        for index, part in parts {
+            if (A_Index == 1) {
+                Continue
+            }
+            str .= String.toTitleCase(part)
+        }
+        return str
     }
 }
