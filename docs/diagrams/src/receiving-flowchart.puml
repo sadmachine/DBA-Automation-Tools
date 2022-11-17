@@ -1,0 +1,85 @@
+@startuml
+
+skinparam LegendBackgroundColor #FAFAFA
+
+start
+
+legend top left
+  <b>Legend</b>
+  |<#F1F1F1> |  <b>Program Action</b>\n  Any general action the program takes   |
+  |<#orange> |  <b>User Action</b>\n  An action that requires user input  |
+  |<#pink>   |  <b>Error/Exception State</b>\n  Process will stop  |
+  |<#purple>   |  <b>Printing State</b>\n  Actions involving printing  |
+  |<#blue>   |  <b>Action within DBA</b>\n  Defines an action taken within DBA  |
+  |<#lightgreen>   |  <b>Action within Excel</b>\n  Defines an action affecting an Excel/CSV file  |
+  |<color:orange>Text |  <b>Conditional Statement</b>\n  Process flow depends on outcome  |
+  |<color:red>Text |  <b>Not Yet Implemented</b>\n  Steps now yet implemented  |
+end legend
+
+floating note left: Receiver has item to receive, as well as tablet in hand
+partition Input {
+  #orange:<b>Click</b>: "PO Receiving" Button on DBA AutoTools Dashboard; 
+
+  #orange:<b>Enter</b>: PO#; 
+  #orange:<b>Enter</b>: Part#; 
+  #orange:<b>Enter</b>: Lot#; 
+  #orange:<b>Enter</b>: Quantity;
+}
+
+partition Verification {
+  if (<color:orange>PO# exists?) then (no)
+    #pink:<b>Notify</b>: No matching PO #;
+    stop
+  elseif (<color:orange>Part# on PO?) then (no)
+    #pink:<b>Notify</b>: No matching Part# on PO;
+    stop
+  elseif (<color:orange>Quantity <= Remaining PO Quantity?) then (no)
+    #pink:<b>Notify</b>: Quantity is larger than expected for\n the remaining lines on the PO;
+    stop
+  endif
+}
+note right: "Remaining PO Quantity" is calculated as\n\n""((PO Qty * 1.10) - Received Qty)""\n\nThis allows to receive 10% over PO Quantity 
+
+partition Line Selection {
+  :Display Interface with scanned information and matching lines;
+
+  #orange:<b>Select</b>: line to receive against;
+
+  #orange:<b>Click</b>: "Receive" button;
+}
+
+partition Receiving {
+  #blue:<color:white>Open PO Receipts screen;
+  #orange:<b>Yes/No</b>: Item has cert;
+  #orange:<b>Enter</b>: Location;
+  #blue:<color:white>Add receipt line;
+
+  while (<color:orange>Yes/No: Add Another Lot Number?) is (yes)
+    #orange:<b>Enter</b>: Lot #;
+    #orange:<b>Enter</b>: Quantity;
+    #orange:<b>Yes/No</b>: Item has cert;
+    #orange:<b>Enter</b>: Location;
+    #blue:<color:white>Add receipt line;
+  endwhile (no)
+
+  #blue:<color:white>Finalize Receipt;
+}
+
+partition <color:red>Labels (Not yet implemented) {
+  repeat :<color:orange>For each entered Lot#;
+    #purple:<color:white>Print Label;
+  repeat while (<color:orange>Another?)
+}
+
+partition Reporting {
+  repeat :<color:orange>For each entered Lot#;
+    #lightgreen:Record transaction in Receiving log;
+    #lightgreen:Output new inspection report;
+  repeat while (<color:orange>Another?)
+}
+
+
+
+stop
+
+@enduml
