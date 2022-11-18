@@ -5,6 +5,20 @@ class Group
     sectionList := []
     fieldList := []
     slug := ""
+    _path := ""
+
+    path[] {
+        get {
+            return this._path
+        }
+        set {
+            this._path := value
+            for slug, field in this.fields {
+                field.path := this._path
+            }
+            return value
+        }
+    }
 
     __New(slug := -1)
     {
@@ -28,5 +42,31 @@ class Group
         this.fields[field.slug] := field
         this.fieldList.push(field)
         this.sectionList.push(section)
+    }
+
+    load()
+    {
+        for slug, field in this.fields {
+            field.load()
+        }
+    }
+
+    store()
+    {
+        for slug, field in this.fields {
+            field.store()
+        }
+    }
+
+    setDefaults()
+    {
+        for slug, field in this.fields {
+            field.setDefault()
+        }
+    }
+
+    exists()
+    {
+        return FileExist(this.path)
     }
 }

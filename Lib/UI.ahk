@@ -6,6 +6,7 @@ class UI
     #Include <UI/InputBoxObj>
     #Include <UI/MsgBoxObj>
     #Include <UI/ProgressBoxObj>
+    #Include <UI/Settings>
 
     ; --- Class Functions --------------------------------------------------------
 

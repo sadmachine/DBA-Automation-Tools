@@ -19,50 +19,77 @@ class Config
 
     register(group)
     {
+        group.path := this.getGroupPath(group.slug)
         this.groups[group.slug] := group
         this.groupList.push(group)
     }
 
-    initialize()
+    load()
     {
-        if (FileExist(this.baseConfigLocation) != "D") {
-            throw Exception("Directory Not Found", -1, "The directory " this.baseConfigLocation " does not exist.")
-        }
-
+        this._initialize()
         for slug, group in this.groups {
-            if (!FileExist(this.getConfigPath(slug))) {
-                this.createDefaultConfig(slug)
-            }
+            group.load()
+        }
+    }
+
+    store()
+    {
+        for slug, group in this.groups {
+            group.store()
         }
     }
 
     get(identifier)
     {
-        token := this.parseIdentifier(identifier)
-        IniRead, iniValue, % this.getConfigPath(token["group"]), % token["section"], % token["field"]
-        return iniValue
+        token := this._parseIdentifier(identifier)
+        return this.groups[token["group"]].fields[token["field"]].value
     }
 
     set(identifier, value)
     {
-        token := this.parseIdentifier(identifier)
-        IniWrite, % value, % this.getConfigPath(token["group"]), % token["section"], % token["field"]
+        token := this._parseIdentifier(identifier)
+        return this.groups[token["group"]].fields[token["field"]].value := value
     }
 
     setDefault(identifier)
     {
-        token := this.parseIdentifier(identifier)
-        value := this.getDefault(identifier)
-        IniWrite, % value, % this.getConfigPath(token["group"]), % token["section"], % token["field"]
+        token := this._parseIdentifier(identifier)
+        default := this.groups[token["group"]].fields[token["field"]].default
+        return this.groups[token["group"]].fields[token["field"]].value := default
     }
 
-    getDefault(identifier)
+    resetAllDefaults()
     {
-        token := this.parseIdentifier(identifier)
-        return this.groups[token["group"]].fields[token["field"]].default
+        this._initialize(true)
     }
 
-    parseIdentifier(identifier)
+    getGroupPath(groupSlug)
+    {
+        return this.baseConfigLocation "/" groupSlug ".ini"
+    }
+
+    ; --- "Private"  methods ---------------------------------------------------
+
+    _initialize(force := false)
+    {
+        this._assertConfigDirectoryExists()
+
+        for slug, group in this.groups {
+            if (force || !group.exists()) {
+                group.setDefaults()
+            }
+        }
+    }
+
+    _assertConfigDirectoryExists()
+    {
+        if (FileExist(this.baseConfigLocation) != "D") {
+            throw Exception("Directory Not Found", -1, "The directory " this.baseConfigLocation " does not exist.")
+        }
+        return this.baseConfigLocation
+    }
+
+    _parseIdentifier(identifier)
     {
         parts := StrSplit(identifier, ".")
         token := {}
@@ -72,16 +99,12 @@ class Config
         return token
     }
 
-    getConfigPath(groupSlug)
+    _destroyGroupFiles()
     {
-        return this.baseConfigLocation "/" groupSlug ".ini"
-    }
-
-    createDefaultConfig(groupSlug)
-    {
-        configFilename := this.getConfigPath(groupSlug)
-        for slug, field in this.groups[groupSlug].fields {
-            IniWrite, % field.default, % configFilename, % field.section, % field.slug
+        for slug, group in this.groups {
+            if (group.exists()) {
+                FileDelete, % group.path
+            }
         }
     }
 }

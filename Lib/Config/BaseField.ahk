@@ -9,6 +9,7 @@ class BaseField
     options := []
     value := ""
     oldValue := ""
+    path := ""
 
     __New(type, label, options := "")
     {
@@ -31,5 +32,30 @@ class BaseField
         global
         local slug := this.slug
         Gui %guiId%:Add, Edit, v%slug% %options%, % choicesList
+    }
+
+    load()
+    {
+        IniRead, iniValue, % this.path, % this.section, % this.slug
+        this.value := iniValue
+        this.oldValue := iniValue
+    }
+
+    store()
+    {
+        if (this.hasChanged())
+        {
+            IniWrite, % this.value, % this.path, % this.section, % this.slug
+        }
+    }
+
+    setDefault()
+    {
+        IniWrite, % this.default, % this.path, % this.section, % this.slug
+    }
+
+    hasChanged()
+    {
+        return this.value != this.oldValue
     }
 }
