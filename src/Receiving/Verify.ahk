@@ -19,7 +19,6 @@ class Verify
 
         if (results.count() > 1)
         {
-            MsgBox %
             UI.MsgBox("More than 1 PO matches the PO # number entered (' " this.receiver.poNumber " '), this must be an error.")
             ExitApp
         }
