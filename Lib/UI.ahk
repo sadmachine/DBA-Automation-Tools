@@ -14,6 +14,21 @@ class UI
         return ib.prompt(prompt, title)
     }
 
+    RequiredInput(input_name, throwOnFailure := true)
+    {
+        result := UI.InputBox("Enter " input_name)
+        if (result.canceled)
+        {
+            if (throwOnFailure) {
+                throw Exception("InvalidInputException", -1, "You must supply a(n) " input_name " to continue.")
+            } else {
+                MsgBox % "You must supply a " field_name " to continue. Exiting..."
+                ExitApp
+            }
+        }
+        return result.value
+    }
+
     MsgBox(prompt, title := "")
     {
         mb := new UI.MsgBoxObj(prompt, title)
