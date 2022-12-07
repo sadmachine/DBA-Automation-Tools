@@ -17,8 +17,8 @@ class Transaction
                 this.receiver.RequestLotNumber()
                 this.receiver.RequestQuantity()
             }
-            this.receiver.RequestCertInfo()
-            this.receiver.RequestLocation()
+            this.receiver.hasCert.push(UI.RequiredYesNoBox("Does lot # " this.receiver.currentLotInfo["number"] " have certification?"))
+            this.receiver.locations.push(UI.RequiedInput("Enter Location"))
 
             this.ReceiveLotInfo()
 
@@ -35,7 +35,7 @@ class Transaction
     {
         Global
         lineNumber := this.receiver.lineReceived
-        openLines := DB.query("SELECT line FROM podetl WHERE ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.GetCurrentLotInfo("quantity") "' AND closed IS NULL ORDER BY line ASC;")
+        openLines := DB.query("SELECT line FROM podetl WHERE ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.currentLotInfo["quantity"] "' AND closed IS NULL ORDER BY line ASC;")
         ; TODO: Error message if empty
         for n, row in openLines.data()
         {
@@ -118,10 +118,10 @@ class Transaction
             MsgBox % "PO Receipts never became active"
         }
         Send {Home}
-        Send % this.receiver.GetCurrentLotInfo("quantity")
+        Send % this.receiver.currentLotInfo["quantity"]
         Send {Enter}
         Send {End}
-        Send % this.receiver.GetCurrentLotInfo("number")
+        Send % this.receiver.currentLotInfo["number"]
         Send {Shift Down}{Tab}{Shift Up}
         Send {Shift Down}{Tab}{Shift Up}
         Send {Enter}
@@ -136,7 +136,7 @@ class Transaction
         Sleep 200
         ControlClick, TCheckBox1, % "FrmPopDrpLocationLook_sub",,,,NA
         Sleep 200
-        ControlSend, TdxButtonEdit1, % this.receiver.GetCurrentLotInfo("location"), % "FrmPopDrpLocationLook_sub"
+        ControlSend, TdxButtonEdit1, % this.receiver.currentLotInfo["location"], % "FrmPopDrpLocationLook_sub"
         Sleep 100
         ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
         Sleep 100
