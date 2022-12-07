@@ -9,6 +9,7 @@ class Base
     _margin := ""
     _color := ""
     _hwnd := ""
+    _autoSize := false
 
     static _defaultOptions := ""
     static _defaultFont := {"options": "", "fontName": ""}
@@ -198,6 +199,16 @@ class Base
             this._defaultMargin := value
             Gui Margin, % this._defaultMargin, % this._defaultMargin
             return this._defaultMargin
+        }
+    }
+
+    autoSize[] {
+        get {
+            return this._autoSize
+        }
+        set {
+            this._autoSize := value
+            return this._autoSize
         }
     }
 
