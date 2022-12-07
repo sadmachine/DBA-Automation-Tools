@@ -16,6 +16,7 @@ FONT_OPTIONS := {options: "s12", fontName: ""}
 
 UI.Base.defaultFont := FONT_OPTIONS
 UI.Base.defaultMargin := 5
+UI.MsgBoxObj.defaultWidth := 300
 
 config := new IniConfig("po_verification")
 
