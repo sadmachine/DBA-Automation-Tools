@@ -26,10 +26,10 @@ if !(config.exists()) {
 
 receiver := new Receiving.Receiver()
 
-receiver.RequestPONumber()
-receiver.RequestPartNumber()
-receiver.RequestLotNumber()
-receiver.RequestQuantity()
+receiver.poNumber := UI.RequiredInput("Enter PO #")
+receiver.partNumber := UI.RequiredInput("Enter Part #")
+receiver.lotNumbers.push(UI.RequiredInput("Enter Lot #"))
+receiver.quantities.push(UI.RequiredInput("Enter Quantity"))
 
 verifier := new Receiving.Verify(receiver)
 
