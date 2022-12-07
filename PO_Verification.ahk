@@ -11,6 +11,7 @@ SetWorkingDir, %A_ScriptDir%
 #Include <DBA>
 #Include <Excel>
 #Include src/Receiving.ahk
+#Include src/Models.ahk
 
 FONT_OPTIONS := {options: "s12", fontName: ""}
 
@@ -24,7 +25,7 @@ if !(config.exists()) {
     config.copyFrom("po_verification.default.ini")
 }
 
-receiver := new Receiving.Receiver()
+receiver := new Models.Receiver()
 
 receiver.poNumber := UI.RequiredInput("Enter PO #")
 receiver.partNumber := UI.RequiredInput("Enter Part #")
