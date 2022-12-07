@@ -10,14 +10,14 @@ class UI
     InputBox(prompt, title := "")
     {
         ib := new UI.InputBoxObj(prompt, title)
-        ib.widht := 280
+        ib.width := 280
         return ib.prompt(prompt, title)
     }
 
     MsgBox(prompt, title := "")
     {
         mb := new UI.MsgBoxObj(prompt, title)
-        mb.width := 280
+        mb.autoSize := true
         return mb.OK()
     }
 
