@@ -14,15 +14,15 @@ class UI
         return ib.prompt(prompt, title)
     }
 
-    RequiredInput(input_name, throwOnFailure := true)
+    RequiredInput(prompt, title := "", throwOnFailure := true)
     {
-        result := UI.InputBox("Enter " input_name)
+        result := UI.InputBox(prompt, title)
         if (result.canceled)
         {
             if (throwOnFailure) {
-                throw Exception("InvalidInputException", -1, "You must supply a(n) " input_name " to continue.")
+                throw Exception("InvalidInputException", -1, "You must supply an input to continue.")
             } else {
-                MsgBox % "You must supply a " field_name " to continue. Exiting..."
+                MsgBox % "You must supply an input to continue. Exiting..."
                 ExitApp
             }
         }
@@ -41,6 +41,21 @@ class UI
         mb := new UI.MsgBoxObj(prompt, title)
         mb.width := 280
         return mb.YesNo()
+    }
+
+    RequiredYesNoBox(prompt, title := "", throwOnFailure := true)
+    {
+        result := UI.YesNoBox(prompt, title)
+        if (result.canceled)
+        {
+            if (throwOnFailure) {
+                throw Exception("InvalidInputException", -1, "You must respond yes or no to continue.")
+            } else {
+                MsgBox % "You must respond yes or no to continue. Exiting..."
+                ExitApp
+            }
+        }
+        return result.value
     }
 
     ; --- Utility methods --------------------------------------------------------
