@@ -21,7 +21,7 @@ class Results extends UI.Base
         this.Add("Text", "x+10 ys+30", "Quantity:")
         this.Add("Edit", "ReadOnly x+5 yp-4 w82", receiver.quantities[1])
         this.Add("GroupBox", "xm w650 h436 Section", "Matching Lines:")
-        ResultsListView := this.Add("ListView", "xs+4 ys+26 w642 h400", poResults.LV_headers)
+        ResultsListView := this.Add("ListView", "xs+4 ys+26 w642 h400", poResults.lvHeaders)
         this.Add("GroupBox", "xs+654 ys+0 w146 h436 Section", "Actions")
         ReceiveButton := this.Add("Button", "xs+6 ys+26 w132 Default", "Receive")
         this.bind(ReceiveButton, "NewTransaction")
