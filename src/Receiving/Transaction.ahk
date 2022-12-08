@@ -17,8 +17,8 @@ class Transaction
                 this.receiver.RequestLotNumber()
                 this.receiver.RequestQuantity()
             }
-            this.receiver.hasCert.push(UI.RequiredYesNoBox("Does lot # " this.receiver.currentLotInfo["number"] " have certification?"))
-            this.receiver.locations.push(UI.RequiedInput("Enter Location"))
+            this.receiver.hasCert.push(UI.Required.YesNoBox("Does lot # " this.receiver.currentLotInfo["number"] " have certification?"))
+            this.receiver.locations.push(UI.Required.InputBox("Enter Location"))
 
             this.ReceiveLotInfo()
 

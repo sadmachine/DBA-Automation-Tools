@@ -27,10 +27,10 @@ if !(config.exists()) {
 
 receiver := new Models.Receiver()
 
-receiver.poNumber := UI.RequiredInput("Enter PO #")
-receiver.partNumber := UI.RequiredInput("Enter Part #")
-receiver.lotNumbers.push(UI.RequiredInput("Enter Lot #"))
-receiver.quantities.push(UI.RequiredInput("Enter Quantity"))
+receiver.poNumber := UI.Required.InputBox("Enter PO #")
+receiver.partNumber := UI.Required.InputBox("Enter Part #")
+receiver.lotNumbers.push(UI.Required.InputBox("Enter Lot #"))
+receiver.quantities.push(UI.Required.InputBox("Enter Quantity"))
 
 verifier := new Receiving.Verify(receiver)
 
