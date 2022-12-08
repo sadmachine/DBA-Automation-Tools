@@ -1,0 +1,5 @@
+; DBA.RecordSet
+class RecordSet
+{
+
+}
