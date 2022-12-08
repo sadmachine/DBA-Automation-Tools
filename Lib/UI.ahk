@@ -1,32 +1,19 @@
 class UI
 {
+    ; --- Sub-Classes ----------------------------------------------------------
     #Include <UI/Base>
     #Include <UI/InputBoxObj>
     #Include <UI/MsgBoxObj>
     #Include <UI/ProgressBoxObj>
+    #Include <UI/Required>
 
-    ; --- Class Functions --------------------------------------------------------
+    ; --- Class Functions ------------------------------------------------------
 
     InputBox(prompt, title := "")
     {
         ib := new UI.InputBoxObj(prompt, title)
         ib.width := 280
         return ib.prompt(prompt, title)
-    }
-
-    RequiredInput(prompt, title := "", throwOnFailure := true)
-    {
-        result := UI.InputBox(prompt, title)
-        if (result.canceled)
-        {
-            if (throwOnFailure) {
-                throw Exception("InvalidInputException", -1, "You must supply an input to continue.")
-            } else {
-                MsgBox % "You must supply an input to continue. Exiting..."
-                ExitApp
-            }
-        }
-        return result.value
     }
 
     MsgBox(prompt, title := "")
@@ -43,22 +30,7 @@ class UI
         return mb.YesNo()
     }
 
-    RequiredYesNoBox(prompt, title := "", throwOnFailure := true)
-    {
-        result := UI.YesNoBox(prompt, title)
-        if (result.canceled)
-        {
-            if (throwOnFailure) {
-                throw Exception("InvalidInputException", -1, "You must respond yes or no to continue.")
-            } else {
-                MsgBox % "You must respond yes or no to continue. Exiting..."
-                ExitApp
-            }
-        }
-        return result.value
-    }
-
-    ; --- Utility methods --------------------------------------------------------
+    ; --- Utility methods ------------------------------------------------------
 
     disableCloseButton(hwnd="")
     {
