@@ -51,49 +51,34 @@ class ActiveRecord
     __New(criteria)
     {
         if (IsObject(criteria)) {
-            this._loadFromCriteria(criteria)
+            this._buildFromObject(criteria)
         } else {
-            this._loadFromPk(criteria)
+            this._buildFromPk(criteria)
+        }
+
+    }
+
+    _buildFromObject(attributes)
+    {
+        for name, value in attributes {
+            this.%name% := value
         }
     }
 
-    _loadFromCriteria(criteria)
+    _buildFromPk(searchPk)
     {
-        DBA.ActiveRecord.connection
-    }
+        local results := ""
 
-    _loadFromPk(pk)
-    {
+        query := "SELECT * FROM " this.tableName " WHERE " this.pk " = '" searchPk "'"
+        results := DBA.ActiveRecord.connection.query(query)
 
+        firstRow := results.row(1)
+        this._buildFromObject(firstRow)
     }
 
     build(where := "", orderBy := "", limit := -1, page := -1)
     {
-        local query := "SELECT"
-
-        ; Limit and page, if those variables are specified
-        if (limit != -1) {
-            query .= " FIRST " limit
-
-            if (page != -1) {
-                query .= " SKIP " (limit * (page - 1))
-            }
-        }
-
-        ; Get all columns from the specified table name
-        query .= "* FROM " this.tableName
-
-        ; Add our where statement, if specified
-        if (where != "") {
-            query .= " WHERE " where
-        }
-
-        ; Add our order by statement, if specified
-        if(orderBy != "") {
-            query .= " ORDER BY " orderBy
-        }
-
-        DBA.ActiveRecord.connection.query(query)
+        return DBA.RecordSet.build(this, where, orderBy, limit, page)
     }
 
 }
