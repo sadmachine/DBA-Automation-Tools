@@ -6,16 +6,16 @@ class DBConnection
     UID := "SYSDBA"
     PWD := "masterkey"
     RO := true
-    coldelim := "|"
+    colDelim := "|"
     connectionStr := ""
-    __New(DSN := "DBA NG", UID := "SYSDBA", PWD := "masterkey", coldelim := "")
+    __New(DSN := "DBA NG", UID := "SYSDBA", PWD := "masterkey", colDelim := "")
     {
         this.DSN := DSN
         this.UID := UID
         this.PWD := PWD
 
-        if (coldelim != "") {
-            this.coldelim := coldelim
+        if (colDelim != "") {
+            this.colDelim := colDelim
         }
 
     }
@@ -28,8 +28,8 @@ class DBConnection
     _buildConnectionStr()
     {
         ro_str := (this.RO ? "READONLY=YES" : "")
-        coldelim := this.coldelim
-        this.connectionStr := "DSN=" this.DSN ";UID=" this.UID ";PWD=" this.PWD ";" ro_str ";coldelim=" coldelim
+        colDelim := this.colDelim
+        this.connectionStr := "DSN=" this.DSN ";UID=" this.UID ";PWD=" this.PWD ";" ro_str "coldelim=" colDelim
     }
 
     query(qStr)
@@ -38,7 +38,7 @@ class DBConnection
         qStr := RTrim(qStr)
         if (SubStr(qStr, 0) != ";")
             qStr .= ";"
-        return new Results(ADOSQL(this.connectionStr, qStr), this.coldelim)
+        return new Results(ADOSQL(this.connectionStr, qStr), this.colDelim)
     }
 }
 
@@ -47,16 +47,16 @@ class Results
     answer := ""
     rawAnswer := ""
     delim := "|"
-    __New(queryOutput, coldelim := "|")
+    __New(queryOutput, colDelim := "|")
     {
         if (ADOSQL_LastError)
         {
             throw Exception("Query error:`n" ADOSQL_LastError)
         }
-        this.delim := coldelim
+        this.delim := colDelim
         this.rawAnswer := queryOutput
         this.answer := StrSplit(this.rawAnswer, "`n")
-        this.LV_headers := StrReplace(this.answer[1], "_", " ")
+        this.lvHeaders := StrReplace(this.answer[1], "_", " ")
         columnHeaders := StrSplit(this.answer[1], this.delim)
         this.columnHeaders := columnHeaders
         this.headerIndex := {}
@@ -111,7 +111,7 @@ class Results
     display()
     {
         Gui, New, hwndDisplaySQL +AlwaysOnTop,
-        Gui, %DisplaySQL%:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.LV_Headers
+        Gui, %DisplaySQL%:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.lvHeaders
         Gui, %DisplaySQL%:Default
 
         for index,row in this.rows
