@@ -29,7 +29,7 @@ class DBConnection
     {
         ro_str := (this.RO ? "READONLY=YES" : "")
         colDelim := this.colDelim
-        this.connectionStr := "DSN=" this.DSN ";UID=" this.UID ";PWD=" this.PWD ";" ro_str "coldelim=" colDelim
+        this.connectionStr := "DSN=" this.DSN ";UID=" this.UID ";PWD=" this.PWD ";" ro_str ";coldelim=" colDelim
     }
 
     query(qStr)
