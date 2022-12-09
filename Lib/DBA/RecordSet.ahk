@@ -1,41 +1,40 @@
 ; DBA.RecordSet
 class RecordSet
 {
-    build(classObj, where := "", orderBy := "", limit := -1, page := -1)
+    records := []
+
+    __New(records)
     {
-        local query := "SELECT"
-        local results := ""
+        this.records := records
+    }
 
-        ; Limit and page, if those variables are specified
-        if (limit != -1) {
-            query .= " FIRST " limit
-
-            if (page != -1) {
-                query .= " SKIP " (limit * (page - 1))
-            }
+    buildWith(classObjOrTable, fields, where := "", orderBy := "", limit := "", page := "")
+    {
+        tableName := classObjOrTable
+        if (IsObject(classObjOrTable)) {
+            tableName := classObj.tableName
         }
 
-        ; Get all columns from the specified table name
-        query .= "* FROM " classObj.tableName
-
-        ; Add our where statement, if specified
-        if (where != "") {
-            query .= " WHERE " where
-        }
-
-        ; Add our order by statement, if specified
-        if(orderBy != "") {
-            query .= " ORDER BY " orderBy
-        }
-
-        results := DBA.ActiveRecord.connection.query(query)
+        results := DBA.QueryBuilder
+            .from(tableName)
+            .select(fields)
+            .where(where)
+            .orderBy(orderBy)
+            .limit(limit)
+            .page(page)
+            .run()
 
         records := []
 
-        for index, row in results {
+        for index, row in results.data() {
             records.push(new DBA.ActiveRecord(row))
         }
 
         return records
+    }
+
+    build(classObjOrTable, where := "", orderBy := "", limit := "", page := "")
+    {
+        return this.buildWith(classObjOrTable, "*", where, orderBy, limit, page)
     }
 }

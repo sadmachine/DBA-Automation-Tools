@@ -2,22 +2,9 @@
 class ActiveRecord
 {
 
-    _connection := ""
     _pk := ""
     _tableName := ""
-
-    connection[]
-    {
-        get
-        {
-            return this._connection
-        }
-        set
-        {
-            this._connection := value
-            return this._connection
-        }
-    }
+    _exists := false
 
     pk[]
     {
@@ -37,7 +24,9 @@ class ActiveRecord
         get
         {
             if (this.__tableName == "") {
-                return this.__Class
+                className := StrSplit(this.__Class, ".")
+                className := className[className.MaxIndex()]
+                return className
             }
             return this._tableName
         }
@@ -48,20 +37,35 @@ class ActiveRecord
         }
     }
 
+    exists[] {
+        get
+        {
+            return this._exists
+        }
+        set
+        {
+            this._exists := value
+            return this._exists
+        }
+    }
+
     __New(criteria)
     {
+        if (criteria == "") {
+            this.exists := false
+            return
+        }
         if (IsObject(criteria)) {
             this._buildFromObject(criteria)
         } else {
             this._buildFromPk(criteria)
         }
-
     }
 
     _buildFromObject(attributes)
     {
         for name, value in attributes {
-            this.%name% := value
+            this[name] := value
         }
     }
 
@@ -69,16 +73,21 @@ class ActiveRecord
     {
         local results := ""
 
-        query := "SELECT * FROM " this.tableName " WHERE " this.pk " = '" searchPk "'"
-        results := DBA.ActiveRecord.connection.query(query)
+        results := DBA.QueryBuilder
+            .from(this.tableName)
+            .where(this.pk " = '" searchPk "'")
+            .run()
 
-        firstRow := results.row(1)
-        this._buildFromObject(firstRow)
+        if (!results.empty()) {
+            this.exists := true
+            firstRow := results.row(1)
+            this._buildFromObject(firstRow)
+        }
     }
 
-    build(where := "", orderBy := "", limit := -1, page := -1)
+    build(where := "", orderBy := "", limit := "", page := "")
     {
-        return DBA.RecordSet.build(this, where, orderBy, limit, page)
+        return DBA.RecordSet.build(this.tableName, where, orderBy, limit, page)
     }
 
 }
