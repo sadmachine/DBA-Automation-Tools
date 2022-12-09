@@ -14,8 +14,7 @@ class DbResults
 
         this.delim := colDelim
         this.rawAnswer := queryOutput
-        this.answer := StrSplit(this.rawAnswer, "`n")
-
+        this.answer := StrSplit(this._encodeNewLines(this.rawAnswer), "`n")
         this.lvHeaders := StrReplace(this.answer[1], "_", " ")
         columnHeaders := StrSplit(this.answer[1], this.delim)
         this.columnHeaders := columnHeaders
@@ -36,6 +35,7 @@ class DbResults
         maxRow := this.answer.Length()
         Loop % maxRow - 1
         {
+            this.answer[currentRow] := this._decodeNewLines(this.answer[currentRow])
             rowData := StrSplit(this.answer[currentRow], this.delim)
             current := []
             count := 1
@@ -47,6 +47,16 @@ class DbResults
             this.rows.Push(current)
             currentRow++
         }
+    }
+
+    _encodeNewLines(string)
+    {
+        return StrReplace(string, "`r`n", "\r\n")
+    }
+
+    _decodeNewLines(string)
+    {
+        return StrReplace(string, "\r\n", "`r`n")
     }
 
     count()
@@ -76,6 +86,7 @@ class DbResults
 
     display()
     {
+        Global
         Gui, New, hwndDisplaySQL +AlwaysOnTop,
         Gui, %DisplaySQL%:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.lvHeaders
         Gui, %DisplaySQL%:Default
