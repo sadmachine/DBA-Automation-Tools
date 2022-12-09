@@ -5,7 +5,7 @@ class DbConnection extends OdbcConnection
     UID := "SYSDBA"
     PWD := "masterkey"
     RO := true
-    colDelim := "|"
+    colDelim := "||"
     connectionStr := ""
     __New(DSN := "DBA NG", UID := "SYSDBA", PWD := "masterkey", colDelim := "")
     {
@@ -35,9 +35,8 @@ class DbConnection extends OdbcConnection
 
     query(qStr)
     {
-        local results := ""
         this._buildConnectionStr()
-        results := base.query(qStr)
-        return new DBA.DbResults(results, this.colDelim)
+        thisResult := new DBA.DbResults(base.query(qStr), this.colDelim)
+        return thisResult
     }
 }
