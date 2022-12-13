@@ -65,6 +65,7 @@ class ActiveRecord
     _buildFromObject(attributes)
     {
         for name, value in attributes {
+            this.exists := true
             this[name] := value
         }
     }
