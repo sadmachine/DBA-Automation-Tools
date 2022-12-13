@@ -7,7 +7,8 @@ class Verify
     __New(receiver)
     {
         this.receiver := receiver
-        this.DB := new DBConnection()
+        generalConfig := new IniConfig("database")
+        this.DB := new DBConnection(generalConfig.get("main.dsn"))
         this.FindMatchingPO()
         this.FindPartNumberOnPO()
         this.FindMatchingLines()

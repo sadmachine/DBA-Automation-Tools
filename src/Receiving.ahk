@@ -1,4 +1,5 @@
 #Include <File>
+#Include <IniConfig>
 class Receiving
 {
     #Include src\Receiving\Verify.ahk

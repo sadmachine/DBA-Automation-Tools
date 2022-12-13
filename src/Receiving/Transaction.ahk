@@ -4,7 +4,8 @@ class Transaction
     {
         Global
         this.receiver := receiver
-        this.DB := new DBConnection()
+        generalConfig := new IniConfig("database")
+        this.DB := new DBConnection(generalConfig.get("main.dsn"))
         indexNumber := this.GetLineNumberIndex()
 
         this.PreparePOScreen(indexNumber)
@@ -57,7 +58,7 @@ class Transaction
             MsgBox % "Main window never became active"
         }
 
-        Send {Alt Down}pr{Alt Up}
+        Send {Alt Down}pR{Alt Up}
         WinWaitActive, % DBA.Windows.POReceiptLookup,, 5
         if ErrorLevel
         {

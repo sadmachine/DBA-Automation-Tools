@@ -66,7 +66,8 @@ class Receiver
 
     PullAdditionalInfo()
     {
-        DB := new DBConnection()
+        generalConfig := new IniConfig("database")
+        DB := new DBConnection(generalConfig.get("main.dsn"))
         query := "SELECT p.qty, i.supplier, i.descript FROM podetl p LEFT JOIN item i ON p.reference = i.itemcode WHERE p.line='" this.lineReceived "' AND p.ponum='" this.poNumber "' AND p.reference='" this.partNumber "';"
         res := DB.query(query)
         if (res.empty()) {
