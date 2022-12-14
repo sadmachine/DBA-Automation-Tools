@@ -3,7 +3,7 @@ class Receiver
 {
     _poNumber := ""
     partNumber := ""
-    lineReceived := ""
+    _lineReceived := ""
     partDescription := ""
     lineQuantity := ""
     supplier := ""
@@ -23,6 +23,20 @@ class Receiver
         {
             this._poNumber := String.toUpper(value)
             return this._poNumber
+        }
+    }
+
+    lineReceived[]
+    {
+        get
+        {
+            return this._lineReceived
+        }
+        set
+        {
+            this._lineReceived := value
+            this._buildLineInfo()
+            return this._lineReceived
         }
     }
 
@@ -83,14 +97,14 @@ class Receiver
         return true
     }
 
-    PullAdditionalInfo()
+    _buildLineInfo()
     {
-        this.receivedLine := DBA.RecordSet.build("podetl", "p.line='" this.lineReceived "' AND p.ponum='" this.poNumber "' AND p.reference='" this.partNumber "'")[1]
+        this.receivedLine := Models.DBA.podetl.build("p.line='" this.lineReceived "' AND p.ponum='" this.poNumber "' AND p.reference='" this.partNumber "'")[1]
         this.receivedItem := new Models.DBA.item(this.receivedLine.reference)
         query := "SELECT p.qty, i.supplier, i.descript FROM podetl p LEFT JOIN item i ON p.reference = i.itemcode WHERE p.line='" this.lineReceived "' AND p.ponum='" this.poNumber "' AND p.reference='" this.partNumber "';"
         res := DB.query(query)
         if (!this.receivedLine.exists || !this.receivedItem.exists) {
-            throw Exception("Could not pull in additional receiving details from PO")
+            throw Exception("DatabaseException", "Models.Receiver._buildLineInfo()", "Could not pull in additional receiving details from PO")
         }
         this.supplier := this.receivedItem.supplier
         this.partDescription := this.receivedItem.descript
