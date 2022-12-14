@@ -4,9 +4,9 @@ class ReceivingTransaction
     {
         Global
         this.receiver := receiver
-        indexNumber := this.GetLineNumberIndex()
+        indexNumber := this._getLineNumberIndex()
 
-        this.PreparePOScreen(indexNumber)
+        this._preparePoScreen(indexNumber)
 
         loopAgain := true
         while (loopAgain)
@@ -19,15 +19,15 @@ class ReceivingTransaction
             this.receiver.hasCert.push(UI.Required.YesNoBox("Does lot # " this.receiver.currentLotInfo["number"] " have certification?"))
             this.receiver.locations.push(UI.Required.InputBox("Enter Location"))
 
-            this.ReceiveLotInfo()
+            this._receiveLotInfo()
 
             loopAgain := (UI.YesNoBox("Add another lot/qty?").value == "Yes")
         }
 
-        this.SaveAndExitPOScreen()
+        this._saveAndExitPoScreen()
     }
 
-    GetLineNumberIndex()
+    _getLineNumberIndex()
     {
         Global
         lineNumber := this.receiver.lineReceived
@@ -41,7 +41,7 @@ class ReceivingTransaction
         }
     }
 
-    PreparePOScreen(indexNumber)
+    _preparePoScreen(indexNumber)
     {
         global
         WinActivate, % DBA.Windows.Main
@@ -79,7 +79,7 @@ class ReceivingTransaction
         Send {Tab}
     }
 
-    SaveAndExitPOScreen()
+    _saveAndExitPoScreen()
     {
         global
         WinActivate, % DBA.Windows.POReceipts
@@ -102,7 +102,7 @@ class ReceivingTransaction
         }
     }
 
-    ReceiveLotInfo()
+    _receiveLotInfo()
     {
         global
         WinActivate, % DBA.Windows.POReceipts
