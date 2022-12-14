@@ -12,12 +12,8 @@ SetWorkingDir, %A_ScriptDir%
 #Include <Excel>
 #Include src/Receiving.ahk
 #Include src/Models.ahk
-
-FONT_OPTIONS := {options: "s12", fontName: ""}
-
-UI.Base.defaultFont := FONT_OPTIONS
-UI.Base.defaultMargin := 5
-UI.MsgBoxObj.defaultWidth := 300
+#Include src/Controllers.ahk
+#Include src/Views.ahk
 
 config := new IniConfig("po_verification")
 
@@ -25,19 +21,11 @@ if !(config.exists()) {
     config.copyFrom("po_verification.default.ini")
 }
 
-receiver := new Models.Receiver()
+receivingController := new Controllers.Receiving()
 
-receiver.poNumber := UI.Required.InputBox("Enter PO #")
-receiver.partNumber := UI.Required.InputBox("Enter Part #")
-receiver.lotNumbers.push(UI.Required.InputBox("Enter Lot #"))
-receiver.quantities.push(UI.Required.InputBox("Enter Quantity"))
+receivingController.bootstrapReceiver(new Models.Receiver())
 
-verifier := new Receiving.Verify(receiver)
-
-poResults := verifier.GetResults()
-
-recvResults := new Receiving.Results()
-recvResults.display(receiver, poResults)
+receivingController.displayReceivingResults()
 
 ExitApp
 
