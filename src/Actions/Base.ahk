@@ -5,7 +5,6 @@ class Base
     __Call(method, args*) {
         if (method = "")
             return this.Call(args*)
-        if (IsObject(method))
-            return this[method](args*)
+        return this[method](args*)
     }
 }
