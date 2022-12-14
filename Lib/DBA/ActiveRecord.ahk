@@ -23,7 +23,7 @@ class ActiveRecord
     {
         get
         {
-            if (this.__tableName == "") {
+            if (this._tableName == "") {
                 className := StrSplit(this.__Class, ".")
                 className := className[className.MaxIndex()]
                 return className
