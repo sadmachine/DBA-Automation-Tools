@@ -61,40 +61,32 @@ class Receiver
         this.related["podetl"] := Models.DBA.podetl.build("ponum='" this.poNumber "' AND reference='" this.partNumber "' AND (qty*1.1)-qtyr>='" this.quantities[1] "'", "line ASC")
     }
 
-    poExists()
+    assertPoExists()
     {
         if (this.related["porder"].Count() == 0) {
-            UI.MsgBox("No POs matched the PO # entered ('" this.poNumber "').")
-            ExitApp
+            throw Exception("AssertionException", "Models.Receiver.assertPoExists()", "No POs matched the PO # entered ('" this.poNumber "').")
         }
-        return true
     }
 
-    poIsUnique()
+    assertPoIsUnique()
     {
         if (this.related["porder"].Count() > 1) {
-            UI.MsgBox("More than 1 PO matches the PO # number entered (' " this.poNumber " '), this must be an error.")
-            ExitApp
+            throw Exception("AssertionException", "Models.Receiver.assertPoIsUnique()", "More than 1 PO matches the PO # number entered (' " this.poNumber " '), this must be an error.")
         }
-        return true
     }
 
-    poHasCorrectStatus()
+    assertPoHasCorrectStatus()
     {
         if (!InStr("Open,Printed", this.related["porder"][1].status)) {
-            UI.MsgBox("The PO '" this.poNumber "' has status '" this.related["porder"][1].status "'. Status should be either 'Open' or 'Printed'")
-            ExitApp
+            throw Exception("AssertionException", "Models.Receiver.assertPoHasCorrectStatus()", "The PO '" this.poNumber "' has status '" this.related["porder"][1].status "'. Status should be either 'Open' or 'Printed'")
         }
-        return true
     }
 
-    poHasPartNumber()
+    assertPoHasPartNumber()
     {
-        if (this.related["podetl"].Count() == 0)) {
-            UI.MsgBox("The PO '" this.poNumber "' did not contain a line with the specified part number '" this.partNumber "'.")
-            ExitApp
+        if (this.related["podetl"].Count() == 0) {
+            throw Exception("AssertionException", "Models.Receiver.assertPoHasPartNumber()", "The PO '" this.poNumber "' did not contain a line with the specified part number '" this.partNumber "'.")
         }
-        return true
     }
 
     _buildLineInfo()
