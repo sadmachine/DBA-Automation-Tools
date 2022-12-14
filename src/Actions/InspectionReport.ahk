@@ -1,6 +1,6 @@
 ; DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Actions.InspectionReport
-class InspectionReport
+class InspectionReport extends Actions.Base
 {
     Call(ByRef receiver)
     {

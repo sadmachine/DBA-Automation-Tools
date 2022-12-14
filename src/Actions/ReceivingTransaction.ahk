@@ -1,4 +1,4 @@
-class ReceivingTransaction
+class ReceivingTransaction extends Actions.Base
 {
     Call(ByRef receiver)
     {
