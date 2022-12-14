@@ -91,7 +91,7 @@ class Receiver
 
     _buildLineInfo()
     {
-        this.receivedLine := Models.DBA.podetl.build("line='" this.lineReceived "' AND ponum='" this.poNumber "' AND preference='" this.partNumber "'")[1]
+        this.receivedLine := Models.DBA.podetl.build("line='" this.lineReceived "' AND ponum='" this.poNumber "' AND reference='" this.partNumber "'")[1]
         this.receivedItem := new Models.DBA.item(this.receivedLine.reference)
         if (!this.receivedLine.exists || !this.receivedItem.exists) {
             throw Exception("DatabaseException", "Models.Receiver._buildLineInfo()", "Could not pull in additional receiving details from PO")
