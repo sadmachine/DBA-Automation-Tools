@@ -10,6 +10,7 @@ class RecordSet
 
     buildWith(classObjOrTable, fields, where := "", orderBy := "", limit := "", page := "")
     {
+        local index, row
         tableName := classObjOrTable
         if (IsObject(classObjOrTable)) {
             tableName := classObj.tableName

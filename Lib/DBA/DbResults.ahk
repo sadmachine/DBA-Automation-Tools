@@ -7,6 +7,7 @@ class DbResults
 
     __New(queryOutput, colDelim := "|")
     {
+        local header, index, row
         if (ADOSQL_LastError)
         {
             throw Exception("Query error:`n" ADOSQL_LastError)
