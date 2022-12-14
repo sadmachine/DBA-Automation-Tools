@@ -93,8 +93,6 @@ class Receiver
     {
         this.receivedLine := Models.DBA.podetl.build("p.line='" this.lineReceived "' AND p.ponum='" this.poNumber "' AND p.reference='" this.partNumber "'")[1]
         this.receivedItem := new Models.DBA.item(this.receivedLine.reference)
-        query := "SELECT p.qty, i.supplier, i.descript FROM podetl p LEFT JOIN item i ON p.reference = i.itemcode WHERE p.line='" this.lineReceived "' AND p.ponum='" this.poNumber "' AND p.reference='" this.partNumber "';"
-        res := DB.query(query)
         if (!this.receivedLine.exists || !this.receivedItem.exists) {
             throw Exception("DatabaseException", "Models.Receiver._buildLineInfo()", "Could not pull in additional receiving details from PO")
         }
