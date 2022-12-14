@@ -56,6 +56,7 @@ class PoLookupResults extends UI.Base
 
         selected_row := LV_GetNext()
         LV_GetText(lineNumber, selected_row)
+        this.Destroy()
         return lineNumber
     }
 }

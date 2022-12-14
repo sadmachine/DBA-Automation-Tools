@@ -41,7 +41,6 @@ class Receiving extends Controllers.Base
     newReceivingTransaction()
     {
         this.receiver.lineReceived := this.receivingResults.getSelectedLine()
-        this.receivingResults.Destroy()
 
         Actions.ReceivingTransaction(this.receiver)
         Actions.ReceivingLog(this.receiver)
