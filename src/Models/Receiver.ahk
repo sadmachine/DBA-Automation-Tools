@@ -57,8 +57,8 @@ class Receiver
 
     buildRelated()
     {
-        this.related["porder"] := DBA.RecordSet.build("porder", "ponum='" this.poNumber "'")
-        this.related["podetl"] := DBA.RecordSet.buildWith("podetl", "line, reference AS part_number, qty, qtyr AS qty_received", "ponum='" this.poNumber "' AND reference='" this.partNumber "' AND (qty*1.1)-qtyr>='" this.receiver.quantities[1] "'", "line ASC")
+        this.related["porder"] := Models.DBA.porder.build("ponum='" this.poNumber "'")
+        this.related["podetl"] := Models.DBA.podetl.build("ponum='" this.poNumber "' AND reference='" this.partNumber "' AND (qty*1.1)-qtyr>='" this.quantities[1] "'", "line ASC")
     }
 
     poExists()
