@@ -24,7 +24,9 @@ class PoLookupResults extends UI.Base
         this.Add("Text", "x+10 ys+64 w50 Right", "Lot #:")
         this.Add("Edit", "ReadOnly x+5 yp-4 w200", receiver.lotNumbers[1])
         this.Add("GroupBox", "x8 w340 h236 Section", "Matching Lines:")
-        ResultsListView := this.Add("ListView", "xs+4 ys+26 w330 h200", "Line|Part #|Qty|Qty Rcvd")
+        columns := "Line|Part #|Qty|Qty Rcvd"
+        columnCount := StrSplit(columns, "|").Count()
+        ResultsListView := this.Add("ListView", "xs+4 ys+26 w330 h200", columns)
         this.Add("GroupBox", "xs+344 ys+0 w116 h236 Section", "Actions")
         ReceiveButton := this.Add("Button", "xs+6 ys+26 w102 Default", "Receive")
         this.controller.bind(ReceiveButton, "newReceivingTransaction")
@@ -35,7 +37,7 @@ class PoLookupResults extends UI.Base
             LV_Add("", Floor(record.line), Floor(record.reference), Floor(record.qty), Floor(record.qtyr))
         }
 
-        Loop % receiver.realted["podetl"].Count()
+        Loop % columnCount
         {
             LV_ModifyCol(A_Index, "AutoHdr")
         }
