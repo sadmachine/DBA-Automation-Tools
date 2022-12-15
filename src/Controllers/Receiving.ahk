@@ -19,17 +19,17 @@ class Receiving extends Controllers.Base
     bootstrapReceiver(receiver)
     {
         this.receiver := receiver
-        receiver.poNumber := UI.Required.InputBox("Enter PO #")
-        receiver.partNumber := UI.Required.InputBox("Enter Part #")
-        receiver.lotNumbers.push(UI.Required.InputBox("Enter Lot #"))
-        receiver.quantities.push(UI.Required.InputBox("Enter Quantity"))
+        this.receiver.poNumber := UI.Required.InputBox("Enter PO #")
+        this.receiver.partNumber := UI.Required.InputBox("Enter Part #")
+        this.receiver.lotNumbers.push(UI.Required.InputBox("Enter Lot #"))
+        this.receiver.quantities.push(UI.Required.InputBox("Enter Quantity"))
 
-        receiver.buildRelated()
+        this.receiver.buildRelated()
 
-        receiver.assertPoExists()
-        receiver.assertPoIsUnique()
-        receiver.assertPoHasCorrectStatus()
-        receiver.assertPoHasPartNumber()
+        this.receiver.assertPoExists()
+        this.receiver.assertPoIsUnique()
+        this.receiver.assertPoHasCorrectStatus()
+        this.receiver.assertPoHasPartNumber()
     }
 
     displayReceivingResults()
@@ -42,8 +42,8 @@ class Receiving extends Controllers.Base
     {
         this.receiver.lineReceived := this.receivingResults.getSelectedLine()
 
-        Actions.ReceivingTransaction(this.receiver)
-        Actions.ReceivingLog(this.receiver)
-        Actions.InspectionReport(this.receiver)
+        new Actions.ReceivingTransaction(this.receiver)
+        new Actions.ReceivingLog(this.receiver)
+        new Actions.InspectionReport(this.receiver)
     }
 }
