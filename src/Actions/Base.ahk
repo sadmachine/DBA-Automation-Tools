@@ -2,9 +2,5 @@
 ; Actions.Base
 class Base
 {
-    __Call(method, args*) {
-        if (method = "")
-            return this.Call(args*)
-        return this[method](args*)
-    }
+
 }
