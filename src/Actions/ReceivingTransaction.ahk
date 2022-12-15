@@ -18,8 +18,8 @@ class ReceivingTransaction extends Actions.Base
         {
             if (A_Index != 1) {
                 Send {Down}
-                this.receiver.RequestLotNumber()
-                this.receiver.RequestQuantity()
+                this.receiver.lotNumbers.push(UI.Required.InputBox("Enter Lot #"))
+                this.receiver.quantities.push(UI.Required.InputBox("Enter Quantity"))
             }
             this.receiver.hasCert.push(UI.Required.YesNoBox("Does lot # " this.receiver.currentLotInfo["number"] " have certification?"))
             this.receiver.locations.push(UI.Required.InputBox("Enter Location"))
