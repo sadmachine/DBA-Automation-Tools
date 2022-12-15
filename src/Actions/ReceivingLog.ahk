@@ -2,7 +2,7 @@
 ; Actions.ReceivingLog
 class ReceivingLog extends Actions.Base
 {
-    Call(ByRef receiver)
+    __New(ByRef receiver)
     {
         config := new IniConfig("po_receiving")
         Logfile := A_ScriptDir "/data/Receiving Log.csv"

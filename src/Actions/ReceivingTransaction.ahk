@@ -1,9 +1,14 @@
+; DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+; Actions.ReceivingTransaction
 class ReceivingTransaction extends Actions.Base
 {
-    Call(ByRef receiver)
+    __New(ByRef receiver)
     {
         Global
+        MsgBox % receiver
+        MsgBox % receiver.poNumber
         this.receiver := receiver
+        MsgBox % this.receiver.poNumber
         indexNumber := this._getLineNumberIndex()
 
         this._preparePoScreen(indexNumber)
