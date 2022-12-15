@@ -14,6 +14,7 @@ SetWorkingDir, %A_ScriptDir%
 #Include src/Models.ahk
 #Include src/Controllers.ahk
 #Include src/Views.ahk
+#Include src/Actions.ahk
 
 config := new IniConfig("po_verification")
 
