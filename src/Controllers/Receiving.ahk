@@ -41,9 +41,11 @@ class Receiving extends Controllers.Base
     newReceivingTransaction()
     {
         this.receiver.lineReceived := this.receivingResults.getSelectedLine()
+        receiver := this.receiver
 
-        new Actions.ReceivingTransaction(this.receiver)
-        new Actions.ReceivingLog(this.receiver)
-        new Actions.InspectionReport(this.receiver)
+        new Actions.ReceivingTransaction(receiver)
+        new Actions.ReceivingLog(receiver)
+        new Actions.InspectionReport(receiver)
+        this.receiver := receiver
     }
 }
