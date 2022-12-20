@@ -7,10 +7,7 @@ class Receiver
     partDescription := ""
     lineQuantity := ""
     supplier := ""
-    lotNumbers := []
-    quantities := []
-    locations := []
-    hasCert := []
+    lots := []
     related := {}
 
     poNumber[]
@@ -43,12 +40,8 @@ class Receiver
     currentLotInfo[key := ""]
     {
         get {
-            lotInfo := {}
             index := this.lotNumbers.MaxIndex()
-            lotInfo["number"] := this.lotNumbers[index]
-            lotInfo["quantity"] := this.quantities[index]
-            lotInfo["location"] := this.locations[index]
-            lotInfo["hasCert"] := this.hasCert[index]
+            lotInfo := this.lots[index]
             if (key == "" || !lotInfo.HasKey(key))
                 return lotInfo
             return lotInfo[key]
@@ -58,7 +51,7 @@ class Receiver
     buildRelated()
     {
         this.related["porder"] := Models.DBA.porder.build("ponum='" this.poNumber "'")
-        this.related["podetl"] := Models.DBA.podetl.build("ponum='" this.poNumber "' AND reference='" this.partNumber "' AND (qty*1.1)-qtyr>='" this.quantities[1] "'", "line ASC")
+        this.related["podetl"] := Models.DBA.podetl.build("ponum='" this.poNumber "' AND reference='" this.partNumber "' AND (qty*1.1)-qtyr>='" this.currentLotInfo.quantity "'", "line ASC")
     }
 
     assertPoExists()

@@ -14,12 +14,13 @@ class ReceivingTransaction extends Actions.Base
         while (loopAgain)
         {
             if (A_Index != 1) {
-                Send {Down}
-                this.receiver.lotNumbers.push(UI.Required.InputBox("Enter Lot #"))
-                this.receiver.quantities.push(UI.Required.InputBox("Enter Quantity"))
+                this._nextReceiptLine()
+                this.receiver.lots.push(new Models.LotInfo())
+                this.receiver.currentLotInfo.lotNumber := UI.Required.InputBox("Enter Lot #")
+                this.receiver.currentLotInfo.quantity := UI.Required.InputBox("Enter Quantity")
             }
-            this.receiver.hasCert.push(UI.Required.YesNoBox("Does lot # " this.receiver.currentLotInfo["number"] " have certification?"))
-            this.receiver.locations.push(UI.Required.InputBox("Enter Location"))
+            this.receiver.currentLotInfo.hasCert := UI.Required.YesNoBox("Does lot # " this.receiver.currentLotInfo.lotNumber " have certification?")
+            this.receiver.currentLotInfo.location := UI.Required.InputBox("Enter Location")
 
             this._receiveLotInfo()
 
@@ -113,6 +114,7 @@ class ReceivingTransaction extends Actions.Base
         {
             MsgBox % "PO Receipts never became active"
         }
+        ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
         Send {Home}
         Send % this.receiver.currentLotInfo["quantity"]
         Send {Enter}
@@ -139,5 +141,17 @@ class ReceivingTransaction extends Actions.Base
         ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
         Sleep 100
         Send {Enter}
+    }
+
+    _nextReceiptLine()
+    {
+        WinActivate, % DBA.Windows.POReceipts
+        WinWaitActive, % DBA.Windows.POReceipts,, 5
+        if ErrorLevel
+        {
+            MsgBox % "PO Receipts never became active"
+        }
+        ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
+        Send {Down}
     }
 }
