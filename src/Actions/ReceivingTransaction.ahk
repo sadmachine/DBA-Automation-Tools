@@ -5,10 +5,7 @@ class ReceivingTransaction extends Actions.Base
     __New(ByRef receiver)
     {
         Global
-        MsgBox % receiver
-        MsgBox % receiver.poNumber
         this.receiver := receiver
-        MsgBox % this.receiver.poNumber
         indexNumber := this._getLineNumberIndex()
 
         this._preparePoScreen(indexNumber)

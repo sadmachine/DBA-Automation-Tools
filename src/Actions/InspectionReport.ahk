@@ -5,7 +5,6 @@ class InspectionReport extends Actions.Base
     __New(ByRef receiver)
     {
         Global
-        MsgBox % A_LINEFILE
         this.reportCount := receiver.lotNumbers.Count()
 
         this.progressGui := new UI.ProgressBoxObj("Creating Inspection Reports, please wait...", "Creating Inspection Reports")
