@@ -10,7 +10,6 @@ SetWorkingDir, %A_ScriptDir%
 #Include <String>
 #Include <DBA>
 #Include <Excel>
-#Include src/Receiving.ahk
 #Include src/Models.ahk
 #Include src/Controllers.ahk
 #Include src/Views.ahk
