@@ -34,7 +34,7 @@ class ReceivingTransaction extends Actions.Base
     {
         Global
         lineNumber := this.receiver.lineReceived
-        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.currentLotInfo["quantity"] "' AND closed IS NULL", "line ASC")
+        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.currentLotInfo.quantity "' AND closed IS NULL", "line ASC")
         ; TODO: Error message if empty
         for n, record in records {
             curLine := Floor(record.line)
@@ -116,10 +116,10 @@ class ReceivingTransaction extends Actions.Base
         }
         ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
         Send {Home}
-        Send % this.receiver.currentLotInfo["quantity"]
+        Send % this.receiver.currentLotInfo.quantity
         Send {Enter}
         Send {End}
-        Send % this.receiver.currentLotInfo["number"]
+        Send % this.receiver.currentLotInfo.lotNumber
         Send {Shift Down}{Tab}{Shift Up}
         Send {Shift Down}{Tab}{Shift Up}
         Send {Enter}
@@ -134,7 +134,7 @@ class ReceivingTransaction extends Actions.Base
         Sleep 200
         ControlClick, TCheckBox1, % "FrmPopDrpLocationLook_sub",,,,NA
         Sleep 200
-        ControlSend, TdxButtonEdit1, % this.receiver.currentLotInfo["location"], % "FrmPopDrpLocationLook_sub"
+        ControlSend, TdxButtonEdit1, % this.receiver.currentLotInfo.location, % "FrmPopDrpLocationLook_sub"
         Sleep 100
         ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
         Sleep 100

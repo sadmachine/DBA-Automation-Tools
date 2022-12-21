@@ -40,7 +40,7 @@ class Receiver
     currentLotInfo[key := ""]
     {
         get {
-            index := this.lotNumbers.MaxIndex()
+            index := this.lots.MaxIndex()
             lotInfo := this.lots[index]
             if (key == "" || !lotInfo.HasKey(key))
                 return lotInfo
