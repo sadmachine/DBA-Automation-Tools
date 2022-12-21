@@ -1,7 +1,6 @@
 class Dashboard
 {
-
-    static initialized := false
+    static built := false
     static vertical_fix := 65
     static height := 200
     static width := 300
@@ -19,10 +18,25 @@ class Dashboard
     initialize()
     {
         Global
+        daemon := ObjBindMethod(Dashboard, "_daemon")
+        SetTimer, % daemon, 250
+    }
 
+    _daemon() {
+        if (!this.built) {
+            this.build(true)
+        } else {
+            this.destroyOnClose()
+        }
+    }
+
+    build(show := false)
+    {
         this.display_x := 234 + this.padding
         this.display_y := 74
-        ; Wait for the "Sub-Assy Jobs" screen to be active
+
+        ; Wait for the Main DBA window to be active
+        WinWait, % DBA.Windows.Main
         WinActivate, % DBA.Windows.Main
         WinWaitActive, % DBA.Windows.Main
 
@@ -35,6 +49,12 @@ class Dashboard
         ; Get a reference to the "parent" and "child" window
         this.hwnd["parent"] := WinExist(DBA.Windows.Main)
         this.hwnd["child"] := hChild
+
+        this.built := true
+
+        if (show) {
+            this.show()
+        }
     }
 
     show()
@@ -46,6 +66,13 @@ class Dashboard
         UI.setParent(this.hwnd["child"], this.hwnd["parent"])
 
         UI.disableCloseButton(this.hwnd["child"])
+    }
+
+    destroyOnClose()
+    {
+        WinWaitClose, % DBA.Windows.Main
+        Gui, dashboard:Destroy
+        this.built := false
     }
 
     _buildModuleSections()

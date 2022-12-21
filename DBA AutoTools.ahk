@@ -59,7 +59,6 @@ for n, param in A_Args
 
 ModuleLoader.boot(MODS_FOLDER)
 Dashboard.initialize()
-Dashboard.show()
 ;initialize_hub_gui()
 
 Return
