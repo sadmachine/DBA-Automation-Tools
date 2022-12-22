@@ -22,8 +22,8 @@ class Receiving extends Controllers.Base
         this.receiver.poNumber := UI.Required.InputBox("Enter PO #")
         this.receiver.partNumber := UI.Required.InputBox("Enter Part #")
         this.receiver.lots.push(new Models.LotInfo())
-        this.receiver.currentLotInfo.lotNumber := UI.Required.InputBox("Enter Lot #")
-        this.receiver.currentLotInfo.quantity := UI.Required.InputBox("Enter Quantity")
+        this.receiver.lots["current"].lotNumber := UI.Required.InputBox("Enter Lot #")
+        this.receiver.lots["current"].quantity := UI.Required.InputBox("Enter Quantity")
 
         this.receiver.buildRelated()
 

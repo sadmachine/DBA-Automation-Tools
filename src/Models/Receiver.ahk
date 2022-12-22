@@ -7,7 +7,7 @@ class Receiver
     partDescription := ""
     lineQuantity := ""
     supplier := ""
-    lots := []
+    _lots := []
     related := {}
 
     poNumber[]
@@ -37,21 +37,31 @@ class Receiver
         }
     }
 
-    currentLotInfo[key := ""]
+    lots[index := "", key := ""]
     {
         get {
-            index := this.lots.MaxIndex()
-            lotInfo := this.lots[index]
-            if (key == "" || !lotInfo.HasKey(key))
-                return lotInfo
-            return lotInfo[key]
+            if (index == "" and key == "") {
+                return this._lots
+            }
+            lot := ""
+            if index is integer
+            {
+                lot := this._lots[index]
+            } else if (index == "current") {
+                lot := this._lots[this._lots.MaxIndex()]
+            } else {
+                throw Exception("InvalidIndexException", "Models.Receiver.lots.get[index:=" index ", key:=" key "]")
+            }
+            if (key == "" || !lot.HasKey(key))
+                return lot
+            return lot[key]
         }
     }
 
     buildRelated()
     {
         this.related["porder"] := Models.DBA.porder.build("ponum='" this.poNumber "'")
-        this.related["podetl"] := Models.DBA.podetl.build("ponum='" this.poNumber "' AND reference='" this.partNumber "' AND (qty*1.1)-qtyr>='" this.currentLotInfo.quantity "'", "line ASC")
+        this.related["podetl"] := Models.DBA.podetl.build("ponum='" this.poNumber "' AND reference='" this.partNumber "' AND (qty*1.1)-qtyr>='" this.lots["current"].quantity "'", "line ASC")
     }
 
     assertPoExists()

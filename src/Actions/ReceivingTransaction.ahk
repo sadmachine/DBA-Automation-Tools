@@ -16,11 +16,11 @@ class ReceivingTransaction extends Actions.Base
             if (A_Index != 1) {
                 this._nextReceiptLine()
                 this.receiver.lots.push(new Models.LotInfo())
-                this.receiver.currentLotInfo.lotNumber := UI.Required.InputBox("Enter Lot #")
-                this.receiver.currentLotInfo.quantity := UI.Required.InputBox("Enter Quantity")
+                this.receiver.lots["current"].lotNumber := UI.Required.InputBox("Enter Lot #")
+                this.receiver.lots["current"].quantity := UI.Required.InputBox("Enter Quantity")
             }
-            this.receiver.currentLotInfo.hasCert := UI.Required.YesNoBox("Does lot # " this.receiver.currentLotInfo.lotNumber " have certification?")
-            this.receiver.currentLotInfo.location := UI.Required.InputBox("Enter Location")
+            this.receiver.lots["current"].hasCert := UI.Required.YesNoBox("Does lot # " this.receiver.lots["current"].lotNumber " have certification?")
+            this.receiver.lots["current"].location := UI.Required.InputBox("Enter Location")
 
             this._receiveLotInfo()
 
@@ -34,7 +34,7 @@ class ReceivingTransaction extends Actions.Base
     {
         Global
         lineNumber := this.receiver.lineReceived
-        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.currentLotInfo.quantity "' AND closed IS NULL", "line ASC")
+        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.lots["current"].quantity "' AND closed IS NULL", "line ASC")
         ; TODO: Error message if empty
         for n, record in records {
             curLine := Floor(record.line)
@@ -116,10 +116,10 @@ class ReceivingTransaction extends Actions.Base
         }
         ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
         Send {Home}
-        Send % this.receiver.currentLotInfo.quantity
+        Send % this.receiver.lots["current"].quantity
         Send {Enter}
         Send {End}
-        Send % this.receiver.currentLotInfo.lotNumber
+        Send % this.receiver.lots["current"].lotNumber
         Send {Shift Down}{Tab}{Shift Up}
         Send {Shift Down}{Tab}{Shift Up}
         Send {Enter}
@@ -134,7 +134,7 @@ class ReceivingTransaction extends Actions.Base
         Sleep 200
         ControlClick, TCheckBox1, % "FrmPopDrpLocationLook_sub",,,,NA
         Sleep 200
-        ControlSend, TdxButtonEdit1, % this.receiver.currentLotInfo.location, % "FrmPopDrpLocationLook_sub"
+        ControlSend, TdxButtonEdit1, % this.receiver.lots["current"].location, % "FrmPopDrpLocationLook_sub"
         Sleep 100
         ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
         Sleep 100
