@@ -1,26 +1,26 @@
-#Include <Helpers>
-
 class UI
 {
+    ; --- Sub-Classes ----------------------------------------------------------
     #Include <UI/Base>
     #Include <UI/InputBoxObj>
     #Include <UI/MsgBoxObj>
     #Include <UI/ProgressBoxObj>
     #Include <UI/Settings>
+    #Include <UI/Required>
 
-    ; --- Class Functions --------------------------------------------------------
+    ; --- Class Functions ------------------------------------------------------
 
     InputBox(prompt, title := "")
     {
         ib := new UI.InputBoxObj(prompt, title)
-        ib.widht := 280
+        ib.width := 280
         return ib.prompt(prompt, title)
     }
 
     MsgBox(prompt, title := "")
     {
         mb := new UI.MsgBoxObj(prompt, title)
-        mb.width := 280
+        mb.autoSize := true
         return mb.OK()
     }
 
@@ -31,7 +31,7 @@ class UI
         return mb.YesNo()
     }
 
-    ; --- Utility methods --------------------------------------------------------
+    ; --- Utility methods ------------------------------------------------------
 
     disableCloseButton(hwnd="")
     {

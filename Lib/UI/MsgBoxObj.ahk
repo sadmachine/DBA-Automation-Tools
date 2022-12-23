@@ -52,13 +52,17 @@ class MsgBoxObj extends UI.Base
         Global
 
         this.ApplyFont()
-        this.Add("Text", "r2", this.promptMsg)
+        this.Add("Text", "w" (this.width - (this.margin*4)), this.promptMsg)
     }
 
     _Show()
     {
         Global
-        this.Show("w" this.width)
+        if (!this.autoSize) {
+            this.Show("w" this.width)
+        } else {
+            this.Show()
+        }
 
         WinWaitClose, % this.title
         return % this.output

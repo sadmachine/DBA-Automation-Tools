@@ -1,75 +1,42 @@
-#include <ADOSQL>
-
-class DBConnection
-{
-    DSN := "DBA NG"
-    UID := "SYSDBA"
-    PWD := "masterkey"
-    RO := true
-    colDelim := "|"
-    connectionStr := ""
-    __New(DSN := "DBA NG", UID := "SYSDBA", PWD := "masterkey", colDelim := "")
-    {
-        this.DSN := DSN
-        this.UID := UID
-        this.PWD := PWD
-
-        if (colDelim != "") {
-            this.colDelim := colDelim
-        }
-
-    }
-
-    ReadOnly(is_ro)
-    {
-        this.RO := is_ro
-    }
-
-    _buildConnectionStr()
-    {
-        ro_str := (this.RO ? "READONLY=YES" : "")
-        colDelim := this.colDelim
-        this.connectionStr := "DSN=" this.DSN ";UID=" this.UID ";PWD=" this.PWD ";" ro_str ";coldelim=" colDelim
-    }
-
-    query(qStr)
-    {
-        this._buildConnectionStr()
-        qStr := RTrim(qStr)
-        if (SubStr(qStr, 0) != ";")
-            qStr .= ";"
-        return new Results(ADOSQL(this.connectionStr, qStr), this.colDelim)
-    }
-}
-
-class Results
+; DBA.DbResult
+class DbResults
 {
     answer := ""
     rawAnswer := ""
     delim := "|"
+
     __New(queryOutput, colDelim := "|")
     {
+        local header, index, row
         if (ADOSQL_LastError)
         {
             throw Exception("Query error:`n" ADOSQL_LastError)
         }
+
         this.delim := colDelim
         this.rawAnswer := queryOutput
-        this.answer := StrSplit(this.rawAnswer, "`n")
+        this.answer := StrSplit(this._encodeNewLines(this.rawAnswer), "`n")
         this.lvHeaders := StrReplace(this.answer[1], "_", " ")
         columnHeaders := StrSplit(this.answer[1], this.delim)
         this.columnHeaders := columnHeaders
+
+        ; Keep track of the actual order of each header
+        ; so we can put them back in the right order later
         this.headerIndex := {}
         for index,header in columnHeaders
         {
             this.headerIndex[header] := index
         }
+
         this.colCount := columnheaders.Length()
         this.rows := []
+        ; Start at row 2 (skip the headers)
         currentRow := 2
+
         maxRow := this.answer.Length()
         Loop % maxRow - 1
         {
+            this.answer[currentRow] := this._decodeNewLines(this.answer[currentRow])
             rowData := StrSplit(this.answer[currentRow], this.delim)
             current := []
             count := 1
@@ -81,6 +48,16 @@ class Results
             this.rows.Push(current)
             currentRow++
         }
+    }
+
+    _encodeNewLines(string)
+    {
+        return StrReplace(string, "`r`n", "\r\n")
+    }
+
+    _decodeNewLines(string)
+    {
+        return StrReplace(string, "\r\n", "`r`n")
     }
 
     count()
@@ -110,6 +87,7 @@ class Results
 
     display()
     {
+        Global
         Gui, New, hwndDisplaySQL +AlwaysOnTop,
         Gui, %DisplaySQL%:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.lvHeaders
         Gui, %DisplaySQL%:Default

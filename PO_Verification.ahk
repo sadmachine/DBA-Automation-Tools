@@ -10,12 +10,10 @@ SetWorkingDir, %A_ScriptDir%
 #Include <String>
 #Include <DBA>
 #Include <Excel>
-#Include src/Receiving.ahk
-
-FONT_OPTIONS := {options: "s12", fontName: ""}
-
-UI.Base.defaultFont := FONT_OPTIONS
-UI.Base.defaultMargin := 5
+#Include src/Models.ahk
+#Include src/Controllers.ahk
+#Include src/Views.ahk
+#Include src/Actions.ahk
 
 config := new IniConfig("po_verification")
 
@@ -23,19 +21,11 @@ if !(config.exists()) {
     config.copyFrom("po_verification.default.ini")
 }
 
-receiver := new Receiving.Receiver()
+receivingController := new Controllers.Receiving()
 
-receiver.RequestPONumber()
-receiver.RequestPartNumber()
-receiver.RequestLotNumber()
-receiver.RequestQuantity()
+receivingController.bootstrapReceiver(new Models.Receiver())
 
-verifier := new Receiving.Verify(receiver)
-
-poResults := verifier.GetResults()
-
-recvResults := new Receiving.Results()
-recvResults.display(receiver, poResults)
+receivingController.displayReceivingResults()
 
 ExitApp
 

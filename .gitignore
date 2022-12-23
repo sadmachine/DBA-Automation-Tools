@@ -5,3 +5,4 @@
 **/modules/data/*.csv
 
 !**/modules/config/*.default.ini
+!dist/**/*.exe
