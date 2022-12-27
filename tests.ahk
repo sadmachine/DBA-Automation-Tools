@@ -13,5 +13,4 @@
 ; Run tests suites here
 ; e.g.
 ;Yunit.Use(YunitWindow).Test(TestSuite)
-Yunit.Use(YunitWindow).Test(DbaSuite)
-Yunit.Use(YunitWindow).Test(ConfigSuite)
+Yunit.Use(YunitWindow).Test(DbaSuite, ConfigSuite)
