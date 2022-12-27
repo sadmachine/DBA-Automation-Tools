@@ -1,6 +1,6 @@
 #Include <YUnit/JUnit>
 #Include <YUnit/OutputDebug>
-#Include <YUnit/StdOut>
+#Include <YUnit/Stdout>
 #Include <YUnit/Window>
 #Include <YUnit/Yunit>
 
