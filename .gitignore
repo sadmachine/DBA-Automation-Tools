@@ -3,6 +3,7 @@
 **/modules/config/*.ini
 **/modules/data/*.xlsx
 **/modules/data/*.csv
+tests/config/*
 
 !**/modules/config/*.default.ini
 !dist/**/*.exe

@@ -19,6 +19,9 @@ class ConfigSuite
     }
 }
 
+SplitPath, A_LineFile,, baseDir
+
+Config.setBaseConfigLocation(baseDir "/config")
 Config.register(new VerificationGroup())
 Config.register(new PoReceivingGroup())
 Config.load()
