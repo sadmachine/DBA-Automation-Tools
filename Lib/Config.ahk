@@ -10,11 +10,20 @@ class Config
 
     static groups := {}
     static groupList := []
-    static baseConfigLocation := A_ScriptDir "/config"
+    static localConfigLocation := A_ScriptDir "/config"
+    static globalConfigLocation := ""
+    static GLOBAL_ONLY := 1
+    static LOCAL_OVERWRITES_GLOBAL := 2
+    static LOCAL_ONLY := 3
 
-    setBaseConfigLocation(baseConfigLocation)
+    setLocalConfigLocation(localConfigLocation)
     {
-        this.baseConfigLocation := baseConfigLocation
+        this.localConfigLocation := localConfigLocation
+    }
+
+    setGlobalConfigLocation(globalConfigLocation)
+    {
+        this.globalConfigLocation := globalConfigLocation
     }
 
     register(group)
@@ -24,18 +33,26 @@ class Config
         this.groupList.push(group)
     }
 
-    load()
+    load(groupSlug:="")
     {
-        this._initialize()
-        for slug, group in this.groups {
-            group.load()
+        if (groupSlug == "") {
+            this._initialize()
+            for slug, group in this.groups {
+                group.load()
+            }
+        } else {
+            this.groups[groupSlug].load()
         }
     }
 
-    store()
+    store(groupSlug:="")
     {
-        for slug, group in this.groups {
-            group.store()
+        if (groupSlug == "") {
+            for slug, group in this.groups {
+                group.store()
+            }
+        } else {
+            this.groups[groupSlug].store()
         }
     }
 
@@ -51,7 +68,7 @@ class Config
         return this.groups[token["group"]].fields[token["field"]].value := value
     }
 
-    setDefault(identifier)
+    resetDefault(identifier)
     {
         token := this._parseIdentifier(identifier)
         default := this.groups[token["group"]].fields[token["field"]].default
