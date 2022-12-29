@@ -27,7 +27,6 @@ class Group
             className := this.__Class
             removedGroup := RegExReplace(className, "Group$", "")
             this.slug := String.toLower(SubStr(removedGroup, 1, 1)) . SubStr(removedGroup, 2)
-            MsgBox % this.slug
         }
         this.define()
     }
@@ -61,7 +60,7 @@ class Group
     setDefaults()
     {
         for slug, field in this.fields {
-            field.setDefault()
+            field.resetDefault()
         }
     }
 

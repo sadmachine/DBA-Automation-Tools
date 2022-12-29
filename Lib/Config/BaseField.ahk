@@ -49,7 +49,7 @@ class BaseField
         }
     }
 
-    setDefault()
+    resetDefault()
     {
         IniWrite, % this.default, % this.path, % this.section, % this.slug
     }
