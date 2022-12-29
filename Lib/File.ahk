@@ -11,4 +11,34 @@ class File
         DllCall("GetFullPathName", "str", path, "uint", cc, "str", buf, "ptr", 0, "uint")
         return buf
     }
+
+    parseDirectory(path)
+    {
+        SplitPath, path,, dir
+        return dir
+    }
+
+    parseFilename(path)
+    {
+        SplitPath, path, filename
+        return filename
+    }
+
+    parseExtension(path)
+    {
+        SplitPath, path,,, extension
+        return extension
+    }
+
+    parseFilenameNoExtension(path)
+    {
+        SplitPath, path, , , , filenameWithExtension
+        return filenameWithExtension
+    }
+
+    parseDrive(path)
+    {
+        SplitPath, path, , , , , drive
+        return drive
+    }
 }
