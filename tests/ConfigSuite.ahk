@@ -22,7 +22,7 @@ class ConfigSuite
     }
 }
 
-Config.setBaseConfigLocation(File.parseDirectory(A_LineFile) "/config")
+Config.setLocalConfigLocation(File.parseDirectory(A_LineFile) "/config")
 Config.register(new VerificationGroup())
 Config.register(new PoReceivingGroup())
 Config.load()
