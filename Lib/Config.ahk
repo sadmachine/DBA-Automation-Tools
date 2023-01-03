@@ -1,6 +1,7 @@
 #Include <String>
 class Config
 {
+    #Include <Config/Scope>
     #include <Config/Group>
     #include <Config/BaseField>
     #include <Config/DateField>
@@ -12,9 +13,6 @@ class Config
     static groupList := []
     static localConfigLocation := A_ScriptDir "/config"
     static globalConfigLocation := ""
-    static GLOBAL_ONLY := 1
-    static LOCAL_OVERWRITES_GLOBAL := 2
-    static LOCAL_ONLY := 3
 
     setLocalConfigLocation(localConfigLocation)
     {
