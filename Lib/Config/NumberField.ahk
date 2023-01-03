@@ -5,9 +5,9 @@ class NumberField extends Config.BaseField
     max := ""
     step := ""
 
-    __New(label, options := "")
+    __New(label, scope := "", options := "")
     {
-        base.__New("number", label, options)
+        base.__New("number", label, scope, options)
         if (options.HasKey("min")) {
             this.min := options["min"]
         }

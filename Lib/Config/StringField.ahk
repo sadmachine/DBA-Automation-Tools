@@ -4,9 +4,9 @@ class StringField extends Config.BaseField
     min := ""
     max := ""
 
-    __New(label, options := "")
+    __New(label, scope := "", options := "")
     {
-        base.__New("string", label, options)
+        base.__New("string", label, scope, options)
 
         if (options.HasKey("min")) {
             this.min := options["min"]

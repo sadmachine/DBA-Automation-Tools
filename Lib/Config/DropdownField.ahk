@@ -4,10 +4,10 @@ class DropdownField extends Config.BaseField
     choices := []
     selected := ""
 
-    __New(label, choices, options := "")
+    __New(label, choices, scope := "", options := "")
     {
         this.choices := choices
-        base.__New("dropdown", label, options)
+        base.__New("dropdown", label, scope, options)
         if (options.HasKey("selected")) {
             this.selected := options["selected"]
         }

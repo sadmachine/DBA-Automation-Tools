@@ -2,8 +2,6 @@
 ; Config.Scope
 class Scope
 {
-    static GLOBAL_ONLY := 1
-    static GLOBAL_FIRST := 2
-    static LOCAL_FIRST := 3
-    static LOCAL_ONLY := 4
+    static GLOBAL := 1
+    static LOCAL := 2
 }

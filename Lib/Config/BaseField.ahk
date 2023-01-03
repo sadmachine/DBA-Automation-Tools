@@ -10,12 +10,33 @@ class BaseField
     value := ""
     oldValue := ""
     path := ""
+    group := ""
 
-    __New(type, label, options := "")
+    path[] {
+        get {
+            if (this.scope == Config.Scope.GLOBAL_ONLY) {
+                return Config.globalConfigLocation
+            } else if (this.p.scope == Config.Scope.LOCAL_ONLY) {
+                return Config.localConfigLocation
+            }
+            throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
+        }
+        set {
+
+        }
+    }
+
+    __New(type, label, scope := "", options := "")
     {
         if (this.options != "") {
             this.options := options
         }
+
+        this.scope := Config.Scope.GLOBAL
+        if (scope != "") {
+            this.scope := scope
+        }
+
         this.type := type
         this.label := label
         this.slug := String.toCamelCase(label)
