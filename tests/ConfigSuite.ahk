@@ -31,7 +31,7 @@ class PoReceivingGroup extends Config.Group
 {
     define()
     {
-        this.access := Config.GLOBAL_ONLY
+        this.scope := Config.Scope.GLOBAL_ONLY
         this.add("fields", new Config.StringField("Test Field"))
         this.add("stuff", new Config.NumberField("Test Field 2", {"default": 5, "slug": "specialSlug"}))
     }
@@ -41,7 +41,7 @@ class VerificationGroup extends Config.Group
 {
     define()
     {
-        this.access := Config.LOCAL_ONLY
+        this.scope := Config.Scope.LOCAL_ONLY
         this.add("defaults", new Config.DateField("Test Field"))
         this.add("main", new Config.FileField("Test Field 2"))
     }
