@@ -13,6 +13,7 @@ class Config
     static groupList := []
     static localConfigLocation := A_ScriptDir "/config"
     static globalConfigLocation := ""
+    static UNDEFINED := "__UNDEFINED__"
 
     setLocalConfigLocation(localConfigLocation)
     {
@@ -83,25 +84,27 @@ class Config
         return this.baseConfigLocation "/" groupSlug ".ini"
     }
 
-    ; --- "Private"  methods ---------------------------------------------------
-
     initialize(force := false)
     {
-        this._assertConfigDirectoryExists()
+        this._assertConfigDirectoriesExist()
 
         for slug, group in this.groups {
             if (force || !group.exists()) {
-                group.setDefaults()
+                group.initialize()
             }
         }
     }
 
-    _assertConfigDirectoryExists()
+    ; --- "Private"  methods ---------------------------------------------------
+
+    _assertConfigDirectoriesExist()
     {
-        if (FileExist(this.baseConfigLocation) != "D") {
-            throw Exception("InvalidDirectory", "Config._assertConfigDirectoryExists()", "The directory " this.baseConfigLocation " does not exist.")
+        if (FileExist(this.globalConfigLocation) != "D") {
+            throw Exception("InvalidDirectory", "Config._assertConfigDirectoriesExist()", "The directory " this.globalConfigLocation " does not exist.")
         }
-        return this.baseConfigLocation
+        if (FileExist(this.localConfigLocation) != "D") {
+            throw Exception("InvalidDirectory", "Config._assertConfigDirectoriesExist()", "The directory " this.localConfigLocation " does not exist.")
+        }
     }
 
     _parseIdentifier(identifier)
