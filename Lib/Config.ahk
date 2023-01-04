@@ -34,7 +34,7 @@ class Config
     load(groupSlug:="")
     {
         if (groupSlug == "") {
-            this._initialize()
+            this.initialize()
             for slug, group in this.groups {
                 group.load()
             }
@@ -75,7 +75,7 @@ class Config
 
     resetAllDefaults()
     {
-        this._initialize(true)
+        this.initialize(true)
     }
 
     getGroupPath(groupSlug)
@@ -85,7 +85,7 @@ class Config
 
     ; --- "Private"  methods ---------------------------------------------------
 
-    _initialize(force := false)
+    initialize(force := false)
     {
         this._assertConfigDirectoryExists()
 
@@ -99,7 +99,7 @@ class Config
     _assertConfigDirectoryExists()
     {
         if (FileExist(this.baseConfigLocation) != "D") {
-            throw Exception("Directory Not Found", -1, "The directory " this.baseConfigLocation " does not exist.")
+            throw Exception("InvalidDirectory", "Config._assertConfigDirectoryExists()", "The directory " this.baseConfigLocation " does not exist.")
         }
         return this.baseConfigLocation
     }
