@@ -36,6 +36,7 @@ class Group
     add(section, field)
     {
         field.section := section
+        field.group := this
         if (this.sections[section] = "") {
             this.sections[section] := []
         }
@@ -43,6 +44,13 @@ class Group
         this.fields[field.slug] := field
         this.fieldList.push(field)
         this.sectionList.push(section)
+        return field
+    }
+
+    get(fieldSlug)
+    {
+
+        this.fields[fieldSlug]
     }
 
     load()
