@@ -12,7 +12,7 @@ class ConfigSuite
             Config._destroyGroupFiles()
 
             ; Reinitialize files
-            Config._initialize()
+            Config.initialize()
 
             ; Make sure the .ini files DO exist
             for slug, group in Config.groups {
