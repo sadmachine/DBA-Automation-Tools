@@ -75,6 +75,14 @@ class BaseField
         IniWrite, % this.default, % this.path, % this.section, % this.slug
     }
 
+    initialize()
+    {
+        IniRead, iniValue, % this.path, % this.section, % this.slug, % Config.UNDEFINED
+        if (iniValue == Config.UNDEFINED) {
+            throw Exception("UndefinedFieldException", "Config.BaseField.initialize()", "path = " this.path "`nsection = " this.section "`nfield = " this.slug)
+        }
+    }
+
     hasChanged()
     {
         return this.value != this.oldValue

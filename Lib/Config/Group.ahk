@@ -24,13 +24,17 @@ class Group
     __New(slug := -1)
     {
         this.slug := slug
-        this.scope := Config.Scope.LOCAL_FIRST
         if (slug == -1) {
             className := this.__Class
             removedGroup := RegExReplace(className, "Group$", "")
             this.slug := String.toLower(SubStr(removedGroup, 1, 1)) . SubStr(removedGroup, 2)
         }
         this.define()
+    }
+
+    initialize()
+    {
+
     }
 
     add(section, field)
