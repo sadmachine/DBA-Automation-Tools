@@ -34,7 +34,9 @@ class Group
 
     initialize()
     {
-
+        for n, field in this.fields {
+            field.initialize()
+        }
     }
 
     add(section, field)
@@ -80,6 +82,11 @@ class Group
 
     exists()
     {
-        return FileExist(this.path)
+        for n, field in this.fields {
+            if (!field.exists()) {
+                return false
+            }
+        }
+        return true
     }
 }
