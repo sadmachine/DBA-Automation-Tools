@@ -9,17 +9,19 @@ class BaseField
     options := []
     value := ""
     oldValue := ""
-    path := ""
     group := ""
 
     path[] {
         get {
+            basePath := ""
             if (this.scope == Config.Scope.GLOBAL_ONLY) {
-                return Config.globalConfigLocation
+                basePath := Config.globalConfigLocation
             } else if (this.p.scope == Config.Scope.LOCAL_ONLY) {
-                return Config.localConfigLocation
+                basePath := Config.localConfigLocation
+            } else {
+                throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
             }
-            throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
+            return basePath "/" group.slug "/" this.slug ".ini"
         }
         set {
 
@@ -77,10 +79,23 @@ class BaseField
 
     initialize()
     {
+        local file := ""
+        if (!this.exists()) {
+            file := FileOpen(this.path, "w")
+            if (!IsObject(file)) {
+                throw Exception("CouldNotCreateFileException", "Config.BaseField.initialize()", "path = " this.path)
+            }
+            file.Close()
+        }
         IniRead, iniValue, % this.path, % this.section, % this.slug, % Config.UNDEFINED
         if (iniValue == Config.UNDEFINED) {
             throw Exception("UndefinedFieldException", "Config.BaseField.initialize()", "path = " this.path "`nsection = " this.section "`nfield = " this.slug)
         }
+    }
+
+    exists()
+    {
+        return FileExist(this.path)
     }
 
     hasChanged()
