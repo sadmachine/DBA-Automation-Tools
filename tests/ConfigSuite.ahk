@@ -1,6 +1,8 @@
 #Include <Config>
 #Include <File>
 #Include <IniConfig>
+#Include <CompiledErrors>
+MOCK_COMPILED := true
 
 class ConfigSuite
 {
@@ -22,9 +24,14 @@ class ConfigSuite
     }
 }
 
-Config.setLocalConfigLocation(File.parseDirectory(A_LineFile) "/config")
+IniRead, globalConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
+IniRead, localConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+
+Config.setLocalConfigLocation(localConfigLocation)
+Config.setGlobalConfigLocation(globalConfigLocation)
 Config.register(new VerificationGroup())
 Config.register(new PoReceivingGroup())
+
 Config.load()
 
 class PoReceivingGroup extends Config.Group

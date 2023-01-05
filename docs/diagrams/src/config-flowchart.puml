@@ -1,0 +1,18 @@
+@startuml
+
+skinparam LegendBackgroundColor #FAFAFA
+
+start
+
+:Check that local and global config locations are set;
+:Check that local and global config locations exist;
+:Register All Config classes;
+
+while (<color:orange>Foreach registered config class)
+  :Check if group file exists, if not create it;
+  :Check if each required field is set, if not prompt user to set value;
+endwhile
+
+stop
+
+@enduml
