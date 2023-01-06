@@ -35,6 +35,7 @@ class Group
     initialize()
     {
         for n, field in this.fields {
+            field.group := this
             field.initialize()
         }
     }
@@ -42,7 +43,6 @@ class Group
     add(section, field)
     {
         field.section := section
-        field.group := this
         if (this.sections[section] = "") {
             this.sections[section] := []
         }
@@ -88,5 +88,16 @@ class Group
             }
         }
         return true
+    }
+
+    ; --- "Private"  methods ---------------------------------------------------
+
+    _destroyFiles()
+    {
+        for n, field in this.fields {
+            if (field.exists()) {
+                FileDelete, % field.path
+            }
+        }
     }
 }
