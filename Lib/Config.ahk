@@ -100,10 +100,10 @@ class Config
     _assertConfigDirectoriesExist()
     {
         if (FileExist(this.globalConfigLocation) != "D") {
-            throw Exception("InvalidDirectory", "Config._assertConfigDirectoriesExist()", "The directory " this.globalConfigLocation " does not exist.")
+            throw Exception("InvalidDirectoryException", "Config._assertConfigDirectoriesExist()", "The directory " this.globalConfigLocation " does not exist.")
         }
         if (FileExist(this.localConfigLocation) != "D") {
-            throw Exception("InvalidDirectory", "Config._assertConfigDirectoriesExist()", "The directory " this.localConfigLocation " does not exist.")
+            throw Exception("InvalidDirectoryException", "Config._assertConfigDirectoriesExist()", "The directory " this.localConfigLocation " does not exist.")
         }
     }
 
@@ -121,7 +121,7 @@ class Config
     {
         for slug, group in this.groups {
             if (group.exists()) {
-                FileDelete, % group.path
+                group._destroyFiles()
             }
         }
     }
