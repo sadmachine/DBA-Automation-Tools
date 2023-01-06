@@ -3,6 +3,7 @@ class BaseField
 {
     type := ""
     default := ""
+    required := false
     label := ""
     slug := ""
     section := ""
@@ -14,14 +15,14 @@ class BaseField
     path[] {
         get {
             basePath := ""
-            if (this.scope == Config.Scope.GLOBAL_ONLY) {
+            if (this.scope == Config.Scope.GLOBAL) {
                 basePath := Config.globalConfigLocation
-            } else if (this.p.scope == Config.Scope.LOCAL_ONLY) {
+            } else if (this.scope == Config.Scope.LOCAL) {
                 basePath := Config.localConfigLocation
             } else {
                 throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
             }
-            return basePath "/" group.slug "/" this.slug ".ini"
+            return basePath "/" this.group.slug ".ini"
         }
         set {
 
@@ -89,7 +90,10 @@ class BaseField
         }
         IniRead, iniValue, % this.path, % this.section, % this.slug, % Config.UNDEFINED
         if (iniValue == Config.UNDEFINED) {
-            throw Exception("UndefinedFieldException", "Config.BaseField.initialize()", "path = " this.path "`nsection = " this.section "`nfield = " this.slug)
+            if (this.required) {
+                throw Exception("RequiredFieldException", "Config.BaseField.initialize()", "path = " this.path "`nsection = " this.section "`nfield = " this.slug)
+            }
+            IniWrite, % this.default, % this.path, % this.section, % this.slug
         }
     }
 
