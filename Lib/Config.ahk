@@ -1,4 +1,5 @@
 #Include <String>
+#Include <UI/Settings>
 class Config
 {
     #Include <Config/Scope>
@@ -13,6 +14,7 @@ class Config
     static groupList := []
     static localConfigLocation := A_ScriptDir "/config"
     static globalConfigLocation := ""
+    static promptForMissingValues := true
     static UNDEFINED := "__UNDEFINED__"
 
     setLocalConfigLocation(localConfigLocation)
