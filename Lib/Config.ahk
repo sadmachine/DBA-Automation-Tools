@@ -1,11 +1,12 @@
 #Include <String>
-#Include <UI/Settings>
+#Include <UI>
 class Config
 {
     #Include <Config/Scope>
     #include <Config/Group>
     #include <Config/BaseField>
     #include <Config/DateField>
+    #include <Config/DropdownField>
     #include <Config/NumberField>
     #include <Config/StringField>
     #include <Config/FileField>
