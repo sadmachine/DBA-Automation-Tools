@@ -2,7 +2,7 @@
 ; UI.StringDialog
 class StringDialog extends UI.BaseDialog
 {
-    build()
+    define()
     {
         this.setControl("edit")
     }

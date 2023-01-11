@@ -2,5 +2,8 @@
 ; UI.FileDialog
 class FileDialog extends UI.BaseDialog
 {
+    define()
+    {
 
+    }
 }

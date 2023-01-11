@@ -15,7 +15,7 @@ class BaseDialog extends UI.Base
 
         base.__New(title, options)
 
-        this.build()
+        this.define()
     }
 
     setControl(controlType, options := "", text := "")

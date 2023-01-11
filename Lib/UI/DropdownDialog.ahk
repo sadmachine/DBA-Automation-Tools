@@ -2,7 +2,7 @@
 ; UI.DropdownDialog
 class DropdownDialog extends UI.BaseDialog
 {
-    build()
+    define()
     {
         if (!this.data.HasKey("choices")) {
             throw Exception("MissingKeyException", "UI.DropdownDialog.define()", "this.data is missing required key 'choices'")

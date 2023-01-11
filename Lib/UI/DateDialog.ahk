@@ -2,7 +2,7 @@
 ; UI.DateDialog
 class DateDialog extends UI.BaseDialog
 {
-    build()
+    define()
     {
         this.setControl("datetime")
     }
