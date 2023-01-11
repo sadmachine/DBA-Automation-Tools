@@ -7,10 +7,10 @@ class DropdownField extends Config.BaseField
     __New(label, choices, scope := "", options := "")
     {
         this.choices := choices
-        base.__New("dropdown", label, scope, options)
         if (options.HasKey("selected")) {
             this.selected := options["selected"]
         }
+        base.__New("dropdown", label, scope, options)
     }
 
     addTo(guiId, options := "")
