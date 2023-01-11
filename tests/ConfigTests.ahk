@@ -4,6 +4,8 @@
 
 MOCK_COMPILED := true
 
+UI.Base.defaultFont := {options: "s12", fontName: ""}
+
 class ConfigTests
 {
     class Initialize
@@ -20,12 +22,15 @@ class ConfigTests
 
         CreatesIniFiles()
         {
+            Config._destroyGroupFiles()
             ; Reinitialize files
             Config.initialize()
 
             ; Make sure the .ini files DO exist
             for slug, group in Config.groups {
-                Yunit.assert(group.exists(), "Configuration Group file '" group.path "' should exist")
+                for slug, field in group.fields {
+                    Yunit.assert(field.exists(), "Field '" field.slug "' did not exist in file '" field.path "'")
+                }
             }
         }
 
@@ -63,8 +68,8 @@ class PoReceivingGroup extends Config.Group
 {
     define()
     {
-        this.add("fields", new Config.StringField("Test Field", Config.Scope.GLOBAL))
-        this.add("stuff", new Config.NumberField("Test Field 2", Config.Scope.LOCAL, {"default": 5, "slug": "specialSlug"}))
+        this.add("fields", new Config.StringField("String Field", Config.Scope.GLOBAL, {required: true}))
+        this.add("stuff", new Config.NumberField("Number Field", Config.Scope.LOCAL, {default: 5, slug: "specialSlug"}))
     }
 }
 
@@ -72,8 +77,8 @@ class VerificationGroup extends Config.Group
 {
     define()
     {
-        this.scope := Config.Scope.LOCAL_ONLY
-        this.add("defaults", new Config.DateField("Test Field", Config.Scope.GLOBAL))
-        this.add("main", new Config.FileField("Test Field 2", Config.Scope.LOCAL))
+        this.add("defaults", new Config.DateField("Date Field", Config.Scope.GLOBAL, {required:true}))
+        this.add("main", new Config.FileField("File Field", Config.Scope.LOCAL, {required:true}))
+        this.add("main", new Config.DropdownField("Dropdown Field", ["hey", "hi", "hello"], Config.Scope.LOCAL, {required:true}))
     }
 }
