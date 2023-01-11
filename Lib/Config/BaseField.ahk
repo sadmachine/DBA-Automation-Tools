@@ -14,15 +14,12 @@ class BaseField
 
     path[] {
         get {
-            basePath := ""
             if (this.scope == Config.Scope.GLOBAL) {
-                basePath := Config.globalConfigLocation
+                return group.path["global"]
             } else if (this.scope == Config.Scope.LOCAL) {
-                basePath := Config.localConfigLocation
-            } else {
-                throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
+                return group.path["local"]
             }
-            return basePath "\" this.group.slug ".ini"
+            throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
         }
     }
 

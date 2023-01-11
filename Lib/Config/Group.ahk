@@ -6,17 +6,17 @@ class Group
     sectionList := []
     fieldList := []
     slug := ""
-    _path := ""
 
-    path[] {
+    path[key] {
         get {
-            return this._path
+            if (key == "global") {
+                return Config.globalConfigLocation "\" this.slug ".ini"
+            } else if (key == "local") {
+                return Config.localConfigLocation "\" this.slug ".ini"
+            }
+            throw Exception("InvalidKeyException", "Config.Group.path[]", "'" key "' is not a valid path key.")
         }
         set {
-            this._path := value
-            for slug, field in this.fields {
-                field.path := this._path
-            }
             return value
         }
     }
@@ -34,16 +34,34 @@ class Group
 
     initialize()
     {
+        local dialog, result
         for n, field in this.fields {
             field.group := this
-            field.initialize()
+            try {
+                field.initialize()
+            } catch e {
+                if (e.message != "RequiredFieldException") {
+                    throw e
+                }
+                if (Config.promptForMissingValues) {
+                    MsgBox % "The config field '" field.label "' is required, but missing a value. Please supply a value to continue."
+                    dialog := UI.DialogFactory.fromConfigField(field)
+                    result := dialog.prompt()
+                    if (result.canceled) {
+                        throw e
+                    }
+                    field.value := result.value
+                    field.store(true)
+                    MsgBox % "Check value exists"
+                }
+            }
         }
     }
 
     add(section, field)
     {
         field.section := section
-        if (this.sections[section] = "") {
+        if (this.sections[section] == "") {
             this.sections[section] := []
         }
         this.sections[section].push(field)
