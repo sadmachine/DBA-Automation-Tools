@@ -11,7 +11,7 @@ class UI
     #Include <UI/BaseDialog>
     #Include <UI/DateDialog>
     #Include <UI/DropdownDialog>
-    #Include <UI/FileDialog>
+    #Include <UI/PathDialog>
     #Include <UI/NumberDialog>
     #Include <UI/StringDialog>
 

@@ -14,7 +14,7 @@ class InspectionReportConfig extends Config
         this.add("excel_mapping", new Config.StringField("Quantity on PO"))
         this.add("excel_mapping", new Config.StringField("Quantity Received"))
 
-        this.add("file", new Config.FileField("Template", Config.Scope.LOCAL))
-        this.add("file", new Config.FileField("Destination Folder", Config.Scope.LOCAL))
+        this.add("file", new Config.PathField("Template", Config.Scope.LOCAL))
+        this.add("file", new Config.PathField("Destination Folder", Config.Scope.LOCAL))
     }
 }

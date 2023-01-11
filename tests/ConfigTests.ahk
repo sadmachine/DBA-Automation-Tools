@@ -78,7 +78,7 @@ class VerificationGroup extends Config.Group
     define()
     {
         this.add("defaults", new Config.DateField("Date Field", Config.Scope.GLOBAL, {required:true}))
-        this.add("main", new Config.FileField("File Field", Config.Scope.LOCAL, {required:true}))
+        this.add("main", new Config.PathField("File Field", Config.Scope.LOCAL, {required:true}))
         this.add("main", new Config.DropdownField("Dropdown Field", ["hey", "hi", "hello"], Config.Scope.LOCAL, {required:true}))
     }
 }

@@ -9,7 +9,7 @@ class Config
     #include <Config/DropdownField>
     #include <Config/NumberField>
     #include <Config/StringField>
-    #include <Config/FileField>
+    #include <Config/PathField>
 
     static groups := {}
     static groupList := []

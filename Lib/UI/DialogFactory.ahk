@@ -11,10 +11,9 @@ class DialogFactory
         case "dropdown":
             data := {choices: configField.choices, selected: configField.selected}
             return new UI.DropdownDialog(configField.label, data)
-        case "file":
-            EnvGet userProfile, % "USERPROFILE"
-            data := {startingLocation: userProfile}
-            return new UI.FileDialog(configField.label, data)
+        case "path":
+            data := configField.dialogData
+            return new UI.PathDialog(configField.label, data)
         case "number":
             return new UI.NumberDialog(configField.label)
         case "string":
