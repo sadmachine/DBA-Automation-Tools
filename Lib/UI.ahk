@@ -7,6 +7,13 @@ class UI
     #Include <UI/ProgressBoxObj>
     #Include <UI/Settings>
     #Include <UI/Required>
+    #Include <UI/DialogFactory>
+    #Include <UI/BaseDialog>
+    #Include <UI/DateDialog>
+    #Include <UI/DropdownDialog>
+    #Include <UI/FileDialog>
+    #Include <UI/NumberDialog>
+    #Include <UI/StringDialog>
 
     ; --- Class Functions ------------------------------------------------------
 
