@@ -68,6 +68,8 @@ class Base
                     throw Exception("You must supply an object(keys: options, fontName) if you're setting font without a key.")
                 }
                 this._font := value
+                Gui, %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
+                return this._font
             }
             if (!InStr("options fontName", key)) {
                 throw Exception("Key supplied for Font should be either ""options"" or ""fontName""")
