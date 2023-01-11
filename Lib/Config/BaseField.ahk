@@ -22,10 +22,7 @@ class BaseField
             } else {
                 throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
             }
-            return basePath "/" this.group.slug ".ini"
-        }
-        set {
-
+            return basePath "\" this.group.slug ".ini"
         }
     }
 
@@ -49,6 +46,9 @@ class BaseField
         if (options.HasKey("default")) {
             this.default := options["default"]
         }
+        if (options.HasKey("required")) {
+            this.required := options["required"]
+        }
     }
 
     addTo(guiId, options := "")
@@ -65,9 +65,9 @@ class BaseField
         this.oldValue := iniValue
     }
 
-    store()
+    store(force := false)
     {
-        if (this.hasChanged())
+        if (this.hasChanged() || force)
         {
             IniWrite, % this.value, % this.path, % this.section, % this.slug
         }
