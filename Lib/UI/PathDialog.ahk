@@ -14,12 +14,14 @@ class PathDialog extends UI.BaseDialog
         EnvGet, userHome, % "USERPROFILE"
         this.pathType := this.data["pathType"]
 
-        if (pathType = "file") { ; case-insensitive =
-            this.defaultFileName := this.startingPath := this.prompt := this.filter := ""
-            this.options := 3 ; file and path must exist, by default
+        if (this.pathType = "file") { ; case-insensitive =
+            this.defaultFileName := ""
+            this.startingPath := ""
+            this.filter := ""
+            this.dialogOptions := 3 ; file and path must exist, by default
             this.startingFolder := userHome
-            if (this.data.HasKey("options")) {
-                this.options := this.data["options"]
+            if (this.data.HasKey("dialogOptions")) {
+                this.dialogOptions := this.data["dialogOptions"]
             }
             if (this.data.HasKey("startingFolder")) {
                 this.startingFolder := this.data["rootDir"]
@@ -27,8 +29,8 @@ class PathDialog extends UI.BaseDialog
             if (this.data.HasKey("defaultFilename")) {
                 this.defaultFileName := this.data["defaultFilename"]
             }
-            if (this.data.HasKey("prompt")) {
-                this.prompt := this.data["prompt"]
+            if (this.data.HasKey("title")) {
+                this.title := this.data["title"]
             }
             if (this.data.HasKey("filter")) {
                 this.filter := this.data["filter"]
@@ -40,15 +42,13 @@ class PathDialog extends UI.BaseDialog
                     this.startingPath := RTrim(this.startingFolder, "\/") "\" LTrim(this.defaultFilename, "\/")
                 }
             }
-
         } else {
-            this.options := ""
+            this.dialogOptions := ""
             this.startingFolder := userHome
             this.allowUpwardNavigation := true
             this.folderBoundary := ""
-            this.prompt := ""
-            if (this.data.HasKey("options")) {
-                this.options := this.data["options"]
+            if (this.data.HasKey("dialogOptions")) {
+                this.dialogOptions := this.data["dialogOptions"]
             }
             if (this.data.HasKey("startingFolder")) {
                 this.startingFolder := this.data["startingFolder"]
@@ -59,8 +59,8 @@ class PathDialog extends UI.BaseDialog
             if (this.data.HasKey("folderBoundary")) {
                 this.startingFolder := this.data["folderBoundary"]
             }
-            if (this.data.HasKey("prompt")) {
-                this.prompt := this.data["prompt"]
+            if (this.data.HasKey("title")) {
+                this.title := this.data["title"]
             }
             if (this.data.HasKey("filter")) {
                 this.filter := this.data["filter"]
@@ -77,10 +77,12 @@ class PathDialog extends UI.BaseDialog
     prompt()
     {
         if (this.pathType = "file") { ; Case-insensitive '='
-            FileSelectFile, path, % this.options, % this.startingPath, % this.prompt, % this.filter
+            FileSelectFile, path, % this.dialogOptions, % this.startingPath, % this.title, % this.filter
         } else {
-            FileSelectFolder, path, % this.startingPath, % this.options, % this.prompt
+            FileSelectFolder, path, % this.startingPath, % this.dialogOptions, % this.title
         }
-        return path
+        canceled := (ErrorLevel == 0) ? false : true
+        result := {value: path, canceled: canceled}
+        return result
     }
 }

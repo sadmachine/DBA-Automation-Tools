@@ -68,8 +68,15 @@ class PoReceivingGroup extends Config.Group
 {
     define()
     {
-        this.add("fields", new Config.StringField("String Field", Config.Scope.GLOBAL, {required: true}))
-        this.add("stuff", new Config.NumberField("Number Field", Config.Scope.LOCAL, {default: 5, slug: "specialSlug"}))
+        stringField := new Config.StringField("String Field")
+            .setOption("scope", Config.Scope.GLOBAL)
+            .setOption("required", true)
+        numberField := new Config.NumberField("Number Field")
+            .setOption("scope", Config.Scope.LOCAL)
+            .setOption("required", true)
+
+        this.add("fields", stringField)
+        this.add("stuff", numberField)
     }
 }
 
@@ -77,8 +84,18 @@ class VerificationGroup extends Config.Group
 {
     define()
     {
-        this.add("defaults", new Config.DateField("Date Field", Config.Scope.GLOBAL, {required:true}))
-        this.add("main", new Config.PathField("File Field", Config.Scope.LOCAL, {required:true}))
-        this.add("main", new Config.DropdownField("Dropdown Field", ["hey", "hi", "hello"], Config.Scope.LOCAL, {required:true}))
+        dateField := new Config.DateField("Date Field")
+            .setOption("scope", Config.Scope.GLOBAL)
+            .setOption("required", true)
+        fileField := new Config.PathField("Path Field")
+            .setOption("scope", Config.Scope.LOCAL)
+            .setOption("required", true)
+        dropdownField := new Config.DropdownField("Dropdown Field", ["Hey", "Hi", "Hello"])
+            .setOption("scope", Config.Scope.LOCAL)
+            .setOption("required", true)
+
+        this.add("defaults", dateField)
+        this.add("main", fileField)
+        this.add("main", dropdownField)
     }
 }
