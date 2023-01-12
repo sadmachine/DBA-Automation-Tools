@@ -87,7 +87,11 @@ class VerificationGroup extends Config.Group
         dateField := new Config.DateField("Date Field")
             .setOption("scope", Config.Scope.GLOBAL)
             .setOption("required", true)
-        fileField := new Config.PathField("Path Field")
+        fileField := new Config.PathField("File Field")
+            .setOption("scope", Config.Scope.LOCAL)
+            .setOption("required", true)
+        folderField := new Config.PathField("Folder Field")
+            .setOption("pathType", "folder")
             .setOption("scope", Config.Scope.LOCAL)
             .setOption("required", true)
         dropdownField := new Config.DropdownField("Dropdown Field", ["Hey", "Hi", "Hello"])
@@ -96,6 +100,7 @@ class VerificationGroup extends Config.Group
 
         this.add("defaults", dateField)
         this.add("main", fileField)
+        this.add("main", folderField)
         this.add("main", dropdownField)
     }
 }
