@@ -4,6 +4,7 @@ class BaseDialog extends UI.Base
 {
     data := ""
     resultVar := ""
+    controls := []
 
     __New(title, data := "")
     {
@@ -18,7 +19,7 @@ class BaseDialog extends UI.Base
         this.define()
     }
 
-    setControl(controlType, options := "", text := "")
+    addControl(controlType, options := "", text := "")
     {
         resultVarOptionString := "v" this.resultVar
         if (RegExMatch(options, "v[a-zA-Z0-9_]+")) {
@@ -26,14 +27,18 @@ class BaseDialog extends UI.Base
         } else {
             options .= resultVarOptionString
         }
-        this.control := {controlType: controlType, options: options, text: text}
+        this.controls.push({controlType: controlType, options: options, text: text})
     }
 
     prompt()
     {
         Global
         this.ApplyFont()
-        this.Add(this.control["controlType"], this.control["options"], this.control["text"])
+
+        for n, control in this.controls {
+            this.Add(this.control["controlType"], this.control["options"], this.control["text"])
+        }
+
         SaveButton := this.Add("Button", "xm Default", "Save")
         CancelButton := this.Add("Button", "x+10", "Cancel")
         this.bind(SaveButton, "SubmitEvent")

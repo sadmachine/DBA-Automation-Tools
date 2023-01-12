@@ -4,6 +4,6 @@ class StringDialog extends UI.BaseDialog
 {
     define()
     {
-        this.setControl("edit")
+        this.addControl("edit")
     }
 }

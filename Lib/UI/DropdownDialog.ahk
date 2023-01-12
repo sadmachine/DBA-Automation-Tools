@@ -25,6 +25,6 @@ class DropdownDialog extends UI.BaseDialog
         if (!lastChoiceIsSelected) {
             choiceString := RTrim(choiceString, "|")
         }
-        this.setControl("DropDownList", "", choiceString)
+        this.addControl("DropDownList", "", choiceString)
     }
 }

@@ -4,6 +4,6 @@ class DateDialog extends UI.BaseDialog
 {
     define()
     {
-        this.setControl("datetime")
+        this.addControl("datetime")
     }
 }
