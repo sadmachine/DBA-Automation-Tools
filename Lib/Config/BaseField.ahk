@@ -15,9 +15,9 @@ class BaseField
     path[] {
         get {
             if (this.scope == Config.Scope.GLOBAL) {
-                return group.path["global"]
+                return this.group.path["global"]
             } else if (this.scope == Config.Scope.LOCAL) {
-                return group.path["local"]
+                return this.group.path["local"]
             }
             throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
         }
@@ -92,6 +92,17 @@ class BaseField
             }
             IniWrite, % this.default, % this.path, % this.section, % this.slug
         }
+    }
+
+    setOption(option, value)
+    {
+        this[option] := value
+        return this
+    }
+
+    getOption(option)
+    {
+        return this[option]
     }
 
     exists()
