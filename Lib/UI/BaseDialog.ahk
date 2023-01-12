@@ -36,7 +36,7 @@ class BaseDialog extends UI.Base
         this.ApplyFont()
 
         for n, control in this.controls {
-            this.Add(this.control["controlType"], this.control["options"], this.control["text"])
+            this.Add(control["controlType"], control["options"], control["text"])
         }
 
         SaveButton := this.Add("Button", "xm Default", "Save")
