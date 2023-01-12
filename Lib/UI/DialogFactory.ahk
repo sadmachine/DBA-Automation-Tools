@@ -9,14 +9,11 @@ class DialogFactory
         case "date":
             return new UI.DateDialog(configField.label)
         case "dropdown":
-            data := {choices: configField.choices, selected: configField.selected}
-            return new UI.DropdownDialog(configField.label, data)
+            return new UI.DropdownDialog(configField.label, configField)
         case "path":
-            data := configField.dialogData
-            return new UI.PathDialog(configField.label, data)
+            return new UI.PathDialog(configField.label, configField)
         case "number":
-            data := {min: configField.min, max: configField.max}
-            return new UI.NumberDialog(configField.label, data)
+            return new UI.NumberDialog(configField.label, configField)
         case "string":
             return new UI.StringDialog(configField.label)
         }
