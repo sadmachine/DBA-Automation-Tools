@@ -15,7 +15,8 @@ class DialogFactory
             data := configField.dialogData
             return new UI.PathDialog(configField.label, data)
         case "number":
-            return new UI.NumberDialog(configField.label)
+            data := {min: configField.min, max: configField.max}
+            return new UI.NumberDialog(configField.label, data)
         case "string":
             return new UI.StringDialog(configField.label)
         }
