@@ -48,6 +48,15 @@ class BaseField
         }
     }
 
+    __Get(key)
+    {
+        if (this.hasKey(key)) {
+            return this[key]
+        } else if (this.options.hasKey(key)) {
+            return this.options[key]
+        }
+    }
+
     addTo(guiId, options := "")
     {
         global
