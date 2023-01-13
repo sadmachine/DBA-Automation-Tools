@@ -114,6 +114,11 @@ class BaseField
         return this[option]
     }
 
+    get()
+    {
+        return this.value
+    }
+
     exists()
     {
         return FileExist(this.path)
