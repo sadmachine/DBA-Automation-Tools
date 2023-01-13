@@ -73,8 +73,7 @@ class Group
 
     get(fieldSlug)
     {
-
-        this.fields[fieldSlug]
+        this.fields[fieldSlug].get()
     }
 
     load()
@@ -82,6 +81,7 @@ class Group
         for slug, field in this.fields {
             field.load()
         }
+        return this
     }
 
     store()
