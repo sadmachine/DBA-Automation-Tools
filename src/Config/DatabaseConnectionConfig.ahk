@@ -6,6 +6,9 @@ class DatabaseConnectionConfig extends Config
     {
         this.label := "Database Connection"
 
-        this.add("database", new Config.StringField("dsn", Config.Scope.LOCAL))
+        dsnField := new Config.StringField("dsn")
+            .setOption("scope", Config.Scope.LOCAL)
+
+        this.add("database", dsnField)
     }
 }
