@@ -19,13 +19,18 @@ class ConfigTests
             Config.register(new TestOneGroup())
             Config.register(new TestTwoGroup())
             Config.initialize()
-            Config.
         }
 
-        LoadRunsWithoutErrors()
+        LoadRunsWithoutExceptions()
         {
             Config.load("testOne")
             Config.load("testTwo")
+        }
+
+        LoadReturnsTheConfigGroup()
+        {
+            thisGroup := Config.load("testOne")
+            YUnit.assert(thisGroup.slug := "testOne", "thisGroup.slug, Expected: testOne, Actual: " thisGroup.slug)
         }
 
         End()
