@@ -8,6 +8,32 @@ UI.Base.defaultFont := {options: "s12", fontName: ""}
 
 class ConfigTests
 {
+    class GeneralUsage
+    {
+        Begin()
+        {
+            IniRead, globalConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
+            IniRead, localConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            Config.setLocalConfigLocation(localConfigLocation)
+            Config.setGlobalConfigLocation(globalConfigLocation)
+            Config.register(new TestOneGroup())
+            Config.register(new TestTwoGroup())
+            Config.initialize()
+            Config.
+        }
+
+        LoadRunsWithoutErrors()
+        {
+            Config.load("testOne")
+            Config.load("testTwo")
+        }
+
+        End()
+        {
+            Config.clear()
+        }
+    }
+
     class Initialize
     {
         Begin()
@@ -16,8 +42,8 @@ class ConfigTests
             IniRead, localConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
-            Config.register(new PoReceivingGroup())
-            Config.register(new VerificationGroup())
+            Config.register(new TestOneGroup())
+            Config.register(new TestTwoGroup())
         }
 
         CreatesIniFiles()
@@ -36,7 +62,7 @@ class ConfigTests
 
         End()
         {
-            Config._destroyGroupFiles()
+            Config.clear()
         }
     }
 
@@ -62,9 +88,35 @@ class ConfigTests
             Yunit.assert(Config.globalConfigLocation == this.globalConfigLocation, Config.globalConfigLocation " != " this.globalConfigLocation)
         }
     }
+
+    class Fields
+    {
+        Begin()
+        {
+            IniRead, globalConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
+            IniRead, localConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            Config.setLocalConfigLocation(localConfigLocation)
+            Config.setGlobalConfigLocation(globalConfigLocation)
+            Config.register(new TestOneGroup())
+            Config.register(new TestTwoGroup())
+        }
+
+        OptionsAccessibleFromMainObject()
+        {
+            Config.groups["testOne"].fields["stringField"].setOption("test", 123)
+            expectedValue := 123
+            actualValue := config.groups["testOne"].fields["stringField"].test
+            YUnit.assert(actualValue == expectedValue, "Expected: " expectedValue ", Actual: " actualValue)
+        }
+
+        End()
+        {
+            Config.clear()
+        }
+    }
 }
 
-class PoReceivingGroup extends Config.Group
+class TestOneGroup extends Config.Group
 {
     define()
     {
@@ -80,7 +132,7 @@ class PoReceivingGroup extends Config.Group
     }
 }
 
-class VerificationGroup extends Config.Group
+class TestTwoGroup extends Config.Group
 {
     define()
     {
