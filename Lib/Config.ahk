@@ -43,7 +43,7 @@ class Config
                 group.load()
             }
         } else {
-            this.groups[groupSlug].load()
+            return this.groups[groupSlug].load()
         }
     }
 
@@ -54,14 +54,14 @@ class Config
                 group.store()
             }
         } else {
-            this.groups[groupSlug].store()
+            return this.groups[groupSlug].store()
         }
     }
 
     get(identifier)
     {
         token := this._parseIdentifier(identifier)
-        return this.groups[token["group"]].fields[token["field"]].value
+        return this.groups[token["group"]].get(token["field"])
     }
 
     set(identifier, value)
@@ -98,6 +98,12 @@ class Config
         }
     }
 
+    clear()
+    {
+        this._destroyGroupFiles()
+        this._unregisterGroups()
+    }
+
     ; --- "Private"  methods ---------------------------------------------------
 
     _assertConfigDirectoriesExist()
@@ -127,5 +133,11 @@ class Config
                 group._destroyFiles()
             }
         }
+    }
+
+    _unregisterGroups()
+    {
+        this.groups := {}
+        this.groupList := []
     }
 }
