@@ -1,4 +1,4 @@
-class File
+class @File
 {
 
     ; --- Include any subclasses -----------------------------------------------

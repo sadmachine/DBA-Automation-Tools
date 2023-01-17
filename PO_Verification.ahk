@@ -6,7 +6,7 @@ SetWorkingDir, %A_ScriptDir%
 #Include <ADOSQL>
 #Include <Query>
 #include <UI>
-#Include <File>
+#Include <@File>
 #Include <String>
 #Include <DBA>
 #Include <Excel>

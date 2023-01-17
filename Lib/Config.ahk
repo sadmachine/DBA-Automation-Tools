@@ -4,6 +4,8 @@ class Config
 {
     #Include <Config/Scope>
     #include <Config/Group>
+    #Include <Config/File>
+    #Include <Config/Section>
     #include <Config/BaseField>
     #include <Config/DateField>
     #include <Config/DropdownField>
@@ -12,7 +14,7 @@ class Config
     #include <Config/PathField>
 
     static groups := {}
-    static groupList := []
+    static loaded := {}
     static localConfigLocation := A_ScriptDir "/config"
     static globalConfigLocation := ""
     static promptForMissingValues := true
@@ -28,80 +30,77 @@ class Config
         this.globalConfigLocation := globalConfigLocation
     }
 
+    localPath(append)
+    {
+        return RTrim(this.localConfigLocation, "/\") "\" LTrim(append, "/\")
+    }
+
+    globalPath(append)
+    {
+        return RTrim(this.globalConfigLocation, "/\") "\" LTrim(append, "/\")
+    }
+
     register(group)
     {
-        group.path := this.getGroupPath(group.slug)
         this.groups[group.slug] := group
-        this.groupList.push(group)
     }
 
-    load(groupSlug:="")
+    load(identifier)
     {
-        if (groupSlug == "") {
-            this.initialize()
-            for slug, group in this.groups {
-                group.load()
-            }
-        } else {
-            return this.groups[groupSlug].load()
-        }
+        t := this._parseIdentifier(identifier)
+        thisGroup := this.groups[t["group"]].load(t["file"])
+        return thisGroup
     }
 
-    store(groupSlug:="")
+    store(identifier)
     {
-        if (groupSlug == "") {
-            for slug, group in this.groups {
-                group.store()
-            }
-        } else {
-            return this.groups[groupSlug].store()
-        }
+        t := this._parseIdentifier(identifier)
+        return this.groups[t["group"]][t["group"]].store()
     }
 
     get(identifier)
     {
-        token := this._parseIdentifier(identifier)
-        return this.groups[token["group"]].get(token["field"])
-    }
-
-    set(identifier, value)
-    {
-        token := this._parseIdentifier(identifier)
-        return this.groups[token["group"]].fields[token["field"]].value := value
+        t := this._parseIdentifier(identifier)
+        thisFile := ""
+        if (!this.group[t["group"]].files[t["file"]].loaded) {
+            thisFile := this.load(identifier)
+        } else {
+            thisFile := this.groups[t["group"]].files[t["file"]]
+        }
+        if (t["section"] == "" || t["field"] == "") {
+            return thisFile
+        } else {
+            return thisFile.get(t["section"] "." t["field"])
+        }
     }
 
     resetDefault(identifier)
     {
-        token := this._parseIdentifier(identifier)
-        default := this.groups[token["group"]].fields[token["field"]].default
-        return this.groups[token["group"]].fields[token["field"]].value := default
+        throw Exception("NotImplementedException", "Config.resetDefault()", "Not yet implemented")
+        ; token := this._parseIdentifier(identifier)
+        ; default := this.groups[token["group"]].fields[token["field"]].default
+        ; return this.groups[token["group"]].fields[token["field"]].value := default
     }
 
     resetAllDefaults()
     {
-        this.initialize(true)
-    }
-
-    getGroupPath(groupSlug)
-    {
-        return this.baseConfigLocation "/" groupSlug ".ini"
+        throw Exception("NotImplementedException", "Config.resetAllDefaults()", "Not yet implemented")
+        ; this.initialize(true)
     }
 
     initialize(force := false)
     {
         this._assertConfigDirectoriesExist()
 
-        for slug, group in this.groups {
-            if (force || !group.exists()) {
-                group.initialize()
-            }
+        for groupSlug, group in this.groups {
+            group.initialize(force)
         }
     }
 
     clear()
     {
-        this._destroyGroupFiles()
-        this._unregisterGroups()
+        this._deletePaths()
+        this._unregisterAll()
     }
 
     ; --- "Private"  methods ---------------------------------------------------
@@ -120,24 +119,22 @@ class Config
     {
         parts := StrSplit(identifier, ".")
         token := {}
-        token["group"] := parts[1]
-        token["section"] := parts[2]
-        token["field"] := parts[3]
+        token["group"] := (parts.Count() >= 1 ? parts[1] : "")
+        token["file"] := (parts.Count() >= 2 ? parts[2] : "")
+        token["section"] := (parts.Count() >= 3 ? parts[3] : "")
+        token["field"] := (parts.Count() >= 4 ? parts[4] : "")
         return token
     }
 
-    _destroyGroupFiles()
+    _deletePaths()
     {
-        for slug, group in this.groups {
-            if (group.exists()) {
-                group._destroyFiles()
-            }
+        for groupSlug, group in this.groups {
+            group._deletePaths()
         }
     }
 
-    _unregisterGroups()
+    _unregisterAll()
     {
         this.groups := {}
-        this.groupList := []
     }
 }

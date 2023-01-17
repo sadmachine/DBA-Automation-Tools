@@ -3,21 +3,22 @@ class BaseField
 {
     type := ""
     default := ""
-    required := false
+    required := ""
     label := ""
     slug := ""
-    section := ""
     options := []
     value := ""
     oldValue := ""
-    group := ""
+    section := ""
+
+    static defaultRequirementValue := false
 
     path[] {
         get {
             if (this.scope == Config.Scope.GLOBAL) {
-                return this.group.path["global"]
+                return this.section.path["global"]
             } else if (this.scope == Config.Scope.LOCAL) {
-                return this.group.path["local"]
+                return this.section.path["local"]
             }
             throw Exception("InvalidScopeException", "Config.BaseField.path[]", "this.scope = " this.scope)
         }
@@ -34,9 +35,11 @@ class BaseField
             this.scope := scope
         }
 
+        this.required := this.defaultRequirementValue
+
         this.type := type
         this.label := label
-        this.slug := String.toCamelCase(label)
+        this.slug := String.toCamelCase(this.label)
         if (options.HasKey("slug")) {
             this.slug := options["slug"]
         }
@@ -66,7 +69,7 @@ class BaseField
 
     load()
     {
-        IniRead, iniValue, % this.path, % this.section, % this.slug
+        IniRead, iniValue, % this.path, % this.section.slug, % this.slug
         this.value := iniValue
         this.oldValue := iniValue
     }
@@ -75,31 +78,31 @@ class BaseField
     {
         if (this.hasChanged() || force)
         {
-            IniWrite, % this.value, % this.path, % this.section, % this.slug
+            IniWrite, % this.value, % this.path, % this.section.slug, % this.slug
         }
     }
 
     resetDefault()
     {
-        IniWrite, % this.default, % this.path, % this.section, % this.slug
+        IniWrite, % this.default, % this.path, % this.section.slug, % this.slug
     }
 
-    initialize()
+    initialize(force := false)
     {
-        local file := ""
-        if (!this.exists()) {
-            file := FileOpen(this.path, "w")
-            if (!IsObject(file)) {
+        local fileObj := ""
+        if (!FileExist(this.path)) {
+            fileObj := FileOpen(this.path, "w")
+            if (!IsObject(fileObj)) {
                 throw Exception("CouldNotCreateFileException", "Config.BaseField.initialize()", "path = " this.path)
             }
-            file.Close()
+            fileObj.Close()
         }
-        IniRead, iniValue, % this.path, % this.section, % this.slug, % Config.UNDEFINED
-        if (iniValue == Config.UNDEFINED) {
-            if (this.required) {
-                throw Exception("RequiredFieldException", "Config.BaseField.initialize()", "path = " this.path "`nsection = " this.section "`nfield = " this.slug)
+
+        if (this._valueIsUndefined()) {
+            if (this.required && this.default == "") {
+                throw Exception("RequiredFieldException", "Config.BaseField.initialize()", "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
             }
-            IniWrite, % this.default, % this.path, % this.section, % this.slug
+            IniWrite, % this.default, % this.path, % this.section.slug, % this.slug
         }
     }
 
@@ -119,13 +122,26 @@ class BaseField
         return this.value
     }
 
+    set(value)
+    {
+        return this.value := value
+    }
+
     exists()
     {
-        return FileExist(this.path)
+        return ( FileExist(this.path) && !this._valueIsUndefined() )
     }
 
     hasChanged()
     {
         return this.value != this.oldValue
+    }
+
+    ; --- "Private"  methods ---------------------------------------------------
+
+    _valueIsUndefined()
+    {
+        IniRead, iniValue, % this.path, % this.section.slug, % this.slug, % Config.UNDEFINED
+        return (iniValue == Config.UNDEFINED)
     }
 }

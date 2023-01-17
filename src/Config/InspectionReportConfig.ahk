@@ -1,5 +1,6 @@
 #Include <Config>
-class InspectionReportConfig extends Config
+
+class InspectionReportGroup extends Config.Group
 {
     define()
     {

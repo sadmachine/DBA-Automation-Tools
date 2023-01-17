@@ -3,7 +3,7 @@ class PathField extends Config.BaseField
 {
     __New(label, pathType := "file", scope := "", options := "")
     {
-        this.pathType := pathType
+        this.pathType := String.toLower(pathType)
 
         base.__New("path", label, scope, options)
     }

@@ -28,7 +28,7 @@ class InspectionReport extends Actions.Base
             filepath := RTrim(destination, "/") "/" inspectionNumber ".xlsx"
             FileCopy, % template, % filepath
 
-            iReport := new Excel(File.getFullPath(filepath))
+            iReport := new Excel(@File.getFullPath(filepath))
 
             iReport.range["C2"].Value := lot.inspectionNumber
             iReport.range["C3"].Value := dateOfGeneration

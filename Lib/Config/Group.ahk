@@ -1,18 +1,17 @@
+; DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+; Config.Group
 class Group
 {
-    scope := ""
-    fields := {}
-    sections := {}
-    sectionList := []
-    fieldList := []
+    files := {}
+    label := ""
     slug := ""
 
     path[key] {
         get {
             if (key == "global") {
-                return Config.globalConfigLocation "\" this.slug ".ini"
+                return Config.globalPath(this.slug)
             } else if (key == "local") {
-                return Config.localConfigLocation "\" this.slug ".ini"
+                return Config.localpath(this.slug)
             }
             throw Exception("InvalidKeyException", "Config.Group.path[]", "'" key "' is not a valid path key.")
         }
@@ -24,98 +23,110 @@ class Group
     __New(slug := -1)
     {
         this.slug := slug
-        if (slug == -1) {
-            className := this.__Class
-            removedGroup := RegExReplace(className, "Group$", "")
-            this.slug := String.toLower(SubStr(removedGroup, 1, 1)) . SubStr(removedGroup, 2)
-        }
+
         this.define()
+
+        if (this.slug == -1 && this.label == "") {
+            className := this.__Class
+            modifiedClassName := RegExReplace(className, "Group$", "")
+            this.slug := String.toLower(SubStr(modifiedClassName, 1, 1)) . SubStr(modifiedClassName, 2)
+        } else {
+            this.slug := String.toCamelCase(this.label)
+        }
     }
 
-    initialize()
+    initialize(force := false)
     {
         local dialog, result
-        for n, field in this.fields {
-            field.group := this
-            try {
-                field.initialize()
-            } catch e {
-                if (e.message != "RequiredFieldException") {
-                    throw e
-                }
-                if (Config.promptForMissingValues) {
-                    MsgBox % "The config field '" field.label "' is required, but missing a value. Please supply a value to continue."
-                    dialog := UI.DialogFactory.fromConfigField(field)
-                    result := dialog.prompt()
-                    if (result.canceled) {
-                        throw e
-                    }
-                    field.value := result.value
-                    field.store(true)
-                    MsgBox % "Check value exists"
-                }
+        for fileSlug, file in this.files {
+            if (!this._pathsExist()) {
+                FileCreateDir, % this.path["global"]
+                FileCreateDir, % this.path["local"]
             }
+            file.group := this
+            file.initialize(force)
         }
     }
 
-    add(section, field)
+    add(fileObj)
     {
-        field.section := section
-        if (this.sections[section] == "") {
-            this.sections[section] := []
-        }
-        this.sections[section].push(field)
-        this.fields[field.slug] := field
-        this.fieldList.push(field)
-        this.sectionList.push(section)
-        return field
-    }
-
-    get(fieldSlug)
-    {
-        this.fields[fieldSlug].get()
-    }
-
-    load()
-    {
-        for slug, field in this.fields {
-            field.load()
-        }
+        this.files[fileObj.slug] := fileObj
         return this
     }
 
-    store()
+    get(identifier)
     {
-        for slug, field in this.fields {
-            field.store()
-        }
+        t := this._parseIdentifier(identifier)
+        return this.files[t["file"]].get(t["section"] "." t["field"])
+    }
+
+    load(fileSlug)
+    {
+        return this.files[fileSlug].load()
+    }
+
+    store(fileSlug)
+    {
+        this.files[fileSlug].store()
     }
 
     setDefaults()
     {
-        for slug, field in this.fields {
-            field.resetDefault()
-        }
+        throw Exception("NotImplementedException", "Config.Collection.setDefaults()", "Not yet implemented")
     }
 
     exists()
     {
-        for n, field in this.fields {
-            if (!field.exists()) {
+        if (!this._pathsExist()) {
+            return false
+        }
+
+        for fileSlug, file in this.files {
+            if (!file.exists()) {
                 return false
             }
         }
+
         return true
     }
 
     ; --- "Private"  methods ---------------------------------------------------
 
-    _destroyFiles()
+    _pathsExist()
     {
-        for n, field in this.fields {
-            if (field.exists()) {
-                FileDelete, % field.path
+        globalPathExists := InStr(FileExist(this.path["global"]), "D")
+        localPathExists := InStr(FileExist(this.path["local"]), "D")
+        if (!globalPathExists || !localPathExists) {
+            return false
+        }
+
+        return true
+    }
+
+    _deletePaths()
+    {
+        for fileSlug, file in this.files {
+            if (file.exists()) {
+                file._deletePaths()
             }
         }
+
+        globalPathExists := InStr(FileExist(this.path["global"]), "D")
+        localPathExists := InStr(FileExist(this.path["local"]), "D")
+        if (globalPathExists) {
+            FileRemoveDir, % this.path["global"], 1
+        }
+        if (localPathExists) {
+            FileRemoveDir, % this.path["local"], 1
+        }
+    }
+
+    _parseIdentifier(identifier)
+    {
+        parts := StrSplit(identifier, ".")
+        token := {}
+        token["file"] := parts[1]
+        token["section"] := parts[2]
+        token["field"] := parts[3]
     }
 }

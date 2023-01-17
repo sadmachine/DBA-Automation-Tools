@@ -1,5 +1,5 @@
 #Include <Config>
-#Include <File>
+#Include <@File>
 #Include <IniConfig>
 
 MOCK_COMPILED := true
@@ -12,25 +12,25 @@ class ConfigTests
     {
         Begin()
         {
-            IniRead, globalConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-            IniRead, localConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            IniRead, globalConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
+            IniRead, localConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
-            Config.register(new TestOneGroup())
-            Config.register(new TestTwoGroup())
+            Config.register(new ContactGroup())
+            Config.register(new CustomerGroup())
             Config.initialize()
         }
 
         LoadRunsWithoutExceptions()
         {
-            Config.load("testOne")
-            Config.load("testTwo")
+            Config.load("contact.list")
+            Config.load("customers.list")
         }
 
         LoadReturnsTheConfigGroup()
         {
-            thisGroup := Config.load("testOne")
-            YUnit.assert(thisGroup.slug := "testOne", "thisGroup.slug, Expected: testOne, Actual: " thisGroup.slug)
+            thisGroup := Config.load("contact.list")
+            YUnit.assert(thisGroup.slug := "list", "thisGroup.slug, Expected: list, Actual: " thisGroup.slug)
         }
 
         End()
@@ -43,24 +43,49 @@ class ConfigTests
     {
         Begin()
         {
-            IniRead, globalConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-            IniRead, localConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            IniRead, globalConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
+            IniRead, localConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
-            Config.register(new TestOneGroup())
-            Config.register(new TestTwoGroup())
         }
 
         CreatesIniFiles()
         {
-            Config._destroyGroupFiles()
+            Config.register(new ContactGroup())
+            Config.register(new CustomerGroup())
+            Config._deletePaths()
+            ; Reinitialize files
+            Config.initialize()
+            MsgBox % "Check files"
+
+            ; Make sure the .ini files DO exist
+            for groupSlug, group in Config.groups {
+                for fileSlug, file in group.files {
+                    for sectionSlug, section in file.sections {
+                        for fieldSlug, field in section.fields {
+                            Yunit.assert(field.exists(), "Field '" field.slug "' did not exist in file '" field.path "'")
+                        }
+                    }
+                }
+            }
+        }
+
+        RequiredFieldsPromptForValue()
+        {
+            Config.register(new RequiredContactGroup())
+            Config.register(new RequiredCustomerGroup())
+            Config._deletePaths()
             ; Reinitialize files
             Config.initialize()
 
             ; Make sure the .ini files DO exist
-            for slug, group in Config.groups {
-                for slug, field in group.fields {
-                    Yunit.assert(field.exists(), "Field '" field.slug "' did not exist in file '" field.path "'")
+            for groupSlug, group in Config.groups {
+                for fileSlug, file in group.files {
+                    for sectionSlug, section in file.sections {
+                        for fieldSlug, field in section.fields {
+                            Yunit.assert(field.exists(), "Field '" field.slug "' did not exist in file '" field.path "'")
+                        }
+                    }
                 }
             }
         }
@@ -75,8 +100,8 @@ class ConfigTests
     {
         Begin()
         {
-            IniRead, globalConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-            IniRead, localConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            IniRead, globalConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
+            IniRead, localConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
             this.globalConfigLocation := globalConfigLocation
             this.localConfigLocation := localConfigLocation
         }
@@ -98,19 +123,20 @@ class ConfigTests
     {
         Begin()
         {
-            IniRead, globalConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-            IniRead, localConfigLocation, % File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            IniRead, globalConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
+            IniRead, localConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
-            Config.register(new TestOneGroup())
-            Config.register(new TestTwoGroup())
+            Config.register(new ContactGroup())
+            Config.register(new CustomerGroup())
+            Config.initialize()
         }
 
         OptionsAccessibleFromMainObject()
         {
-            Config.groups["testOne"].fields["stringField"].setOption("test", 123)
             expectedValue := 123
-            actualValue := config.groups["testOne"].fields["stringField"].test
+            Config.groups["contact"].files["list"].sections["entries"].fields["name"].setOption("test", expectedValue)
+            actualValue := Config.groups["contact"].files["list"].sections["entries"].fields["name"].test
             YUnit.assert(actualValue == expectedValue, "Expected: " expectedValue ", Actual: " actualValue)
         }
 
@@ -121,43 +147,131 @@ class ConfigTests
     }
 }
 
-class TestOneGroup extends Config.Group
+class ContactGroup extends Config.Group
 {
     define()
     {
-        stringField := new Config.StringField("String Field")
-            .setOption("scope", Config.Scope.GLOBAL)
-            .setOption("required", true)
-        numberField := new Config.NumberField("Number Field")
-            .setOption("scope", Config.Scope.LOCAL)
-            .setOption("required", true)
+        this.label := "Contact"
 
-        this.add("fields", stringField)
-        this.add("stuff", numberField)
+        listFile := new Config.File("List")
+
+        entriesSection := new Config.Section("Entries")
+            .add(new Config.StringField("Name").setOption("default", "Austin"))
+            .add(new Config.NumberField("Age").setOption("default", "26"))
+
+        historySection := new Config.Section("History")
+            .add(new Config.DateField("Last Contact").setOption("default", "20220101123456"))
+            .add(new Config.PathField("Location", "folder").setOption("default", "C:\Config"))
+
+        listFile.add(entriesSection)
+            .add(historySection)
+
+        this.add(listFile)
     }
 }
 
-class TestTwoGroup extends Config.Group
+class CustomerGroup extends Config.Group
 {
     define()
     {
-        dateField := new Config.DateField("Date Field")
-            .setOption("scope", Config.Scope.GLOBAL)
-            .setOption("required", true)
-        fileField := new Config.PathField("File Field")
-            .setOption("scope", Config.Scope.LOCAL)
-            .setOption("required", true)
-        folderField := new Config.PathField("Folder Field")
-            .setOption("pathType", "folder")
-            .setOption("scope", Config.Scope.LOCAL)
-            .setOption("required", true)
-        dropdownField := new Config.DropdownField("Dropdown Field", ["Hey", "Hi", "Hello"])
-            .setOption("scope", Config.Scope.LOCAL)
-            .setOption("required", true)
+        this.label := "Customers"
 
-        this.add("defaults", dateField)
-        this.add("main", fileField)
-        this.add("main", folderField)
-        this.add("main", dropdownField)
+        listFile := new Config.File("List")
+
+        mainSection := new Config.Section("Main")
+            .add(new Config.DropdownField("Type", ["Good", "Bad", "Ugly"]).setOption("default", "Ugly"))
+            .add(new Config.NumberField("Rating").setOption("min", 1).setOption("max", 5).setOption("default", "3"))
+
+        listFile.add(mainSection)
+
+        this.add(listFile)
+    }
+}
+
+class RequiredContactGroup extends Config.File
+{
+    define()
+    {
+        this.label := "Contact"
+
+        listFile := new Config.File("List")
+
+        entriesSection := new Config.Section("Entries")
+            .add(new Config.StringField("Name").setOption("default", "Austin").setOption("required", true))
+            .add(new Config.NumberField("Age").setOption("default", "26").setOption("required", true))
+
+        historySection := new Config.Section("History")
+            .add(new Config.DateField("Last Contact").setOption("default", "20220101123456").setOption("required", true))
+            .add(new Config.PathField("Location", "folder").setOption("default", "C:\Config").setOption("required", true))
+
+        listFile.add(entriesSection)
+            .add(historySection)
+
+        this.add(listFile)
+    }
+}
+
+class RequiredCustomerGroup extends Config.File
+{
+    define()
+    {
+        this.label := "Customers"
+
+        listFile := new Config.File("List")
+
+        mainSection := new Config.Section("Main")
+            .add(new Config.DropdownField("Type", ["Good", "Bad", "Ugly"]).setOption("default", "Ugly").setOption("required", true))
+            .add(new Config.NumberField("Rating", 1, 5).setOption("default", "3").setOption("required", true))
+
+        listFile.add(mainSection)
+
+        this.add(listFile)
+    }
+}
+
+class ReceivingGroup extends Config.Group
+{
+    define()
+    {
+        this.label := "Receiving"
+
+        this._defineInspectionReportFile()
+        this._defineInspectionNumberFile()
+    }
+
+    _defineInspectionReportFile()
+    {
+        inspectionReportFile := new Config.File("Inspection Report")
+
+        excelColumnMappingSection := new Config.Section("Excel Column Mapping")
+            .add(new Config.StringField("Inspection Form Number"))
+            .add(new Config.StringField("Stelray Material Number"))
+            .add(new Config.StringField("Material Description"))
+            .add(new Config.StringField("Lot Number"))
+            .add(new Config.StringField("PO Number"))
+            .add(new Config.StringField("Vendor Name"))
+            .add(new Config.StringField("Quantity on PO"))
+            .add(new Config.StringField("Quantity Received"))
+
+        fileSection := new Config.Section("File")
+            .add(new Config.PathField("Template", Config.Scope.LOCAL))
+            .add(new Config.PathField("Destination Folder", Config.Scope.LOCAL))
+
+        inspectionReportFile.add(excelColumnMappingSection)
+        inspectionReportFile.add(fileSection)
+
+        this.add(inspectionReportFile)
+    }
+
+    _defineInspectionNumberFile()
+    {
+        inspectionNumberfile := new Config.File("Inspection Number")
+
+        lastSection := new Config.Section("Last")
+            .add(new Config.NumberField("Number"))
+
+        inspectionNumberFile.add(lastSection)
+
+        this.add(inspectionNumberFile)
     }
 }
