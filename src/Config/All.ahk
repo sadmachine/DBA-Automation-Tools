@@ -1,2 +1,2 @@
-#Include %A_ScriptDir%/DatabaseGroup.ahk
-#Include %A_ScriptDir%/ReceivingGroup.ahk
+#Include src/Config/DatabaseGroup.ahk
+#Include src/Config/ReceivingGroup.ahk
