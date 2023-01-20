@@ -9,8 +9,9 @@ class DatabaseGroup extends Config.Group
         connectionFile := new Config.File("Connection")
 
         mainSection := new Config.Section("Main")
-            .add(new Config.StringField("DSN").setOption("scope", Config.Scope.LOCAL))
+        mainSection.add(new Config.StringField("DSN").setOption("scope", Config.Scope.LOCAL))
 
         connectionFile.add(mainSection)
+        this.add(connectionFile)
     }
 }
