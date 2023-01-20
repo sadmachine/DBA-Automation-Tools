@@ -7,7 +7,7 @@ class Required
         if (result.canceled)
         {
             if (throwOnFailure) {
-                throw Exception("InvalidInputException", 0, "You must supply an input to continue.")
+                throw Exception("InvalidInputException", "UI.Required.InputBox()", "You must supply an input to continue.")
             } else {
                 MsgBox % "You must supply an input to continue. Exiting..."
                 ExitApp
@@ -22,7 +22,7 @@ class Required
         if (result.canceled)
         {
             if (throwOnFailure) {
-                throw Exception("InvalidInputException", 0, "You must respond yes or no to continue.")
+                throw Exception("InvalidInputException", "UI.Required.YesNoBox()", "You must respond yes or no to continue.")
             } else {
                 MsgBox % "You must respond yes or no to continue. Exiting..."
                 ExitApp
