@@ -6,6 +6,7 @@ class File
     sections := {}
     slug := ""
     loaded := false
+    hasLock := false
 
     path[key] {
         get {
@@ -48,13 +49,20 @@ class File
     get(identifier)
     {
         t := this._parseIdentifier(identifier)
-        this.sections[t["section"]][t["field"]].get()
+        return this.sections[t["section"]].get(t["field"])
+    }
+
+    set(identifier, value)
+    {
+        t := this._parseIdentifier(identifier)
+        return this.sections[t["section"]].set(t["field"], value)
     }
 
     load()
     {
         for sectionSlug, section in this.sections {
             for fieldSlug, field in section.fields {
+                this.awaitLock(field.path)
                 field.load()
             }
         }
@@ -66,6 +74,7 @@ class File
     {
         for sectionSlug, section in this.sections {
             for fieldSlug, field in section {
+                this.awaitLock(field.path)
                 field.store()
             }
         }
@@ -90,6 +99,50 @@ class File
         return true
     }
 
+    lock(scope := "")
+    {
+        if (this.hasLock) {
+            throw Exception("ExistingLockException", "Config.File.lock()", "Cannot relock a file thats already locked.")
+        }
+        if (scope == "" || scope == Config.Scope.GLOBAL) {
+            if (FileExist(this.path["global"])) {
+                @File.createLock(this.path["global"])
+            }
+        }
+        if (scope == "" || scope == Config.Scope.LOCAL) {
+            if (FileExist(this.path["local"])) {
+                @File.createLock(this.path["local"])
+            }
+        }
+        this.hasLock := true
+    }
+
+    unlock(scope := "")
+    {
+        if (!this.hasLock) {
+            throw Exception("MissingLockException", "Config.File.unlock()", "Cannot unlock a file if you do not own the lock.")
+        }
+
+        if (scope == "" || scope == Config.Scope.GLOBAL) {
+            if (FileExist(this.path["global"])) {
+                @File.freeLock(this.path["global"])
+            }
+        }
+        if (scope == "" || scope == Config.Scope.LOCAL) {
+            if (FileExist(this.path["local"])) {
+                @File.freeLock(this.path["local"])
+            }
+        }
+        this.hasLock := false
+    }
+
+    awaitLock(fieldPath)
+    {
+        while (@File.isLocked(fieldPath) && !this.hasLock) {
+            Sleep 200
+        }
+    }
+
     ; --- "Private"  methods ---------------------------------------------------
 
     _destroyFiles()
@@ -109,5 +162,6 @@ class File
         token := {}
         token["section"] := parts[1]
         token["field"] := parts[2]
+        return token
     }
 }
