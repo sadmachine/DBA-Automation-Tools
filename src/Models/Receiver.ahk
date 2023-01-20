@@ -94,7 +94,7 @@ class Receiver
 
     acquireInspectionNumbers()
     {
-        Config.lock("receiving.inspectionNumber")
+        Config.lock("receiving.inspectionNumber", Config.Scope.GLOBAL)
         inspectionNumberFile := Config.load("receiving.inspectionNumber")
         for n, lot in this.lots {
             nextInspectionNumber := inspectionNumberfile.get("last.number") + 1
