@@ -5,7 +5,10 @@
 **/modules/data/*.csv
 tests/**/*.ini
 tests/*.ini
+dist/**/*.ini
 
+!dist/**/mods.ini
+!dist/**/*.example.ini
 !**/modules/config/*.default.ini
 !dist/**/*.exe
 !*.example.ini
