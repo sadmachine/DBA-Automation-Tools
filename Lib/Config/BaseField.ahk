@@ -53,7 +53,7 @@ class BaseField
 
     __Call(methodName, args*)
     {
-        if (SubStr(methodName, 1, 3) == "set" && !this.hasKey(methodName) & args.length() == 1) {
+        if (SubStr(methodName, 1, 3) == "set" && !this.hasKey(methodName) && args.length() == 1) {
             option := String.toLower(SubStr(methodName, 4))
             value := args[1]
             return this.setOption(option, value)
@@ -129,11 +129,6 @@ class BaseField
     get()
     {
         return this.value
-    }
-
-    set(value)
-    {
-        return this.value := value
     }
 
     exists()

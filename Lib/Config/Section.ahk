@@ -64,7 +64,7 @@ class Section
 
     set(identifier, value)
     {
-        return this.fields[identifier].set(value)
+        return this.fields[identifier].value := value
     }
 
     exists()
