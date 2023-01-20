@@ -1,6 +1,6 @@
 ; DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Views.ReceivingLookupResults
-class PoLookupResults extends UI.Base
+class PoLookupResults extends UI.BaseObj
 {
     __New(controller)
     {
@@ -20,9 +20,9 @@ class PoLookupResults extends UI.Base
         this.Add("Text", "x+10 ys+30 w50 Right", "Part #:")
         this.Add("Edit", "ReadOnly x+5 yp-4 w200", receiver.partNumber)
         this.Add("Text", "xs+8 ys+64 w64 Right", "Quantity:")
-        this.Add("Edit", "ReadOnly x+5 yp-4 w102", receiver.quantities[1])
+        this.Add("Edit", "ReadOnly x+5 yp-4 w102", receiver.lots[1].quantity)
         this.Add("Text", "x+10 ys+64 w50 Right", "Lot #:")
-        this.Add("Edit", "ReadOnly x+5 yp-4 w200", receiver.lotNumbers[1])
+        this.Add("Edit", "ReadOnly x+5 yp-4 w200", receiver.lots[1].lotNumber)
         this.Add("GroupBox", "x8 w340 h236 Section", "Matching Lines:")
         columns := "Line|Part #|Qty|Qty Rcvd"
         columnCount := StrSplit(columns, "|").Count()
