@@ -1,6 +1,6 @@
 ; DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Views.ReceivingLookupResults
-class PoLookupResults extends UI.BaseObj
+class PoLookupResults extends UI.Base
 {
     __New(controller)
     {
