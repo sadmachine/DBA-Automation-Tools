@@ -41,4 +41,50 @@ class @File
         SplitPath, path, , , , , drive
         return drive
     }
+
+    isLocked(path) {
+        fileStatus := FileExist(path)
+        if (InStr("D", fileStatus) || fileStatus == "") {
+            throw Exception("InvalidPathException", "@File.isLocked()", "'" path "' does not exist or is a directory")
+        }
+
+        lockPath := path ".lock"
+        return (FileExist(lockPath) != "")
+    }
+
+    createLock(path, waitPeriod := 200)
+    {
+        fileStatus := FileExist(path)
+        if (InStr("D", fileStatus) || fileStatus == "") {
+            throw Exception("InvalidPathException", "@File.createLock()", "'" path "' does not exist or is a directory")
+        }
+
+        lockPath := path ".lock"
+        if (FileExist(lockPath)) {
+            if (waitPeriod == -1) {
+                return false
+            }
+            while (FileExist(lockPath)) {
+                Sleep % waitPeriod
+            }
+        }
+        FileAppend,, % lockPath
+        return true
+    }
+
+    freeLock(path)
+    {
+        fileStatus := FileExist(path)
+        if (InStr("D", fileStatus) || fileStatus == "") {
+            throw Exception("InvalidPathException", "@File.freeLock()", "'" path "' does not exist or is a directory")
+        }
+
+        lockPath := path ".lock"
+        if (!FileExist(lockPath)) {
+            return false
+        }
+
+        FileDelete, % lockPath
+        return true
+    }
 }
