@@ -43,10 +43,11 @@ class PoLookupResults extends UI.Base
         }
 
         ; Make sure first row is selected
+        LV_Modify(1, "Focuse")
         LV_Modify(1, "Select")
 
         this.Show()
-        this.FocusControl(ResultsListView)
+        ; this.FocusControl(ResultsListView)
         this.WaitClose()
     }
 

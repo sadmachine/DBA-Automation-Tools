@@ -5,6 +5,7 @@ class ReceivingTransaction extends Actions.Base
     __New(ByRef receiver)
     {
         Global
+        local location
         this.receiver := receiver
         indexNumber := this._getLineNumberIndex()
 
@@ -20,7 +21,14 @@ class ReceivingTransaction extends Actions.Base
                 this.receiver.lots["current"].quantity := UI.Required.InputBox("Enter Quantity")
             }
             this.receiver.lots["current"].hasCert := UI.Required.YesNoBox("Does lot # " this.receiver.lots["current"].lotNumber " have certification?")
-            this.receiver.lots["current"].location := UI.Required.InputBox("Enter Location")
+            location := UI.Required.InputBox("Enter Location")
+
+            while (!Models.DBA.Locations.contains(location)) {
+                UI.MsgBox("The location entered '" location "' was not valid. Please enter another.")
+                location := UI.Required.InputBox("Enter Location")
+            }
+
+            this.receiver.lots["current"].location := location
 
             this._receiveLotInfo()
 
@@ -28,6 +36,13 @@ class ReceivingTransaction extends Actions.Base
         }
 
         this._saveAndExitPoScreen()
+    }
+
+    _validLocation()
+    {
+        local results
+        results := new Models.DBA.Locations(this.receiver.lots["current"].location)
+        return results.exists
     }
 
     _getLineNumberIndex()
