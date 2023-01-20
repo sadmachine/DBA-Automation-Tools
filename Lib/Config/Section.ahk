@@ -37,7 +37,7 @@ class Section
                     throw e
                 }
                 if (Config.promptForMissingValues) {
-                    MsgBox % "The config field '" field.label "' is required, but missing a value. Please supply a value to continue."
+                    UI.MsgBox("The config field '" field.label "' is required, but missing a value. Please supply a value to continue.", "Required Field Missing")
                     dialog := UI.DialogFactory.fromConfigField(field)
                     result := dialog.prompt()
                     if (result.canceled) {
@@ -45,7 +45,6 @@ class Section
                     }
                     field.value := result.value
                     field.store(true)
-                    MsgBox % "Check value exists"
                 }
             }
         }
