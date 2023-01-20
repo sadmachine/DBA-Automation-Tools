@@ -13,7 +13,7 @@ class Receiving extends Controllers.Base
     {
         UI.Base.defaultFont := {options: "s12", fontName: ""}
         UI.Base.defaultMargin := 5
-        UI.MsgBoxObj.defaultWidth := 300
+        UI.MsgBoxObj.defaultWidth := 320
     }
 
     bootstrapReceiver(receiver)
@@ -42,13 +42,36 @@ class Receiving extends Controllers.Base
 
     newReceivingTransaction()
     {
-        this.receiver.lineReceived := this.receivingResults.getSelectedLine()
-        receiver := this.receiver
+        try {
 
-        new Actions.ReceivingTransaction(receiver)
-        receiver.acquireInspectionNumbers()
-        new Actions.ReceivingLog(receiver)
-        new Actions.InspectionReport(receiver)
-        this.receiver := receiver
+            this.receiver.lineReceived := this.receivingResults.getSelectedLine()
+            receiver := this.receiver
+
+            new Actions.ReceivingTransaction(receiver)
+            receiver.acquireInspectionNumbers()
+            new Actions.ReceivingLog(receiver)
+            new Actions.InspectionReport(receiver)
+            this.receiver := receiver
+        } catch e {
+            DisplayCompiledError(e)
+            this.cleanup()
+            ExitApp
+        }
+    }
+
+    cleanup()
+    {
+        if (WinExist(DBA.Windows.POReceipts)) {
+            WinClose, % DBA.Windows.POReceipts
+            WinWaitActive, % "Warning", % "&Lose Changes", 1
+            if (!ErrorLevel) {
+                Send % "!L"
+                WinWaitClose, % "Warning",,1
+                if (ErrorLevel) {
+                    WinKill, % "Warning"
+                    WinKill, % DBA.Windows.POReceipts
+                }
+            }
+        }
     }
 }

@@ -86,6 +86,13 @@ class ActiveRecord
         }
     }
 
+    contains(criteria)
+    {
+        local results
+        results := new Models.DBA.locations(criteria)
+        return results.exists
+    }
+
     build(where := "", orderBy := "", limit := "", page := "")
     {
         return DBA.RecordSet.build(this.tableName, where, orderBy, limit, page)
