@@ -42,6 +42,7 @@ class Receiving extends Controllers.Base
     newReceivingTransaction()
     {
         this.receiver.lineReceived := this.receivingResults.getSelectedLine()
+        this.receiver.acquireInspectionNumbers()
         receiver := this.receiver
 
         new Actions.ReceivingTransaction(receiver)

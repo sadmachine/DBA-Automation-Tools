@@ -4,8 +4,7 @@ class ReceivingLog extends Actions.Base
 {
     __New(ByRef receiver)
     {
-        config := new IniConfig("po_verification")
-        filepath := A_ScriptDir "/data/Receiving Log.csv"
+        filepath := Config.get("receiving.log.file.location")
         exists := FileExist(filepath)
         logfile := FileOpen(filepath, "a")
         if (!exists)
@@ -16,9 +15,7 @@ class ReceivingLog extends Actions.Base
         {
             FormatTime, datestr,, MM/dd/yyyy
             FormatTime, timestr,, HH:mm:ss
-            inspectionNumber := config.get("inspection.last_number") + 1
             logfile.WriteLine(datestr "," timestr "," receiver.poNumber "," receiver.partNumber "," lot.lotNumber "," lot.quantity "," lot.location "," lot.inspectionNumber "," lot.hasCert)
-            config.set("inspection.last_number", inspectionNumber)
         }
         logfile.Close()
     }

@@ -12,33 +12,28 @@ class InspectionReport extends Actions.Base
         this.progressGui.SetStartValue(1)
         this.progressGui.Show()
 
-        inspectionConfig := new IniConfig("inspection_report")
-        if (!inspectionConfig.exists()) {
-            inspectionConfig.copyFrom("inspection_report.default.ini")
-        }
-        template := inspectionConfig.get("file.template")
-        fields := inspectionConfig.getSection("fields")
-        destination := inspectionConfig.get("file.destination")
+        inspectionReportConfig := Config.load("receiving.inspectionReport")
+        template := inspectionReportConfig.get("file.template")
+        destination := inspectionReportConfig.get("file.destination")
+        inspectionFolder := RTrim(destination, "/") "/" inspectionNumber
         FormatTime, dateOfGeneration,, ShortDate
 
         for n, lot in receiver.lots {
-            inspectionNumber := (inspectionConfig.get("file.last_num") + 1)
-            lot.inspectionNumber := inspectionNumber
-            inspectionConfig.set("file.last_num", inspectionNumber)
-            filepath := RTrim(destination, "/") "/" inspectionNumber ".xlsx"
+            FileCreateDir, % inspectionFolder
+            filepath := inspectionFolder "/" inspectionNumber " - Inspection Report.xlsx"
             FileCopy, % template, % filepath
 
             iReport := new Excel(@File.getFullPath(filepath))
 
-            iReport.range["C2"].Value := lot.inspectionNumber
-            iReport.range["C3"].Value := dateOfGeneration
-            iReport.range["C4"].Value := receiver.partNumber
-            iReport.range["C5"].Value := receiver.partDescription
-            iReport.range["C6"].Value := lot.lotNumber
-            iReport.range["H3"].Value := receiver.poNumber
-            iReport.range["H4"].Value := receiver.supplier
-            iReport.range["C10"].Value := receiver.lineQuantity
-            iReport.range["H10"].Value := lot.quantity
+            iReport.range[inspectionReportConfig.get("excelColumnMapping.inspectionFormNumber")].Value := lot.inspectionNumber
+            iReport.range[inspectionReportconfig.get("excelColumnMapping.reportDate")].Value := dateOfGeneration
+            iReport.range[inspectionReportConfig.get("excelColumnMapping.stelrayMaterialNumber")].Value := receiver.partNumber
+            iReport.range[inspectionReportConfig.get("excelColumnMapping.materialDescription")].Value := receiver.partDescription
+            iReport.range[inspectionReportConfig.get("excelColumnMapping.lotNumber")].Value := lot.lotNumber
+            iReport.range[inspectionReportConfig.get("excelColumnMapping.poNumber")].Value := receiver.poNumber
+            iReport.range[inpsectionReportConfig.get("excelColumnMapping.vendorName")].Value := receiver.supplier
+            iReport.range[inspectionReportConfig.get("excelColumnMapping.quantityOnPo")].Value := receiver.lineQuantity
+            iReport.range[inpsectionReportConfig.get("excelColumnMapping.quantityReceived")].Value := lot.quantity
 
             iReport.Save()
             iReport.Quit()

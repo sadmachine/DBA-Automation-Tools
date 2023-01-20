@@ -33,6 +33,30 @@ class ConfigTests
             YUnit.assert(thisGroup.slug := "list", "thisGroup.slug, Expected: list, Actual: " thisGroup.slug)
         }
 
+        LoadThenGetReturnsCorrectValue()
+        {
+            expectedValue := 26
+            actualValue := Config.load("contact.list").get("entries.age")
+            YUnit.assert(expectedValue == actualValue, "contact.list.entries.age should be equal to " expectedValue " but found " actualValue)
+        }
+
+        LockCreatesLockFile()
+        {
+            Config.lock("contact.list", Config.Scope.GLOBAL)
+
+            MsgBox % "Check"
+            fileObj := Config.groups["contact"].files["list"]
+            if (FileExist(fileObj.path["global"])) {
+                globalIsLocked := @File.isLocked(fileObj.path["global"])
+                YUnit.assert(globalIsLocked, "Global path for contact.list should be locked, but isnt.'")
+            }
+            if (FileExist(fileObj.path["local"])) {
+                localIsLocked := @File.isLocked(fileObj.path["local"])
+                YUnit.assert(localIsLocked, "Local path for contact.list should be locked, but isnt.'")
+            }
+            Config.unlock("contact.list")
+        }
+
         End()
         {
             Config.clear()
@@ -156,12 +180,12 @@ class ContactGroup extends Config.Group
         listFile := new Config.File("List")
 
         entriesSection := new Config.Section("Entries")
-            .add(new Config.StringField("Name").setOption("default", "Austin"))
-            .add(new Config.NumberField("Age").setOption("default", "26"))
+        entriesSection.add(new Config.StringField("Name").setDefault("Austin"))
+        entriesSection.add(new Config.NumberField("Age").setDefault("26"))
 
         historySection := new Config.Section("History")
-            .add(new Config.DateField("Last Contact").setOption("default", "20220101123456"))
-            .add(new Config.PathField("Location", "folder").setOption("default", "C:\Config"))
+        historySection.add(new Config.DateField("Last Contact").setOption("default", "20220101123456"))
+        historySection.add(new Config.PathField("Location", "folder").setOption("default", "C:\Config"))
 
         listFile.add(entriesSection)
             .add(historySection)

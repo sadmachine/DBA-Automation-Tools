@@ -92,6 +92,19 @@ class Receiver
         }
     }
 
+    acquireInspectionNumbers()
+    {
+        Config.lock("receiving.inspectionNumber")
+        inspectionNumberFile := Config.load("receiving.inspectionNumber")
+        for n, lot in this.lots {
+            nextInspectionNumber := inspectionNumberfile.get("last.number") + 1
+            this.lots[n].inspectionNumber := nextInspectionNumber
+            inspectionNumberFile.set("last.number", nextInspectionNumber)
+        }
+        inspectionNumberFile.store()
+        Config.unlock("receiving.inspectionNumber")
+    }
+
     _buildLineInfo()
     {
         this.receivedLine := Models.DBA.podetl.build("line='" this.lineReceived "' AND ponum='" this.poNumber "' AND reference='" this.partNumber "'")[1]
