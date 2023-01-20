@@ -52,6 +52,18 @@ class Config
         return thisGroup
     }
 
+    lock(identifier, scope := "")
+    {
+        t := this._parseIdentifier(identifier)
+        return this.groups[t["group"]].files[t["file"]].lock(scope)
+    }
+
+    unlock(identifier, scope := "")
+    {
+        t := this._parseIdentifier(identifier)
+        return this.groups[t["group"]].files[t["file"]].unlock(scope)
+    }
+
     store(identifier)
     {
         t := this._parseIdentifier(identifier)
@@ -67,10 +79,12 @@ class Config
         } else {
             thisFile := this.groups[t["group"]].files[t["file"]]
         }
-        if (t["section"] == "" || t["field"] == "") {
-            return thisFile
-        } else {
+        if (t["section"] != "" && t["field"] == "") {
+            return thisFile.section[t["section"]]
+        } else if (t["section"] != "" & t["field"] != "") {
             return thisFile.get(t["section"] "." t["field"])
+        } else {
+            return thisFile
         }
     }
 
@@ -137,4 +151,9 @@ class Config
     {
         this.groups := {}
     }
+}
+
+@Config(identifier)
+{
+    Config.get(identifier)
 }
