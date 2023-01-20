@@ -19,6 +19,7 @@ class Receiving extends Controllers.Base
     bootstrapReceiver(receiver)
     {
         this.receiver := receiver
+        this.receiver.identification := UI.Required.InputBox("Enter Employee ID #")
         this.receiver.poNumber := UI.Required.InputBox("Enter PO #")
         this.receiver.partNumber := UI.Required.InputBox("Enter Part #")
         this.receiver.lots.push(new Models.LotInfo())
