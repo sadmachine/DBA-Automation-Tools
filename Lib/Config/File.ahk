@@ -73,7 +73,7 @@ class File
     store()
     {
         for sectionSlug, section in this.sections {
-            for fieldSlug, field in section {
+            for fieldSlug, field in section.fields {
                 this.awaitLock(field.path)
                 field.store()
             }
