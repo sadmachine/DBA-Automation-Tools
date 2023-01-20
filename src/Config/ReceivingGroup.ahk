@@ -16,19 +16,19 @@ class ReceivingGroup extends Config.Group
         inspectionReportFile := new Config.File("Inspection Report")
 
         excelColumnMappingSection := new Config.Section("Excel Column Mapping")
-            .add(new Config.StringField("Inspection Form Number").setDefault("C2"))
-            .add(new Config.StringField("Report Date").setDefault("C3"))
-            .add(new Config.StringField("Stelray Material Number").setDefault("C4"))
-            .add(new Config.StringField("Material Description").setDefault("C5"))
-            .add(new Config.StringField("Lot Number").setDefault("C6"))
-            .add(new Config.StringField("PO Number").setDefault("H3"))
-            .add(new Config.StringField("Vendor Name").setDefault("H4"))
-            .add(new Config.StringField("Quantity on PO").setDefault("C10"))
-            .add(new Config.StringField("Quantity Received").setDefault("H10"))
+        excelColumnMappingSection.add(new Config.StringField("Inspection Form Number").setOption("default", "C2"))
+        excelColumnMappingSection.add(new Config.StringField("Report Date").setOption("default", "C3"))
+        excelColumnMappingSection.add(new Config.StringField("Stelray Material Number").setOption("default", "C4"))
+        excelColumnMappingSection.add(new Config.StringField("Material Description").setOption("default", "C5"))
+        excelColumnMappingSection.add(new Config.StringField("Lot Number").setOption("default", "C6"))
+        excelColumnMappingSection.add(new Config.StringField("PO Number").setOption("default", "H3"))
+        excelColumnMappingSection.add(new Config.StringField("Vendor Name").setOption("default", "H4"))
+        excelColumnMappingSection.add(new Config.StringField("Quantity on PO").setOption("default", "C10"))
+        excelColumnMappingSection.add(new Config.StringField("Quantity Received").setOption("default", "H10"))
 
         fileSection := new Config.Section("File")
-            .add(new Config.PathField("Template").setScope(Config.Scope.LOCAL))
-            .add(new Config.PathField("Destination Folder").setScopr(Config.Scope.LOCAL))
+        fileSection.add(new Config.PathField("Template").setScope(Config.Scope.LOCAL))
+        fileSection.add(new Config.PathField("Destination Folder", "folder").setScope(Config.Scope.LOCAL))
 
         inspectionReportFile.add(excelColumnMappingSection)
         inspectionReportFile.add(fileSection)
@@ -41,7 +41,7 @@ class ReceivingGroup extends Config.Group
         logFile := new Config.File("Log")
 
         fileSection := new Config.Section("File")
-            .add(new Config.PathField("Location", Config.Scope.LOCAL))
+        fileSection.add(new Config.PathField("Location").setScope(Config.Scope.LOCAL))
 
         logFile.add(fileSection)
 
@@ -53,7 +53,7 @@ class ReceivingGroup extends Config.Group
         inspectionNumberfile := new Config.File("Inspection Number")
 
         lastSection := new Config.Section("Last")
-            .add(new Config.NumberField("Number"))
+        lastSection.add(new Config.NumberField("Number").setDefault(100000))
 
         inspectionNumberFile.add(lastSection)
 
