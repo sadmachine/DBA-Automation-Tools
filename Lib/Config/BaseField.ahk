@@ -35,7 +35,7 @@ class BaseField
             this.scope := scope
         }
 
-        this.required := this.defaultRequirementValue
+        this.required := Config.BaseField.defaultRequirementValue
 
         this.type := type
         this.label := label
@@ -138,7 +138,7 @@ class BaseField
 
     exists()
     {
-        return ( FileExist(this.path) && !this._valueIsUndefined() )
+        return FileExist(this.path)
     }
 
     hasChanged()
