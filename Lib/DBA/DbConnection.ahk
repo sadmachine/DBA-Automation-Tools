@@ -7,11 +7,17 @@ class DbConnection extends OdbcConnection
     RO := true
     colDelim := "||"
     connectionStr := ""
-    __New(DSN := "DBA NG", UID := "SYSDBA", PWD := "masterkey", colDelim := "")
+    __New(DSN := -1, UID := -1, PWD := -1, colDelim := "")
     {
-        this.DSN := DSN
-        this.UID := UID
-        this.PWD := PWD
+        if (DSN != -1) {
+            this.DSN := DSN
+        }
+        if (UID != -1) {
+            this.UID := UID
+        }
+        if (PWD != -1) {
+            this.PWD := PWD
+        }
 
         if (colDelim != "") {
             this.colDelim := colDelim
