@@ -22,7 +22,7 @@ class MsgBoxObj extends UI.Base
         }
         else
         {
-            return base.__New(prompt, options)
+            return base.__New(title, options)
         }
     }
 
