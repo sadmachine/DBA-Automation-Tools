@@ -37,7 +37,8 @@ class Section
                     throw e
                 }
                 if (Config.promptForMissingValues) {
-                    UI.MsgBox("The config field '" field.label "' is required, but missing a value. Please supply a value to continue.", "Required Field Missing")
+                    fullFieldIdentifier := this.file.group.label "." this.file.label "." this.label "." field.label
+                    UI.MsgBox("The config field '" fullFieldIdentifier "' is required, but missing a value. Please supply a value to continue.", "Required Field Missing")
                     dialog := UI.DialogFactory.fromConfigField(field)
                     result := dialog.prompt()
                     if (result.canceled) {
