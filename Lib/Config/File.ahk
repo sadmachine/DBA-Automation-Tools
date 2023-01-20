@@ -49,7 +49,17 @@ class File
     get(identifier)
     {
         t := this._parseIdentifier(identifier)
-        return this.sections[t["section"]].get(t["field"])
+        if (t["section"] == "") {
+            throw Exception("MissingSectionException", "Config.File.get()", "You must supply a section handle.")
+        }
+        if (!this.sections.hasKey(t["section"])) {
+            throw Exception("InvalidSectionException", "Config.File.get()", "The section handle supplied '" t["section"] "' is invalid.")
+        }
+        if (t["field"] == "") {
+            return this.sections[t["section"]]
+        } else {
+            return this.sections[t["section"]].get(t["field"])
+        }
     }
 
     set(identifier, value)
@@ -160,8 +170,14 @@ class File
     {
         parts := StrSplit(identifier, ".")
         token := {}
-        token["section"] := parts[1]
-        token["field"] := parts[2]
+        token["section"] := ""
+        token["field"] := ""
+        if (parts.Count() >= 1) {
+            token["section"] := parts[1]
+        }
+        if (parts.Count() >= 2) {
+            token["field"] := parts[2]
+        }
         return token
     }
 }
