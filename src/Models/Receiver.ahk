@@ -40,7 +40,7 @@ class Receiver
     lots[index := "", key := ""]
     {
         get {
-            if (index == "" and key == "") {
+            if (index == "" && key == "") {
                 return this._lots
             }
             lot := ""
@@ -98,11 +98,11 @@ class Receiver
         inspectionNumberFile := Config.load("receiving.inspectionNumber")
         for n, lot in this.lots {
             nextInspectionNumber := inspectionNumberfile.get("last.number") + 1
-            this.lots[n].inspectionNumber := nextInspectionNumber
+            lot.inspectionNumber := nextInspectionNumber
             inspectionNumberFile.set("last.number", nextInspectionNumber)
         }
         inspectionNumberFile.store()
-        Config.unlock("receiving.inspectionNumber")
+        Config.unlock("receiving.inspectionNumber", Config.Scope.GLOBAL)
     }
 
     _buildLineInfo()
