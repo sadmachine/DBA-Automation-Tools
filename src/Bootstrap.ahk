@@ -13,7 +13,6 @@
 #Include src/Actions.ahk
 #Include src/Config/All.ahk
 
-DBA.DbConnection.DSN := Config.get("database.connection.main.dsn")
 UI.Base.defaultFont := {options: "S12", fontName: ""}
 Config.BaseField.defaultRequirementValue := true
 
@@ -24,3 +23,5 @@ Config.setGlobalConfigLocation(globalConfigLocation)
 Config.register(new DatabaseGroup())
 Config.register(new ReceivingGroup())
 Config.initialize()
+
+DBA.DbConnection.DSN := Config.get("database.connection.main.dsn")

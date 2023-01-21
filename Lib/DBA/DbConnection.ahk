@@ -1,10 +1,10 @@
 ; DBA.DbConnection
 class DbConnection extends OdbcConnection
 {
-    DSN := "DBA NG"
-    UID := "SYSDBA"
-    PWD := "masterkey"
-    RO := true
+    static DSN := "DBA NG"
+    static UID := "SYSDBA"
+    static PWD := "masterkey"
+    static RO := true
     colDelim := "||"
     connectionStr := ""
     __New(DSN := -1, UID := -1, PWD := -1, colDelim := "")
