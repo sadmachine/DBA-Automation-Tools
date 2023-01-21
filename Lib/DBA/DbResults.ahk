@@ -10,7 +10,7 @@ class DbResults
         local header, index, row
         if (ADOSQL_LastError)
         {
-            throw Exception("QueryException", "DBA.DbResults.__New()", "Query error:`n" ADOSQL_LastError)
+            throw Exception("QueryException", A_ThisFunc, "Query error:`n" ADOSQL_LastError)
         }
 
         this.delim := colDelim

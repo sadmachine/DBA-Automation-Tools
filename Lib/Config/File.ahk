@@ -15,7 +15,7 @@ class File
             } else if (key == "local") {
                 return Config.localpath(this.group.slug "\" this.slug ".ini")
             }
-            throw Exception("InvalidKeyException", "Config.File.path[]", "'" key "' is not a valid path key.")
+            throw Exception("InvalidKeyException", A_ThisFunc, "'" key "' is not a valid path key.")
         }
         set {
             return value
@@ -50,10 +50,10 @@ class File
     {
         t := this._parseIdentifier(identifier)
         if (t["section"] == "") {
-            throw Exception("MissingSectionException", "Config.File.get()", "You must supply a section handle.")
+            throw Exception("MissingSectionException", A_ThisFunc, "You must supply a section handle.")
         }
         if (!this.sections.hasKey(t["section"])) {
-            throw Exception("InvalidSectionException", "Config.File.get()", "The section handle supplied '" t["section"] "' is invalid.")
+            throw Exception("InvalidSectionException", A_ThisFunc, "The section handle supplied '" t["section"] "' is invalid.")
         }
         if (t["field"] == "") {
             return this.sections[t["section"]]
@@ -112,7 +112,7 @@ class File
     lock(scope := "")
     {
         if (this.hasLock) {
-            throw Exception("ExistingLockException", "Config.File.lock()", "Cannot relock a file thats already locked.")
+            throw Exception("ExistingLockException", A_ThisFunc, "Cannot relock a file thats already locked.")
         }
         if (scope == "" || scope == Config.Scope.GLOBAL) {
             if (FileExist(this.path["global"])) {
@@ -130,7 +130,7 @@ class File
     unlock(scope := "")
     {
         if (!this.hasLock) {
-            throw Exception("MissingLockException", "Config.File.unlock()", "Cannot unlock a file if you do not own the lock.")
+            throw Exception("MissingLockException", A_ThisFunc, "Cannot unlock a file if you do not own the lock.")
         }
 
         if (scope == "" || scope == Config.Scope.GLOBAL) {

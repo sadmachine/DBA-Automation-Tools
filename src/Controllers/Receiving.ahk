@@ -19,6 +19,7 @@ class Receiving extends Controllers.Base
     bootstrapReceiver(receiver)
     {
         GLOBAL DEBUG_MODE
+        DEBUG_MODE := true
         this.receiver := receiver
         this.receiver.identification := UI.Required.InputBox("Enter Employee ID #")
         this.receiver.poNumber := UI.Required.InputBox("Enter PO #")
@@ -40,9 +41,9 @@ class Receiving extends Controllers.Base
                 throw e
             }
             if (DEBUG_MODE) {
-                UI.MsgBox(e.extra, "PO Criteria is Invalid")
-            } else {
                 DisplayCompiledError(e)
+            } else {
+                UI.MsgBox(e.extra, "PO Criteria is Invalid")
             }
             ExitApp
         }

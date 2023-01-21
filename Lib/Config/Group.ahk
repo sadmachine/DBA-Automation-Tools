@@ -13,7 +13,7 @@ class Group
             } else if (key == "local") {
                 return Config.localpath(this.slug)
             }
-            throw Exception("InvalidKeyException", "Config.Group.path[]", "'" key "' is not a valid path key.")
+            throw Exception("InvalidKeyException", A_ThisFunc, "'" key "' is not a valid path key.")
         }
         set {
             return value
@@ -72,7 +72,7 @@ class Group
 
     setDefaults()
     {
-        throw Exception("NotImplementedException", "Config.Collection.setDefaults()", "Not yet implemented")
+        throw Exception("NotImplementedException", A_ThisFunc, "Not yet implemented")
     }
 
     exists()

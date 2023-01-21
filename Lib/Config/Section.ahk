@@ -10,7 +10,7 @@ class Section
     path[key] {
         get {
             if (!InStr("global local", key)) {
-                throw Exception("InvalidKeyException", "Config.File.path[]", "'" key "' is not a valid path key.")
+                throw Exception("InvalidKeyException", A_ThisFunc, "'" key "' is not a valid path key.")
             }
             return this.file.path[key]
         }

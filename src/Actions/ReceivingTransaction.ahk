@@ -9,7 +9,7 @@ class ReceivingTransaction extends Actions.Base
         this.receiver := receiver
         indexNumber := this._getLineNumberIndex()
 
-        this._preparePoScreen(indexNumber)
+        this._preparePoWindow(indexNumber)
 
         loopAgain := true
         while (loopAgain)
@@ -35,7 +35,7 @@ class ReceivingTransaction extends Actions.Base
             loopAgain := (UI.YesNoBox("Add another lot/qty?").value == "Yes")
         }
 
-        this._saveAndExitPoScreen()
+        this._saveAndExitPoWindow()
     }
 
     _validLocation()
@@ -59,14 +59,14 @@ class ReceivingTransaction extends Actions.Base
         }
     }
 
-    _preparePoScreen(indexNumber)
+    _preparePoWindow(indexNumber)
     {
         global
         WinActivate, % DBA.Windows.Main
         WinWaitActive, % DBA.Windows.Main,, 5
         if ErrorLevel
         {
-            MsgBox % "Main window never became active"
+            throw Exception("WindowException", A_ThisFunc, "Main DBA window never bexame active (waited 5 seconds).")
             ExitApp
         }
 
@@ -74,7 +74,7 @@ class ReceivingTransaction extends Actions.Base
         WinWaitActive, % DBA.Windows.POReceiptLookup,, 5
         if ErrorLevel
         {
-            MsgBox % "PO Receipt Lookup never became active"
+            throw Exception("WindowException", A_ThisFunc, "PO Receipt Lookup window never bexame active (waited 5 seconds).")
             ExitApp
         }
 
@@ -85,7 +85,7 @@ class ReceivingTransaction extends Actions.Base
         WinWaitActive, % DBA.Windows.POReceipts,, 5
         if ErrorLevel
         {
-            MsgBox % "PO Receipts never became active"
+            throw Exception("WindowException", A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
             ExitApp
         }
 
@@ -100,14 +100,14 @@ class ReceivingTransaction extends Actions.Base
         Send {Tab}
     }
 
-    _saveAndExitPoScreen()
+    _saveAndExitPoWindow()
     {
         global
         WinActivate, % DBA.Windows.POReceipts
         WinWaitActive, % DBA.Windows.POReceipts,, 5
         if ErrorLevel
         {
-            MsgBox % "PO Receipts never became active, exiting"
+            throw Exception("WindowException", A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
             ExitApp
         }
         Sleep 100
@@ -118,6 +118,7 @@ class ReceivingTransaction extends Actions.Base
         WinWaitClose, % DBA.Windows.POReceipts,, 5
         if ErrorLevel
         {
+            throw Exception("WindowException", A_ThisFunc, "PO Receipts window never closed (waited 5 seconds).")
             MsgBox % "PO Receipts never closed, exiting"
             ExitApp
         }
@@ -130,6 +131,7 @@ class ReceivingTransaction extends Actions.Base
         WinWaitActive, % DBA.Windows.POReceipts,, 5
         if ErrorLevel
         {
+            throw Exception("WindowException", A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
             MsgBox % "PO Receipts never became active"
         }
         ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
