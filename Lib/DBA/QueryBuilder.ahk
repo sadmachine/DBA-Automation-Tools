@@ -47,7 +47,17 @@ class QueryBuilder
 
     Where(conditions)
     {
-        this._conditions := conditions
+        this._conditions := ""
+        if (IsObject(conditions)) {
+            for field, value in conditions {
+                if (A_Index != 1) {
+                    this._conditions .= "AND "
+                }
+                this._conditions .= field "'" value "' "
+            }
+        } else {
+            this._conditions := conditions
+        }
         return this
     }
 
@@ -102,6 +112,11 @@ class QueryBuilder
 
     Run()
     {
-        return this.connection.query(this._buildQuery())
+        Global DEBUG_MODE
+        query := this._buildQuery()
+        if (DEBUG_MODE) {
+            UI.MsgBox(query)
+        }
+        return this.connection.query(query)
     }
 }
