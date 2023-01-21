@@ -28,10 +28,19 @@ class Receiving extends Controllers.Base
 
         this.receiver.buildRelated()
 
-        this.receiver.assertPoExists()
-        this.receiver.assertPoIsUnique()
-        this.receiver.assertPoHasCorrectStatus()
-        this.receiver.assertPoHasPartNumber()
+        try {
+            this.receiver.assertPoExists()
+            this.receiver.assertPoIsUnique()
+            this.receiver.assertPoHasCorrectStatus()
+            this.receiver.assertPoHasPartNumber()
+            this.receiver.assertPoHasCorrectQty()
+        } catch e {
+            if (e.message != "AssertionException") {
+                throw e
+            }
+            UI.MsgBox(e.extra, "PO Criteria is Invalid")
+            ExitApp
+        }
     }
 
     displayReceivingResults()
