@@ -23,7 +23,7 @@ class ReceivingTransaction extends Actions.Base
             this.receiver.lots["current"].hasCert := UI.Required.YesNoBox("Does lot # " this.receiver.lots["current"].lotNumber " have certification?")
             location := UI.Required.InputBox("Enter Location")
 
-            while (!Models.DBA.Locations.contains(location)) {
+            while (!Models.DBA.Locations.hasOne(location)) {
                 UI.MsgBox("The location entered '" location "' was not valid. Please enter another.")
                 location := UI.Required.InputBox("Enter Location")
             }
@@ -67,6 +67,7 @@ class ReceivingTransaction extends Actions.Base
         if ErrorLevel
         {
             MsgBox % "Main window never became active"
+            ExitApp
         }
 
         Send {Alt Down}pR{Alt Up}
@@ -74,6 +75,7 @@ class ReceivingTransaction extends Actions.Base
         if ErrorLevel
         {
             MsgBox % "PO Receipt Lookup never became active"
+            ExitApp
         }
 
         Send % this.receiver.poNumber
@@ -84,6 +86,7 @@ class ReceivingTransaction extends Actions.Base
         if ErrorLevel
         {
             MsgBox % "PO Receipts never became active"
+            ExitApp
         }
 
         position := indexNumber - 1

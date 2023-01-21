@@ -86,11 +86,18 @@ class ActiveRecord
         }
     }
 
-    contains(criteria)
+    hasOne(criteria)
     {
         local results
         results := new Models.DBA.locations(criteria)
         return results.exists
+    }
+
+    has(criteria)
+    {
+        local results
+        results := this.build(criteria)
+        return (results.Count() > 0)
     }
 
     build(where := "", orderBy := "", limit := "", page := "")
