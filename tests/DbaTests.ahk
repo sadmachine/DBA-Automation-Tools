@@ -36,7 +36,18 @@ class DbaTests
             SimpleWhereCriteria_ReturnsArrayWithRecords()
             {
                 local records := Models.DBA.porder.build("ponum = 'PO114' AND status = 'Closed'")
-                YUnit.assert(records.Count() != 0, "records.Count() is " records.Count())
+                YUnit.assert(records.Count() == 1, "records.Count() should be 1, but is " records.Count())
+            }
+
+            ObjectArrayCriteria_ReturnsArrayWithRecords()
+            {
+                local poNum, status, records
+                DEBUG_MODE := true
+                poNum := "PO114"
+                status := "Closed"
+                records := Models.DBA.porder.build({"ponum =": poNum, "status =": status})
+                YUnit.assert(records.Count() == 1, "records.Count() should be 1, but is " records.Count())
+                DEBUG_MODE := false
             }
 
             OrderByCriteria_ReturnsArrayWithRecordsInOrder()
