@@ -109,7 +109,7 @@ class BaseField
 
         if (this._valueIsUndefined()) {
             if (this.required && this.default == "") {
-                throw new @.RequiredFieldException(A_ThisFunc, this, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
+                throw new @.RequiredFieldException(A_ThisFunc, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
             }
             IniWrite, % this.default, % this.path, % this.section.slug, % this.slug
         }
