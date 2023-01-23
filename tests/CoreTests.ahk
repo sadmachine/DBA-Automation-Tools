@@ -136,29 +136,29 @@ class CoreTests
         }
     }
 
-    class IsSubclassOf
+    class SubclassOf
     {
         FooIsSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := @.isSubclassOf(new Foo.Bar.Baz(), "Foo")
+            subclassOf := @.subclassOf(new Foo.Bar.Baz(), "Foo")
             YUnit.assert(subclassOf == true, "Found: " subclassOf)
         }
 
         BarIsSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := @.isSubclassOf(new Foo.Bar.Baz(), "Bar")
+            subclassOf := @.subclassOf(new Foo.Bar.Baz(), "Bar")
             YUnit.assert(subclassOf == true, "Found: " subclassOf)
         }
 
         BazIsNotSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := @.isSubclassOf(new Foo.Bar.Baz(), "Baz")
+            subclassOf := @.subclassOf(new Foo.Bar.Baz(), "Baz")
             YUnit.assert(subclassOf != true, "Found: " subclassOf)
         }
 
         PrimitiveReturnsFalse()
         {
-            subclassOf := @.isSubclassOf(1, "Baz")
+            subclassOf := @.subclassOf(1, "Baz")
             YUnit.assert(subclassOf != true, "Found: " subclassOf)
         }
     }
