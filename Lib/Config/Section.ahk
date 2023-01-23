@@ -33,7 +33,8 @@ class Section
             try {
                 field.initialize(force)
             } catch e {
-                if (@.typeOf(e) != "RequiredFieldException") {
+                MsgBox % @.typeOf(e)
+                if (e.what != "RequiredFieldException") {
                     throw e
                 }
                 if (Config.promptForMissingValues) {

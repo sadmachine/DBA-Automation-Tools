@@ -37,14 +37,10 @@ class Receiving extends Controllers.Base
             this.receiver.assertPoHasPartNumber()
             this.receiver.assertPoHasCorrectQty()
         } catch e {
-            if (e.message != "AssertionException") {
+            if (e.what != "ValidationException") {
                 throw e
             }
-            if (DEBUG_MODE) {
-                DisplayCompiledError(e)
-            } else {
-                UI.MsgBox(e.extra, "PO Criteria is Invalid")
-            }
+            @.debugException(e, "PO Criteria is Invalid")
             ExitApp
         }
     }
