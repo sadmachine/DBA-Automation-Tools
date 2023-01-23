@@ -65,7 +65,7 @@ class Base
             local thisHwnd := this.hwnd
             if (key == "") {
                 if (!IsObject(value)) {
-                    throw new @.ProgrammerException(A_ThisFunc, "You must supply an object(keys: options, fontName) if you're setting font without a key.")
+                    throw new @.ProgrammerException(A_ThisFunc, "You must supply an object (keys: options, fontName) if you're setting font without a key.")
                 }
                 this._font := value
                 Gui, %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
