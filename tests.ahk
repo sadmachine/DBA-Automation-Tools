@@ -9,8 +9,9 @@
 ;#Include %A_ScriptDir%/tests/TestSuite.ahk
 #Include %A_ScriptDir%/tests/DbaTests.ahk
 #Include %A_ScriptDir%/tests/ConfigTests.ahk
+#Include %A_ScriptDir%/tests/CoreTests.ahk
 
 ; Run tests suites here
 ; e.g.
 ;Yunit.Use(YunitWindow).Test(TestSuite)
-Yunit.Use(YunitWindow).Test(ConfigTests, DbaTests)
+Yunit.Use(YunitWindow).Test(CoreTests)
