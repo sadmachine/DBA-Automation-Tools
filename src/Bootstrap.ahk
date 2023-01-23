@@ -7,12 +7,13 @@
 #Include <String>
 #Include <DBA>
 #Include <Excel>
-#Include <CompiledErrors>
 #Include src/Models.ahk
 #Include src/Controllers.ahk
 #Include src/Views.ahk
 #Include src/Actions.ahk
 #Include src/Config/All.ahk
+
+@.registerExceptionHandler()
 
 UI.Base.defaultFont := {options: "S12", fontName: ""}
 Config.BaseField.defaultRequirementValue := true
