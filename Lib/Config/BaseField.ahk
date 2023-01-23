@@ -20,7 +20,7 @@ class BaseField
             } else if (this.scope == Config.Scope.LOCAL) {
                 return this.section.path["local"]
             }
-            throw Exception("InvalidScopeException", A_ThisFunc, "this.scope = " this.scope)
+            throw new @.ProgrammerException(A_ThisFunc, "Invalid scope, this.scope = " this.scope)
         }
     }
 
@@ -102,14 +102,14 @@ class BaseField
         if (!FileExist(this.path)) {
             fileObj := FileOpen(this.path, "w")
             if (!IsObject(fileObj)) {
-                throw Exception("CouldNotCreateFileException", A_ThisFunc, "path = " this.path)
+                throw new @.FilesystemException(A_ThisFunc, "Could not create file, path = " this.path)
             }
             fileObj.Close()
         }
 
         if (this._valueIsUndefined()) {
             if (this.required && this.default == "") {
-                throw Exception("RequiredFieldException", A_ThisFunc, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
+                throw new @.RequiredFieldException(A_ThisFunc, this, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
             }
             IniWrite, % this.default, % this.path, % this.section.slug, % this.slug
         }

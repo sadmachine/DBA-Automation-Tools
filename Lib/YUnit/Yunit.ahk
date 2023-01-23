@@ -9,12 +9,12 @@ class Yunit
             this.Modules := Modules
         }
     }
-    
+
     Use(Modules*)
     {
         return new this.Tester(Modules)
     }
-    
+
     Test(classes*) ; static method
     {
         instance := new this("")
@@ -31,13 +31,13 @@ class Yunit
             instance.TestClass(obj, cls)
         }
     }
-    
+
     Update(Category, Test, Result)
     {
         for k,module in this.Modules
             module.Update(Category, Test, Result)
     }
-    
+
     TestClass(results, cls)
     {
         environment := new cls() ; calls __New
@@ -47,8 +47,8 @@ class Yunit
             {
                 if (k = "Begin") or (k = "End") or (k = "__New") or (k == "__Delete")
                     continue
-                if ObjHasKey(cls,"Begin") 
-                && IsFunc(cls.Begin)
+                if ObjHasKey(cls,"Begin")
+                    && IsFunc(cls.Begin)
                     environment.Begin()
                 result := 0
                 try
@@ -60,33 +60,33 @@ class Yunit
                 catch error
                 {
                     if !ObjHasKey(environment, "ExpectedException")
-                    || !this.CompareValues(environment.ExpectedException, error)
+                        || !this.CompareValues(environment.ExpectedException, error)
                         result := error
                 }
                 results[k] := result
                 ObjDelete(environment, "ExpectedException")
                 this.Update(cls.__class, k, results[k])
                 if ObjHasKey(cls,"End")
-                && IsFunc(cls.End)
+                    && IsFunc(cls.End)
                     environment.End()
             }
             else if IsObject(v)
-            && ObjHasKey(v, "__class") ;category
+                && ObjHasKey(v, "__class") ;category
                 this.classes.InsertAt(++this.current, v)
         }
     }
-    
+
     Assert(Value, params*)
     {
         Message := (params[1] = "") ? "FAIL" : params[1]
         if (!Value)
             throw Exception(Message, -1)
     }
-    
+
     CompareValues(v1, v2)
-    {   ; Support for simple exceptions. May need to be extended in the future.
+    { ; Support for simple exceptions. May need to be extended in the future.
         if !IsObject(v1) || !IsObject(v2)
-            return v1 = v2   ; obey StringCaseSense
+            return v1 = v2 ; obey StringCaseSense
         if !ObjHasKey(v1, "Message") || !ObjHasKey(v2, "Message")
             return False
         return v1.Message = v2.Message

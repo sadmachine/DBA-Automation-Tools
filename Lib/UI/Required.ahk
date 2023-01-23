@@ -7,7 +7,7 @@ class Required
         if (result.canceled)
         {
             if (throwOnFailure) {
-                throw Exception("InvalidInputException", A_ThisFunc, "You must supply an input to continue.")
+                throw new @.ValidationException(A_ThisFunc, "You must supply an input to continue.")
             } else {
                 MsgBox % "You must supply an input to continue. Exiting..."
                 ExitApp
@@ -22,7 +22,7 @@ class Required
         if (result.canceled)
         {
             if (throwOnFailure) {
-                throw Exception("InvalidInputException", A_ThisFunc, "You must respond yes or no to continue.")
+                throw new @.ValidationException(A_ThisFunc, "You must respond yes or no to continue.")
             } else {
                 MsgBox % "You must respond yes or no to continue. Exiting..."
                 ExitApp

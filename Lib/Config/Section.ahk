@@ -10,7 +10,7 @@ class Section
     path[key] {
         get {
             if (!InStr("global local", key)) {
-                throw Exception("InvalidKeyException", A_ThisFunc, "'" key "' is not a valid path key.")
+                throw new @.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
             }
             return this.file.path[key]
         }
@@ -33,7 +33,7 @@ class Section
             try {
                 field.initialize(force)
             } catch e {
-                if (e.message != "RequiredFieldException") {
+                if (@.typeOf(e) != "RequiredFieldException") {
                     throw e
                 }
                 if (Config.promptForMissingValues) {

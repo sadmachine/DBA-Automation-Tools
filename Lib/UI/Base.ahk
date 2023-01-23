@@ -59,20 +59,20 @@ class Base
             if (font.HasKey(key)) {
                 return font[key]
             }
-            throw Exception("Invalid key for font options: " key)
+            throw new @.ProgrammerException(A_ThisFunc, "Invalid key for font options: " key)
         }
         set {
             local thisHwnd := this.hwnd
             if (key == "") {
                 if (!IsObject(value)) {
-                    throw Exception("You must supply an object(keys: options, fontName) if you're setting font without a key.")
+                    throw new @.ProgrammerException(A_ThisFunc, "You must supply an object(keys: options, fontName) if you're setting font without a key.")
                 }
                 this._font := value
                 Gui, %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
                 return this._font
             }
             if (!InStr("options fontName", key)) {
-                throw Exception("Key supplied for Font should be either ""options"" or ""fontName""")
+                throw new @.ProgrammerException(A_ThisFunc, "Key supplied for Font should be either ""options"" or ""fontName""")
             }
 
             this._font[key] := value
@@ -122,18 +122,18 @@ class Base
             if (color.HasKey(key)) {
                 return color[key]
             }
-            throw Exception("Invalid key for color: " key)
+            throw new @.ProgrammerException(A_ThisFunc, "Invalid key for color: " key)
         }
         set {
             local thisHwnd := this.hwnd
             if (key == "") {
                 if (!IsObject(value)) {
-                    throw Exception("You must supply an object(keys: windowColor, controlColor) if you're setting color without a key.")
+                    throw new @.ProgrammerException(A_ThisFunc, "You must supply an object (keys: windowColor, controlColor) if you're setting color without a key.")
                 }
                 this._color := value
             }
             if (!InStr("windowColor controlColor", key)) {
-                throw Exception("Key supplied for color should be either ""windowColor"" or ""controlColor""")
+                throw new @.ProgrammerException(A_ThisFunc, "Key supplied for color should be either ""windowColor"" or ""controlColor""")
             }
 
             this._color[key] := value

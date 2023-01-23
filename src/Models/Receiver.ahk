@@ -50,7 +50,7 @@ class Receiver
             } else if (index == "current") {
                 lot := this._lots[this._lots.MaxIndex()]
             } else {
-                throw Exception("InvalidIndexException", A_ThisFunc, key:=" key "]")
+                throw new @.ProgrammerException(A_ThisFunc, "key:=" key "]")
             }
             if (key == "" || !lot.HasKey(key))
                 return lot
@@ -67,21 +67,21 @@ class Receiver
     assertPoExists()
     {
         if (this.related["porder"].Count() == 0) {
-            throw Exception("AssertionException", A_ThisFunc, "No POs matched the PO # entered ('" this.poNumber "').")
+            throw new @.ValidationException(A_ThisFunc, "No POs matched the PO # entered ('" this.poNumber "').")
         }
     }
 
     assertPoIsUnique()
     {
         if (this.related["porder"].Count() > 1) {
-            throw Exception("AssertionException", A_ThisFunc, this must be an error.")
+            throw new @.ValidationException(A_ThisFunc, "this must be an error.")
         }
     }
 
     assertPoHasCorrectStatus()
     {
         if (!InStr("Open,Printed", this.related["porder"][1].status)) {
-            throw Exception("AssertionException", A_ThisFunc, "The PO '" this.poNumber "' has status '" this.related["porder"][1].status "'. Status should be either 'Open' or 'Printed'")
+            throw new @.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' has status '" this.related["porder"][1].status "'. Status should be either 'Open' or 'Printed'")
         }
     }
 
@@ -89,14 +89,14 @@ class Receiver
     {
         GLOBAL DEBUG_MODE
         if (!Models.DBA.podetl.has({"ponum=": this.poNumber, "reference=": this.partNumber})) {
-            throw Exception("AssertionException", A_ThisFunc, "The PO '" this.poNumber "' did not contain a line with the specified part number '" this.partNumber "'.")
+            throw new @.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' did not contain a line with the specified part number '" this.partNumber "'.")
         }
     }
 
     assertPoHasCorrectQty()
     {
         if (!Models.DBA.podetl.has({"ponum=": this.poNumber, "reference=": this.partNumber, "(qty*1.1)-qtyr>=": this.lots["current"].quantity})) {
-            throw Exception("AssertionException", A_ThisFunc, "The qty '" this.lots["current"].quantity "' was more than allowed by any line numbers on PO '" this.poNumber "'.")
+            throw new @.ValidationException(A_ThisFunc, "The qty '" this.lots["current"].quantity "' was more than allowed by any line numbers on PO '" this.poNumber "'.")
         }
     }
 
@@ -118,7 +118,7 @@ class Receiver
         this.receivedLine := Models.DBA.podetl.build("line='" this.lineReceived "' AND ponum='" this.poNumber "' AND reference='" this.partNumber "'")[1]
         this.receivedItem := new Models.DBA.item(this.receivedLine.reference)
         if (!this.receivedLine.exists || !this.receivedItem.exists) {
-            throw Exception("DatabaseException", A_ThisFunc, "Could not pull in additional receiving details from PO")
+            throw new @.NoRowsException(A_ThisFunc, "Could not pull in additional receiving details from PO")
         }
         this.supplier := this.receivedItem.supplier
         this.partDescription := this.receivedItem.descript

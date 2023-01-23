@@ -45,7 +45,7 @@ class @File
     isLocked(path) {
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
-            throw Exception("InvalidPathException", A_ThisFunc, "'" path "' does not exist or is a directory")
+            throw new @.NotFoundException(A_ThisFunc, "'" path "' does not exist or is a directory")
         }
 
         lockPath := path ".lock"
@@ -56,7 +56,7 @@ class @File
     {
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
-            throw Exception("InvalidPathException", A_ThisFunc, "'" path "' does not exist or is a directory")
+            throw new @.NotFoundException(A_ThisFunc, "'" path "' does not exist or is a directory")
         }
 
         lockPath := path ".lock"
@@ -76,7 +76,7 @@ class @File
     {
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
-            throw Exception("InvalidPathException", A_ThisFunc, "'" path "' does not exist or is a directory")
+            throw new @.NotFoundException(A_ThisFunc, "'" path "' does not exist or is a directory")
         }
 
         lockPath := path ".lock"

@@ -51,7 +51,7 @@ class Results
     {
         if (ADOSQL_LastError)
         {
-            throw Exception("Query error:`n" ADOSQL_LastError)
+            throw new @.SQLException(A_ThisFunc, "Query error:`n" ADOSQL_LastError)
         }
         this.delim := colDelim
         this.rawAnswer := queryOutput

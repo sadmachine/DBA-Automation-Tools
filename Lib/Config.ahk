@@ -90,7 +90,7 @@ class Config
 
     resetDefault(identifier)
     {
-        throw Exception("NotImplementedException", A_ThisFunc, "Not yet implemented")
+        throw new @.ProgrammerException(A_ThisFunc, "Not yet implemented")
         ; token := this._parseIdentifier(identifier)
         ; default := this.groups[token["group"]].fields[token["field"]].default
         ; return this.groups[token["group"]].fields[token["field"]].value := default
@@ -98,7 +98,7 @@ class Config
 
     resetAllDefaults()
     {
-        throw Exception("NotImplementedException", A_ThisFunc, "Not yet implemented")
+        throw new @.ProgrammerException(A_ThisFunc, "Not yet implemented")
         ; this.initialize(true)
     }
 
@@ -122,10 +122,10 @@ class Config
     _assertConfigDirectoriesExist()
     {
         if (FileExist(this.globalConfigLocation) != "D") {
-            throw Exception("InvalidDirectoryException", A_ThisFunc, "The directory " this.globalConfigLocation " does not exist.")
+            throw new @.FilesystemException(A_ThisFunc, "The directory " this.globalConfigLocation " does not exist.")
         }
         if (FileExist(this.localConfigLocation) != "D") {
-            throw Exception("InvalidDirectoryException", A_ThisFunc, "The directory " this.localConfigLocation " does not exist.")
+            throw new @.FilesystemException(A_ThisFunc, "The directory " this.localConfigLocation " does not exist.")
         }
     }
 
