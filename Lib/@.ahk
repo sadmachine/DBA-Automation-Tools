@@ -56,7 +56,7 @@ Class @
         }
     }
 
-    isSubclassOf(instance, className)
+    subclassOf(instance, className)
     {
         ; If our instance is a primitive type, return false
         if (@.isPrimitiveType(instance)) {
@@ -78,5 +78,37 @@ Class @
             base := base.base
         }
         return false
+    }
+
+    debugException(e, fallbackMessage)
+    {
+        GLOBAL DEBUG_MODE
+        if (DEBUG_MODE) {
+            if (!@.handleException(e)) {
+                throw e
+            }
+        } else {
+            UI.MsgBox(fallbackMessage, )
+        }
+    }
+
+    handleException(e)
+    {
+        if (@.subclassOf(e, "@")) {
+            output := ""
+            output .= "Exception: `t" e.what "`n"
+            output .= "Where: `t`t" e.where "`n`n"
+            output .= "Details: `n" e.message
+            UI.MsgBox(output, "Exception Occurred")
+            return 1
+        }
+        return 0
+    }
+
+    registerExceptionHandler()
+    {
+        Global
+        handleExceptionFunc := ObjBindMethod(this, "handleException")
+        OnError(handleExceptionFunc, 1)
     }
 }
