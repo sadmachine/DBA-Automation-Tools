@@ -18,8 +18,6 @@ class Receiving extends Controllers.Base
 
     bootstrapReceiver(receiver)
     {
-        GLOBAL DEBUG_MODE
-        DEBUG_MODE := true
         this.receiver := receiver
         this.receiver.identification := UI.Required.InputBox("Enter Employee ID #")
         this.receiver.poNumber := UI.Required.InputBox("Enter PO #")
@@ -40,7 +38,7 @@ class Receiving extends Controllers.Base
             if (e.what != "ValidationException") {
                 throw e
             }
-            @.debugException(e, "PO Criteria is Invalid")
+            @.friendlyException(e, "PO Criteria is Invalid")
             ExitApp
         }
     }
@@ -64,7 +62,7 @@ class Receiving extends Controllers.Base
             new Actions.InspectionReport(receiver)
             this.receiver := receiver
         } catch e {
-            DisplayCompiledError(e)
+            @.friendlyException(e)
             this.cleanup()
             ExitApp
         }
