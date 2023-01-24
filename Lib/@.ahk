@@ -108,7 +108,7 @@ Class @
     registerExceptionHandler()
     {
         Global
-        handleExceptionFunc := ObjBindMethod(this, "handleException")
+        handleExceptionFunc := ObjBindMethod(@, "handleException")
         OnError(handleExceptionFunc, 1)
     }
 }
