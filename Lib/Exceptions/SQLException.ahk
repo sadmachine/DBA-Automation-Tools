@@ -4,6 +4,6 @@ class SQLException extends @.UnexpectedException
 {
     __New(where, message)
     {
-        return base.__New("SQLException", where, message)
+        base.__New("SQLException", where, message)
     }
 }

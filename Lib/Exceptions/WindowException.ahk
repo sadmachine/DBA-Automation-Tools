@@ -4,6 +4,6 @@ class WindowException extends @.UnexpectedException
 {
     __New(where, message)
     {
-        return base.__New("WindowException", where, message)
+        base.__New("WindowException", where, message)
     }
 }

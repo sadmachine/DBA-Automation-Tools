@@ -4,6 +4,6 @@ class RequiredFieldException extends @.ExpectedException
 {
     __New(where, message)
     {
-        return base.__New("RequiredFieldException", where, message)
+        base.__New("RequiredFieldException", where, message)
     }
 }

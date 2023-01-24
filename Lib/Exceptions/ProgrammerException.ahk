@@ -4,6 +4,6 @@ class ProgrammerException extends @.UnexpectedException
 {
     __New(where, message)
     {
-        return base.__New("ProgrammerException", where, message)
+        base.__New("ProgrammerException", where, message)
     }
 }

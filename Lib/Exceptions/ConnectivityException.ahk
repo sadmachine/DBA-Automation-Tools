@@ -4,6 +4,6 @@ class ConnectivityException extends @.UnexpectedException
 {
     __New(where, message)
     {
-        return base.__New("ConnectivityException", where, message)
+        base.__New("ConnectivityException", where, message)
     }
 }

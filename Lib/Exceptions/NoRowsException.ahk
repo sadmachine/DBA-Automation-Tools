@@ -4,6 +4,6 @@ class NoRowsException extends @.ExpectedException
 {
     __New(where, message)
     {
-        return base.__New("NoRowsException", "Expected", where, message)
+        base.__New("NoRowsException", "Expected", where, message)
     }
 }

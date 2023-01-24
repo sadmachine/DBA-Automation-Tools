@@ -4,6 +4,6 @@ class FilesystemException extends @.UnexpectedException
 {
     __New(where, message)
     {
-        return base.__New("FilesystemException", where, message)
+        base.__New("FilesystemException", where, message)
     }
 }

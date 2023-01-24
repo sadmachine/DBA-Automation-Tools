@@ -4,6 +4,6 @@ class UnexpectedException extends @.BaseException
 {
     __New(what, where, message)
     {
-        return base.__New("Unexpected", what, where, message)
+        base.__New("Unexpected", what, where, message)
     }
 }
