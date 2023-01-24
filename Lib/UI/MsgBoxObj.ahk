@@ -16,13 +16,10 @@ class MsgBoxObj extends UI.Base
     __New(prompt, title := "", options := "-SysMenu +AlwaysOnTop")
     {
         this.promptMsg := prompt
-        if (this.title == "")
-        {
-            return base.__New(prompt, options)
-        }
-        else
-        {
-            return base.__New(title, options)
+        if (title == "") {
+            base.__New(prompt, options)
+        } else {
+            base.__New(title, options)
         }
     }
 
