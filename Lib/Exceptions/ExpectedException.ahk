@@ -4,6 +4,6 @@ class ExpectedException extends @.BaseException
 {
     __New(what, where, message)
     {
-        return base.__New("Expected", what, where, message)
+        base.__New("Expected", what, where, message)
     }
 }
