@@ -80,15 +80,15 @@ Class @
         return false
     }
 
-    debugException(e, fallbackMessage)
+    friendlyException(e)
     {
         GLOBAL DEBUG_MODE
-        if (DEBUG_MODE) {
+        if (DEBUG_MODE || @.inheritsFrom(e, "UnexpectedException")) {
             if (!@.handleException(e)) {
                 throw e
             }
         } else {
-            UI.MsgBox(fallbackMessage, )
+            UI.MsgBox(e.message, e.what)
         }
     }
 
