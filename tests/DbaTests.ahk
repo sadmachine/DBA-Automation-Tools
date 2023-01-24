@@ -42,12 +42,10 @@ class DbaTests
             ObjectArrayCriteria_ReturnsArrayWithRecords()
             {
                 local poNum, status, records
-                DEBUG_MODE := true
                 poNum := "PO114"
                 status := "Closed"
                 records := Models.DBA.porder.build({"ponum =": poNum, "status =": status})
                 YUnit.assert(records.Count() == 1, "records.Count() should be 1, but is " records.Count())
-                DEBUG_MODE := false
             }
 
             OrderByCriteria_ReturnsArrayWithRecordsInOrder()

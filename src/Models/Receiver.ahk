@@ -87,7 +87,6 @@ class Receiver
 
     assertPoHasPartNumber()
     {
-        GLOBAL DEBUG_MODE
         if (!Models.DBA.podetl.has({"ponum=": this.poNumber, "reference=": this.partNumber})) {
             throw new @.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' did not contain a line with the specified part number '" this.partNumber "'.")
         }
