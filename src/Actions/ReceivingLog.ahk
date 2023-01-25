@@ -19,4 +19,15 @@ class ReceivingLog extends Actions.Base
         }
         logfile.Close()
     }
+
+    Test()
+    {
+        local xlReceivingLog
+        xlReceivingLog := new Excel("C:\Users\austi\Documents\Pragmatic\Projects\DBA-Automation-Tools\dist\modules\data\templates\Incoming Inspection Log.xlsx", true)
+        lastRow := xl.Columns("A").End(xlUp := -4162).Row								;first empty row
+        emptyRow := lastRow.Offset(1,0)
+        lastRow.Copy()
+        emptyRow.PasteSpecial(xlPasteFormats := -4122)
+        emptyRow.Cells(1, 1).Value := test
+    }
 }
