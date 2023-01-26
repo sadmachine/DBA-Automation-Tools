@@ -40,9 +40,20 @@ class ReceivingGroup extends Config.Group
     {
         logFile := new Config.File("Log")
 
+        excelColumnMappingSection := new Config.Section("Excel Column Mapping")
+        excelColumnMappingSection.add(new Config.StringField("Date").setOption("default", "A"))
+        excelColumnMappingSection.add(new Config.StringField("Stelray Item Number").setOption("default", "B"))
+        excelColumnMappingSection.add(new Config.StringField("Material Description").setOption("default", "C"))
+        excelColumnMappingSection.add(new Config.StringField("Material Lot Number").setOption("default", "D"))
+        excelColumnMappingSection.add(new Config.StringField("Lot Quantity").setOption("default", "E"))
+        excelColumnMappingSection.add(new Config.StringField("PO Number").setOption("default", "F"))
+        excelColumnMappingSection.add(new Config.StringField("Inspection Number").setOption("default", "G"))
+        excelColumnMappingSection.add(new Config.StringField("C of C Received").setOption("default", "H"))
+
         fileSection := new Config.Section("File")
         fileSection.add(new Config.PathField("Location").setScope(Config.Scope.LOCAL))
 
+        logFile.add(excelColumnMappingSection)
         logFile.add(fileSection)
 
         this.add(logfile)
