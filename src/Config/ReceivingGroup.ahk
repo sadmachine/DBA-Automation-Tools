@@ -8,6 +8,7 @@ class ReceivingGroup extends Config.Group
 
         this._defineInspectionReportFile()
         this._defineLogFile()
+        this._defineLabelsFile()
         this._defineInspectionNumberFile()
     }
 
@@ -57,6 +58,18 @@ class ReceivingGroup extends Config.Group
         logFile.add(fileSection)
 
         this.add(logfile)
+    }
+
+    _defineLabelsFile()
+    {
+        labelsFile := new Config.File("Labels")
+
+        printJobsSection := new Config.Section("Print Jobs")
+        fileSection.add(new Config.PathField("Location", "directory").setScope(Config.Scope.LOCAL))
+
+        labelsFile.add(printJobsSection)
+
+        this.add(labelsFile)
     }
 
     _defineInspectionNumberFile()
