@@ -2,7 +2,7 @@
 ; Actions.PrintLabels
 class PrintLabels extends Actions.Base
 {
-    __New(ByRef Receiver)
+    __New(ByRef receiver)
     {
         receivingLabelsConfig := Config.load("receiving.labels")
         printJobLocation := receivingLabelsConfig.get("printJobs.location")
@@ -12,9 +12,9 @@ class PrintLabels extends Actions.Base
             throw new @.FilesystemException(A_ThisFunc, "The Print Job location '" printJobLocation " does not exist or is not a valid directory.")
         }
 
-        FormatTime, fileDateTime,
+        FormatTime, fileDateTime, , % "yyyy-MM-dd+HH-mm-ss"
         Random, fileRandomNumber, 0, 10000
-        filename := Format("{1:i}_{2:i}_{3:s}.csv", fileDateTime, fileRandomNumber, receiver.identification)
+        filename := Format("{1:s}_{2:i}_{3:s}.csv", fileDateTime, fileRandomNumber, receiver.identification)
         filepath := RTrim(printJobLocation, "/\") "\" LTrim(filename, "/\")
         printJobFile := FileOpen(filepath, "w")
 
@@ -27,7 +27,7 @@ class PrintLabels extends Actions.Base
 
         ; Loop over data and put into csv
         for n, lot in receiver.lots {
-            printQtyDialog := UI.NumberDialog("Lot Label Qty")
+            printQtyDialog := new UI.NumberDialog("Lot Label Qty", {min: 1, max: 100})
             result := printQtyDialog.prompt("How many labels should be printed for lot # " lot.lotNumber "?")
             printQty := result.value
             waterMark := (lot.hasCert == "Yes" ? "" : "QA HOLD")

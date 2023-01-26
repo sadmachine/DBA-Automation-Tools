@@ -58,6 +58,7 @@ class Receiving extends Controllers.Base
 
             new Actions.ReceivingTransaction(receiver)
             receiver.acquireInspectionNumbers()
+            new Actions.PrintLabels(receiver)
             new Actions.ReceivingLog(receiver)
             new Actions.InspectionReport(receiver)
             this.receiver := receiver
