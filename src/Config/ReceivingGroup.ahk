@@ -65,7 +65,7 @@ class ReceivingGroup extends Config.Group
         labelsFile := new Config.File("Labels")
 
         printJobsSection := new Config.Section("Print Jobs")
-        fileSection.add(new Config.PathField("Location", "directory").setScope(Config.Scope.LOCAL))
+        printJobsSection.add(new Config.PathField("Location", "directory").setScope(Config.Scope.LOCAL))
 
         labelsFile.add(printJobsSection)
 
