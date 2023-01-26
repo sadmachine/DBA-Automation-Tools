@@ -9,6 +9,7 @@ class Receiver
     supplier := ""
     _lots := []
     related := {}
+    identification := ""
 
     poNumber[]
     {
