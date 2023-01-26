@@ -30,10 +30,14 @@ class BaseDialog extends UI.Base
         this.controls.push({controlType: controlType, options: options, text: text})
     }
 
-    prompt()
+    prompt(promptMessage := "")
     {
         Global
         this.ApplyFont()
+
+        if (promptMessage != "") {
+            this.Add("Text", "w" this.width - this.margin * 4, this.promptMessage)
+        }
 
         for n, control in this.controls {
             this.Add(control["controlType"], control["options"], control["text"])
