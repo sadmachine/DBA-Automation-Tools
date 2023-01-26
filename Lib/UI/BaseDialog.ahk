@@ -36,7 +36,7 @@ class BaseDialog extends UI.Base
         this.ApplyFont()
 
         if (promptMessage != "") {
-            this.Add("Text", "w" this.width - this.margin * 4, this.promptMessage)
+            this.Add("Text", "w" this.width - this.margin * 4, promptMessage)
         }
 
         for n, control in this.controls {
