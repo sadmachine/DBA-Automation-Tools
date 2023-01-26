@@ -5,11 +5,16 @@ SetWorkingDir, %A_ScriptDir%
 
 #Include src/Bootstrap.ahk
 
-receivingController := new Controllers.Receiving()
+try {
+    receivingController := new Controllers.Receiving()
 
-receivingController.bootstrapReceiver(new Models.Receiver())
+    receivingController.bootstrapReceiver(new Models.Receiver())
 
-receivingController.displayReceivingResults()
+    receivingController.displayReceivingResults()
+} catch e {
+    @.friendlyException(e)
+    receivingController.cleanup()
+}
 
 ExitApp
 
