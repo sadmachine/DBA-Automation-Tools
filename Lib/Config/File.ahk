@@ -7,6 +7,7 @@ class File
     slug := ""
     loaded := false
     hasLock := false
+    initialized := false
 
     path[key] {
         get {
@@ -34,10 +35,14 @@ class File
 
     initialize(force := false)
     {
+        if (this.initialized) {
+            return
+        }
         for sectionSlug, section in this.sections {
             section.file := this
             section.initialize(force)
         }
+        this.initialized := true
     }
 
     add(section)

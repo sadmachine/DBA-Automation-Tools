@@ -2,8 +2,9 @@
 ; @.RequiredFieldException
 class RequiredFieldException extends @.ExpectedException
 {
-    __New(where, message)
+    __New(where, field, message)
     {
+        this.field := field
         base.__New("RequiredFieldException", where, message)
     }
 }

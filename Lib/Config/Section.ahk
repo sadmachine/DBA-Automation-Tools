@@ -6,6 +6,7 @@ class Section
     label := ""
     fields := {}
     file := ""
+    initialized := false
 
     path[key] {
         get {
@@ -28,28 +29,14 @@ class Section
 
     initialize(force := false)
     {
+        if (this.initialized) {
+            return
+        }
         for fieldSlug, field in this.fields {
             field.section := this
-            try {
-                field.initialize(force)
-            } catch e {
-                MsgBox % @.typeOf(e)
-                if (e.what != "RequiredFieldException") {
-                    throw e
-                }
-                if (Config.promptForMissingValues) {
-                    fullFieldIdentifier := this.file.group.label "." this.file.label "." this.label "." field.label
-                    UI.MsgBox("The config field '" fullFieldIdentifier "' is required, but missing a value. Please supply a value to continue.", "Required Field Missing")
-                    dialog := UI.DialogFactory.fromConfigField(field)
-                    result := dialog.prompt()
-                    if (result.canceled) {
-                        throw e
-                    }
-                    field.value := result.value
-                    field.store(true)
-                }
-            }
+            field.initialize(force)
         }
+        this.initialized := true
     }
 
     add(fieldObj)

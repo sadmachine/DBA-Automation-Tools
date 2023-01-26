@@ -10,6 +10,7 @@ class BaseField
     value := ""
     oldValue := ""
     section := ""
+    initialized := false
 
     static defaultRequirementValue := false
 
@@ -99,6 +100,9 @@ class BaseField
     initialize(force := false)
     {
         local fileObj := ""
+        if (this.initialized) {
+            return
+        }
         if (!FileExist(this.path)) {
             fileObj := FileOpen(this.path, "w")
             if (!IsObject(fileObj)) {
@@ -109,10 +113,11 @@ class BaseField
 
         if (this._valueIsUndefined()) {
             if (this.required && this.default == "") {
-                throw (new @.RequiredFieldException(A_ThisFunc, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug))
+                throw new @.RequiredFieldException(A_ThisFunc, this, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
             }
             IniWrite, % this.default, % this.path, % this.section.slug, % this.slug
         }
+        this.initialized := true
     }
 
     setOption(option, value)
@@ -139,6 +144,11 @@ class BaseField
     hasChanged()
     {
         return this.value != this.oldValue
+    }
+
+    getFullIdentifier()
+    {
+        return this.section.file.group.label "." this.section.file.label "." this.section.label "." this.label
     }
 
     ; --- "Private"  methods ---------------------------------------------------

@@ -17,7 +17,7 @@ class Config
     static loaded := {}
     static localConfigLocation := A_ScriptDir "/config"
     static globalConfigLocation := ""
-    static promptForMissingValues := true
+    static initialized := false
     static UNDEFINED := "__UNDEFINED__"
 
     setLocalConfigLocation(localConfigLocation)
@@ -104,11 +104,16 @@ class Config
 
     initialize(force := false)
     {
+        if (this.initialized) {
+            return
+        }
+
         this._assertConfigDirectoriesExist()
 
         for groupSlug, group in this.groups {
             group.initialize(force)
         }
+        this.initialized := true
     }
 
     clear()

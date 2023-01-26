@@ -5,6 +5,7 @@ class Group
     files := {}
     label := ""
     slug := ""
+    initialized := false
 
     path[key] {
         get {
@@ -38,6 +39,9 @@ class Group
     initialize(force := false)
     {
         local dialog, result
+        if (this.initialized) {
+            return
+        }
         for fileSlug, file in this.files {
             if (!this._pathsExist()) {
                 FileCreateDir, % this.path["global"]
@@ -46,6 +50,7 @@ class Group
             file.group := this
             file.initialize(force)
         }
+        this.initialized := true
     }
 
     add(fileObj)
