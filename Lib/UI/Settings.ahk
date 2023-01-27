@@ -1,8 +1,35 @@
 ; UI.Settings
 class Settings extends UI.Base
 {
-    __New() {
+    __New(title)
+    {
+        options := "+OwnDialogs +AlwaysOnTop"
+        base.__New(title, options)
+        this.Build()
+    }
 
+    Build()
+    {
+        this.Font := {options: "S12", fontName: ""}
+        this.ApplyFont()
+        this.Add("TreeView", "x8 y8 w160 h322")
+        this.Add("GroupBox", "x176 y0 w434 h290", "<Field Name>")
+        this.Add("GroupBox", "x184 y20 w417 h138 Section", "Field Info")
+        this.Add("Edit", "xs+8 ys+20 w403 h113 +Multi +ReadOnly", "Text")
+        this.Add("Text", "xs+8 ys+155 w100 h23 +0x200 +Right Section", "Current Value")
+        this.Add("Edit", "x+8 ys+0 w298 h21 +ReadOnly", "Value")
+        this.Add("Text", "xs+0 ys+40 w100 h23 +0x200 +Right Section", "Default Value")
+        this.Add("Edit", "x+8 ys+0 w298 h21 +0x200 +ReadOnly", "Default")
+        this.Add("Button", "xs+0 ys+32 w160 h30 Section", "&Restore Default")
+        this.Add("Button", "x+138 ys+0 w110 h30", "&Edit Value")
+        this.Add("Button", "xs+0 y296 w160 h30 Section", "Restore &All Defaults")
+        this.Add("Button", "x+14 ys+0 w110 h30", "&Save")
+        this.Add("Button", "x+14 ys+0 w110 h30", "&Cancel")
+    }
+
+    Show()
+    {
+        base.Show("w620 h336")
     }
 }
 
@@ -11,19 +38,6 @@ class Settings extends UI.Base
 ; #NoEnv
 ; SetWorkingDir %A_ScriptDir%
 ; SetBatchLines -1
-
-; Gui Add, TreeView, x8 y8 w160 h322
-; Gui Add, Text, x184 y176 w80 h23 +0x200 +Right, Current Value
-; Gui Add, Edit, x280 y176 w321 h21, Value
-; Gui Add, Text, x184 y216 w80 h23 +0x200 +Right, Default Value
-; Gui Add, GroupBox, x176 y0 w434 h281, GroupBox
-; Gui Add, Edit, x280 y216 w320 h21 +ReadOnly, Default
-; Gui Add, GroupBox, x184 y16 w417 h138, Field Info
-; Gui Add, Text, x192 y32 w403 h113, Text
-; Gui Add, Button, x472 y248 w129 h23, &Restore Default
-; Gui Add, Button, x184 y296 w129 h23, Restore &All Defaults
-; Gui Add, Button, x328 y296 w129 h23, &Save
-; Gui Add, Button, x472 y296 w129 h23, &Cancel
 
 ; Gui Show, w620 h336, Window
 ; Return
