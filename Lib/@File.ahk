@@ -87,4 +87,16 @@ class @File
         FileDelete, % lockPath
         return true
     }
+
+    pathIs(path, pathType)
+    {
+        local exists
+        exists := FileExist(path)
+        return InStr(exists, pathType)
+    }
+
+    concat(path1, path2)
+    {
+        return RTrim(path1, "/\") "\" LTrim(path2, "/\")
+    }
 }
