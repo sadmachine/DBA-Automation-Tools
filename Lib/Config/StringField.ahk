@@ -4,15 +4,15 @@ class StringField extends Config.BaseField
     min := ""
     max := ""
 
-    __New(label, scope := "", options := "")
+    __New(label, scope := "", attributes := "")
     {
-        if (options.HasKey("min")) {
-            this.min := options["min"]
+        if (attributes.HasKey("min")) {
+            this.min := attributes["min"]
         }
-        if (options.HasKey("max")) {
-            this.max := options["max"]
+        if (attributes.HasKey("max")) {
+            this.max := attributes["max"]
         }
 
-        base.__New("string", label, scope, options)
+        base.__New("string", label, scope, attributes)
     }
 }

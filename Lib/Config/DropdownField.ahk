@@ -4,22 +4,13 @@ class DropdownField extends Config.BaseField
     choices := []
     selected := ""
 
-    __New(label, choices, scope := "", options := "")
+    __New(label, choices, scope := "", attributes := "")
     {
         this.choices := choices
-        if (options.HasKey("selected")) {
-            this.selected := options["selected"]
+        if (attributes.HasKey("selected")) {
+            this.selected := attributes["selected"]
         }
-        base.__New("dropdown", label, scope, options)
-    }
-
-    addTo(guiId, options := "")
-    {
-        global
-        local slug := this.slug
-        local choicesList := this._getChoicesList()
-        local selectedIndex := this.selectedIndex
-        Gui %guiId%:Add, DDL, v%slug% Choose%selectedIndex% %options%, % choicesList
+        base.__New("dropdown", label, scope, attributes)
     }
 
     _getChoicesList()
