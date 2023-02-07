@@ -5,6 +5,7 @@ class Section
     slug := ""
     label := ""
     fields := {}
+    fieldsByLabel := {}
     file := ""
     initialized := false
 
@@ -35,6 +36,7 @@ class Section
         for fieldSlug, field in this.fields {
             field.section := this
             field.initialize(force)
+            this.fieldsByLabel[field.label] := field
         }
         this.initialized := true
     }
@@ -42,6 +44,7 @@ class Section
     add(fieldObj)
     {
         this.fields[fieldObj.slug] := fieldObj
+        this.fieldsByLabel[fieldObj.label] := fieldObj
         return this
     }
 

@@ -3,6 +3,7 @@
 class Group
 {
     files := {}
+    filesByLabel := {}
     label := ""
     slug := ""
     initialized := false
@@ -49,6 +50,7 @@ class Group
             }
             file.group := this
             file.initialize(force)
+            this.filesByLabel[file.label] := file
         }
         this.initialized := true
     }
@@ -56,6 +58,7 @@ class Group
     add(fileObj)
     {
         this.files[fileObj.slug] := fileObj
+        this.filesByLabel[fileObj.label] := fileObj
         return this
     }
 
