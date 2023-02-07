@@ -6,7 +6,7 @@ class BaseField
     required := ""
     label := ""
     slug := ""
-    options := []
+    attributes := []
     value := ""
     oldValue := ""
     section := ""
@@ -25,10 +25,10 @@ class BaseField
         }
     }
 
-    __New(type, label, scope := "", options := "")
+    __New(type, label, scope := "", attributes := "")
     {
-        if (this.options != "") {
-            this.options := options
+        if (this.attributes != "") {
+            this.attributes := attributes
         }
 
         this.scope := Config.Scope.GLOBAL
@@ -41,14 +41,14 @@ class BaseField
         this.type := type
         this.label := label
         this.slug := String.toCamelCase(this.label)
-        if (options.HasKey("slug")) {
-            this.slug := options["slug"]
+        if (attributes.HasKey("slug")) {
+            this.slug := attributes["slug"]
         }
-        if (options.HasKey("default")) {
-            this.default := options["default"]
+        if (attributes.HasKey("default")) {
+            this.default := attributes["default"]
         }
-        if (options.HasKey("required")) {
-            this.required := options["required"]
+        if (attributes.HasKey("required")) {
+            this.required := attributes["required"]
         }
     }
 
@@ -65,16 +65,9 @@ class BaseField
     {
         if (this.hasKey(key)) {
             return this[key]
-        } else if (this.options.hasKey(key)) {
-            return this.options[key]
+        } else if (this.attributes.hasKey(key)) {
+            return this.attributes[key]
         }
-    }
-
-    addTo(guiId, options := "")
-    {
-        global
-        local slug := this.slug
-        Gui %guiId%:Add, Edit, v%slug% %options%, % choicesList
     }
 
     load()
@@ -94,13 +87,13 @@ class BaseField
 
     resetDefault()
     {
-        IniWrite, % this.default, % this.path, % this.section.slug, % this.slug
+        this.value := this.default
     }
 
     initialize(force := false)
     {
         local fileObj := ""
-        if (this.initialized) {
+        if (this.initialized && force == false) {
             return
         }
         if (!FileExist(this.path)) {
@@ -149,6 +142,11 @@ class BaseField
     getFullIdentifier()
     {
         return this.section.file.group.label "." this.section.file.label "." this.section.label "." this.label
+    }
+
+    getFullSlugIdentifier()
+    {
+        return this.section.file.group.slug "." this.section.file.slug "." this.section.slug "." this.slug
     }
 
     ; --- "Private"  methods ---------------------------------------------------
