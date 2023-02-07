@@ -2,18 +2,19 @@ class UI
 {
     ; --- Sub-Classes ----------------------------------------------------------
     #Include <UI/Base>
-    #Include <UI/InputBoxObj>
-    #Include <UI/MsgBoxObj>
-    #Include <UI/ProgressBoxObj>
-    #Include <UI/Settings>
-    #Include <UI/Required>
-    #Include <UI/DialogFactory>
     #Include <UI/BaseDialog>
     #Include <UI/DateDialog>
+    #Include <UI/DialogFactory>
     #Include <UI/DropdownDialog>
-    #Include <UI/PathDialog>
+    #Include <UI/InputBoxObj>
+    #Include <UI/MsgBoxObj>
     #Include <UI/NumberDialog>
+    #Include <UI/PathDialog>
+    #Include <UI/ProgressBoxObj>
+    #Include <UI/Required>
+    #Include <UI/Settings>
     #Include <UI/StringDialog>
+    #Include <UI/TreeViewBuilder>
 
     ; --- Class Functions ------------------------------------------------------
 
