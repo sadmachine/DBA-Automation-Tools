@@ -6,7 +6,7 @@ class BaseField
     required := ""
     label := ""
     slug := ""
-    attributes := []
+    options := []
     value := ""
     oldValue := ""
     section := ""
@@ -25,10 +25,10 @@ class BaseField
         }
     }
 
-    __New(type, label, scope := "", attributes := "")
+    __New(type, label, scope := "", optionis := "")
     {
-        if (this.attributes != "") {
-            this.attributes := attributes
+        if (this.options != "") {
+            this.options := options
         }
 
         this.scope := Config.Scope.GLOBAL
@@ -41,14 +41,14 @@ class BaseField
         this.type := type
         this.label := label
         this.slug := String.toCamelCase(this.label)
-        if (attributes.HasKey("slug")) {
-            this.slug := attributes["slug"]
+        if (options.HasKey("slug")) {
+            this.slug := options["slug"]
         }
-        if (attributes.HasKey("default")) {
-            this.default := attributes["default"]
+        if (options.HasKey("default")) {
+            this.default := options["default"]
         }
-        if (attributes.HasKey("required")) {
-            this.required := attributes["required"]
+        if (options.HasKey("required")) {
+            this.required := options["required"]
         }
     }
 
@@ -65,8 +65,8 @@ class BaseField
     {
         if (this.hasKey(key)) {
             return this[key]
-        } else if (this.attributes.hasKey(key)) {
-            return this.attributes[key]
+        } else if (this.options.hasKey(key)) {
+            return this.options[key]
         }
     }
 
