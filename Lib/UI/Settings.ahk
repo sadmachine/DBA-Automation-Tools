@@ -75,6 +75,7 @@ class Settings extends UI.Base
 
     editValue()
     {
+        this.OwnDialogs()
         if (this.currentField == "") {
             UI.MsgBox("You must select a field first.", "Warning")
             return

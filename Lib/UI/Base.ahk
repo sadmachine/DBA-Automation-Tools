@@ -315,6 +315,12 @@ class Base
         WinWaitClose, % this.title
     }
 
+    OwnDialogs()
+    {
+        local thisHwnd := this.hwnd
+        Gui %thisHwnd%: +OwnDialogs
+    }
+
     updateText(ctrlHwnd, newText)
     {
         GuiControl, Text, % %ctrlHwnd%, % newText
