@@ -4,11 +4,20 @@ class ReceivingLog extends Actions.Base
 {
     __New(ByRef receiver)
     {
-        receivingLogConfig := Config.load("receiving.log")
-        filepath := receivingLogConfig.get("file.location")
-        exists := FileExist(filepath)
-        if (!exists) {
-            throw new @.FilesystemException(A_ThisFunc, "Receiving log file does not exist at path: '" filepath "'. Please update the Receiving Log location to point to an existing file.")
+        receivingLogConfig := Config.load("receiving.incomingInspection")
+        fileDestination := receivingLogConfig.get("logFile.destination")
+        templateFile := receivingLogConfig.get("file.template")
+        filePath := RTrim(fileDestination, "/\") "\Receiving Log.xlsx"
+
+        if (FileExist(fileDestination) == "D") {
+            throw new @.FilesystemException("The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection.Log File.Destination' to be a valid directory.")
+        }
+
+        if (!FileExist(filePath)) {
+            if (!FileExist(templateFile)) {
+                throw new @.FilesystemException("The template file for the Receiving Log either could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection.Log File.Template' to be a valid .xlsx file.")
+            }
+            FileCopy, % templateFile, % filePath
         }
 
         @File.createLock(filepath)
