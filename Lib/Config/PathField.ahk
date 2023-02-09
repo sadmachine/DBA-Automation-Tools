@@ -1,10 +1,10 @@
 ; Config.PathField
 class PathField extends Config.BaseField
 {
-    __New(label, pathType := "file", scope := "", attributes := "")
+    __New(label, pathType := "file", scope := "", options := "")
     {
         this.pathType := String.toLower(pathType)
 
-        base.__New("path", label, scope, attributes)
+        base.__New("path", label, scope, options)
     }
 }

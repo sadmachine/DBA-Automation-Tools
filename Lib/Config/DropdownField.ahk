@@ -4,13 +4,13 @@ class DropdownField extends Config.BaseField
     choices := []
     selected := ""
 
-    __New(label, choices, scope := "", attributes := "")
+    __New(label, choices, scope := "", options := "")
     {
         this.choices := choices
-        if (attributes.HasKey("selected")) {
-            this.selected := attributes["selected"]
+        if (options.HasKey("selected")) {
+            this.selected := options["selected"]
         }
-        base.__New("dropdown", label, scope, attributes)
+        base.__New("dropdown", label, scope, options)
     }
 
     _getChoicesList()
