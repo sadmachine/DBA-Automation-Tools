@@ -13,15 +13,6 @@ class DropdownField extends Config.BaseField
         base.__New("dropdown", label, scope, options)
     }
 
-    addTo(guiId, options := "")
-    {
-        global
-        local slug := this.slug
-        local choicesList := this._getChoicesList()
-        local selectedIndex := this.selectedIndex
-        Gui %guiId%:Add, DDL, v%slug% Choose%selectedIndex% %options%, % choicesList
-    }
-
     _getChoicesList()
     {
         choicesList := ""

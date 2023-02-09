@@ -70,13 +70,6 @@ class BaseField
         }
     }
 
-    addTo(guiId, options := "")
-    {
-        global
-        local slug := this.slug
-        Gui %guiId%:Add, Edit, v%slug% %options%, % choicesList
-    }
-
     load()
     {
         IniRead, iniValue, % this.path, % this.section.slug, % this.slug
@@ -94,13 +87,13 @@ class BaseField
 
     resetDefault()
     {
-        IniWrite, % this.default, % this.path, % this.section.slug, % this.slug
+        this.value := this.default
     }
 
     initialize(force := false)
     {
         local fileObj := ""
-        if (this.initialized) {
+        if (this.initialized && force == false) {
             return
         }
         if (!FileExist(this.path)) {
@@ -149,6 +142,11 @@ class BaseField
     getFullIdentifier()
     {
         return this.section.file.group.label "." this.section.file.label "." this.section.label "." this.label
+    }
+
+    getFullSlugIdentifier()
+    {
+        return this.section.file.group.slug "." this.section.file.slug "." this.section.slug "." this.slug
     }
 
     ; --- "Private"  methods ---------------------------------------------------

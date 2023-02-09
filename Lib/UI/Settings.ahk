@@ -1,8 +1,164 @@
 ; UI.Settings
+; TODO - Decouple from fields so much
 class Settings extends UI.Base
 {
-    __New() {
+    fields := {}
+    actions := {}
+    currentField := ""
+    editedFields := {}
 
+    __New(title)
+    {
+        options := "+OwnDialogs +AlwaysOnTop"
+        base.__New(title, options)
+        this.build()
+        this.bindActions()
+        UI.Base.defaultFont := {options: "s12", fontName: ""}
+    }
+
+    build()
+    {
+        this.Font := {options: "S10", fontName: ""}
+        this.ApplyFont()
+
+        this.actions["fieldSelection"] := this.Add("TreeView", "xm ym w200 h322")
+
+        this.Font := {options: "S12", fontName: ""}
+        this.ApplyFont()
+
+        this.fields["fieldName"] := this.Add("GroupBox", "x+8 y0 w434 h290 cGreen Section", "")
+
+        this.Add("Text", "xs+8 ys+26 w88 h25 cMaroon +0x200 +Right", "Config Path:")
+        this.fields["configPath"] := this.Add("Edit", "x+8 yp+0 w318 h25 +ReadOnly", "")
+        this.Add("Text", "xs+8 ys+56 w88 h25 cMaroon +0x200 +Right", "Scope:")
+        this.fields["scope"] := this.Add("Edit", "x+8 yp+0 w105 h25 +ReadOnly", "")
+        this.Add("Text", "x+20 yp+0 w80 h25 cMaroon +0x200 +Right", "Required:")
+        this.fields["required"] := this.Add("Edit", "x+8 yp+0 w105 h25 +ReadOnly", "")
+
+        this.Add("GroupBox", "xs+8 ys+90 w417 h100 cGreen Section", "Field Description")
+        this.fields["description"] := this.Add("Edit", "xs+8 ys+20 w403 r3 +Multi +ReadOnly", "")
+
+        this.Add("Text", "xs+0 ys+104 w104 h25 cMaroon +0x200 +Right Section", "Current Value:")
+        this.fields["currentValue"] := this.Add("Edit", "x+8 ys+0 w302 h25 +ReadOnly", "")
+        this.Add("Text", "xs+0 ys+30 w104 h25 cMaroon +0x200 +Right Section", "Default Value:")
+        this.fields["defaultValue"] := this.Add("Edit", "x+8 ys+0 w302 h25 +0x200 +ReadOnly", "")
+
+        this.actions["restoreDefault"] := this.Add("Button", "xs+0 ys+28 w160 h30 Section", "&Restore Default")
+        this.actions["editValue"] := this.Add("Button", "x+146 ys+0 w110 h30", "&Edit Value")
+        this.actions["restoreAllDefaults"] := this.Add("Button", "xs+0 y296 w160 h30 Section", "Restore &All Defaults")
+        this.actions["save"] := this.Add("Button", "x+18 ys+0 w110 h30", "&Save")
+        this.actions["cancel"] := this.Add("Button", "x+18 ys+0 w110 h30", "&Cancel")
+
+        UI.TreeViewBuilder.fromConfig(this, Config)
+
+        base.build()
+    }
+
+    bindActions()
+    {
+        for actionSlug, action in this.actions {
+            this.bind(action, actionSlug)
+        }
+    }
+
+    restoreDefault()
+    {
+        if (this.currentField == "") {
+            UI.MsgBox("You must select a field first.", "Warning")
+            return
+        }
+        field := this.currentField
+
+        field.resetDefault()
+        this.editedFields[field.slug] := field
+    }
+
+    editValue()
+    {
+        this.OwnDialogs()
+        if (this.currentField == "") {
+            UI.MsgBox("You must select a field first.", "Warning")
+            return
+        }
+        field := this.currentField
+        if (field.scope == Config.Scope.GLOBAL) {
+            result := UI.YesNoBox("This field is a global field. Changing it will affect all other users of the program.`nAre you sure you wish to continue?", "Warning")
+            if (result.canceled || result.value == "No") {
+                return
+            }
+        }
+        dialog := UI.DialogFactory.fromConfigField(field)
+        result := dialog.prompt()
+        if (result.canceled) {
+            return
+        }
+        field.value := result.value
+        this.editedFields[field.slug] := field
+        this._updateFieldInfo()
+    }
+
+    restoreAllDefaults()
+    {
+        throw new @.ProgrammerException(A_ThisFunc, "Not yet implemented.")
+    }
+
+    save()
+    {
+        for fieldSlug, field in this.editedFields {
+            field.store()
+        }
+        this.Destroy()
+    }
+
+    cancel()
+    {
+        this.Destroy()
+    }
+
+    fieldSelection(CtrlHwnd, GuiEvent, EventInfo, ErrLevel:="")
+    {
+        switch GuiEvent
+        {
+        Case "DoubleClick", "S":
+            ; Open info about the selected field, if it is a field
+            treeNodeId := EventInfo
+            labelIdentifier := this._buildLabelIdentifier(treeNodeId)
+            field := Config.getFieldByLabelIdentifier(labelIdentifier)
+            if (IsObject(field)) {
+                this.currentField := field
+                field.load()
+                this._updateFieldInfo()
+            }
+        }
+    }
+
+    _buildLabelIdentifier(treeNodeId)
+    {
+        this.Default()
+        labelIdentifier := ""
+        levelCount := 0
+        Loop {
+            TV_GetText(labelText, treeNodeId)
+            labelIdentifier := labelText "." labelIdentifier
+            treeNodeId := TV_GetParent(treeNodeId)
+            levelCount++
+        } Until (treeNodeId == 0)
+        if (levelCount < 4) {
+            return ""
+        }
+        return Trim(labelIdentifier, ".")
+    }
+
+    _updateFieldInfo()
+    {
+        field := this.currentField
+        this.UpdateText(this.fields["fieldName"], field.label)
+        this.UpdateText(this.fields["configPath"], field.path)
+        this.UpdateText(this.fields["scope"], Config.Scope.toString(field.scope))
+        this.UpdateText(this.fields["required"], (field.required ? "true" : "false"))
+        this.UpdateText(this.fields["description"], field.description)
+        this.UpdateText(this.fields["currentValue"], field.get())
+        this.UpdateText(this.fields["defaultValue"], (field.default != "" ? field.default : "n/a"))
     }
 }
 
@@ -11,19 +167,6 @@ class Settings extends UI.Base
 ; #NoEnv
 ; SetWorkingDir %A_ScriptDir%
 ; SetBatchLines -1
-
-; Gui Add, TreeView, x8 y8 w160 h322
-; Gui Add, Text, x184 y176 w80 h23 +0x200 +Right, Current Value
-; Gui Add, Edit, x280 y176 w321 h21, Value
-; Gui Add, Text, x184 y216 w80 h23 +0x200 +Right, Default Value
-; Gui Add, GroupBox, x176 y0 w434 h281, GroupBox
-; Gui Add, Edit, x280 y216 w320 h21 +ReadOnly, Default
-; Gui Add, GroupBox, x184 y16 w417 h138, Field Info
-; Gui Add, Text, x192 y32 w403 h113, Text
-; Gui Add, Button, x472 y248 w129 h23, &Restore Default
-; Gui Add, Button, x184 y296 w129 h23, Restore &All Defaults
-; Gui Add, Button, x328 y296 w129 h23, &Save
-; Gui Add, Button, x472 y296 w129 h23, &Cancel
 
 ; Gui Show, w620 h336, Window
 ; Return

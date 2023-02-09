@@ -10,6 +10,7 @@ class Base
     _color := ""
     _hwnd := ""
     _autoSize := false
+    _built := false
 
     static _defaultOptions := ""
     static _defaultFont := {"options": "", "fontName": ""}
@@ -138,7 +139,7 @@ class Base
 
             this._color[key] := value
 
-            Gui, %thisHwnd%:Color, % this.color["windowColor"], % this.font["controlColor"]
+            Gui, %thisHwnd%:Color, % this.color["windowColor"], % this.color["controlColor"]
             return this._color
         }
     }
@@ -227,6 +228,11 @@ class Base
         return this
     }
 
+    __Delete()
+    {
+        this.Destroy()
+    }
+
     ; --- Methods --------------------------------------------------------------
 
     Add(ControlType, cOptions := "", text := "")
@@ -281,6 +287,7 @@ class Base
         global
         local thisHwnd := this.hwnd
         Gui %thisHwnd%:Destroy
+        this._built := false
     }
 
     Default()
@@ -306,6 +313,22 @@ class Base
     WaitClose()
     {
         WinWaitClose, % this.title
+    }
+
+    OwnDialogs()
+    {
+        local thisHwnd := this.hwnd
+        Gui %thisHwnd%: +OwnDialogs
+    }
+
+    updateText(ctrlHwnd, newText)
+    {
+        GuiControl, Text, % %ctrlHwnd%, % newText
+    }
+
+    build()
+    {
+        this._built := true
     }
 
     bind(ctrlHwnd, method)

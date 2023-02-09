@@ -62,9 +62,9 @@ class ActiveRecord
         }
     }
 
-    _buildFromObject(attributes)
+    _buildFromObject(options)
     {
-        for name, value in attributes {
+        for name, value in options {
             this.exists := true
             this[name] := value
         }

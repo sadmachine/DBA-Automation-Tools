@@ -14,6 +14,7 @@ class Config
     #include <Config/PathField>
 
     static groups := {}
+    static groupsByLabel := {}
     static loaded := {}
     static localConfigLocation := A_ScriptDir "/config"
     static globalConfigLocation := ""
@@ -43,6 +44,7 @@ class Config
     register(group)
     {
         this.groups[group.slug] := group
+        this.groupsByLabel[group.label] := group
     }
 
     load(identifier)
@@ -112,6 +114,7 @@ class Config
 
         for groupSlug, group in this.groups {
             group.initialize(force)
+            this.groupsByLabel[group.label] := group
         }
         this.initialized := true
     }
@@ -120,6 +123,20 @@ class Config
     {
         this._deletePaths()
         this._unregisterAll()
+    }
+
+    ; TODO - Generalize this better
+    getFieldByLabelIdentifier(labelIdentifier)
+    {
+        parts := StrSplit(labelIdentifier, ".")
+        if (parts.Length() != 4) {
+            return ""
+        }
+        groupLabel := parts[1]
+        fileLabel := parts[2]
+        sectionLabel := parts[3]
+        fieldLabel := parts[4]
+        return this.groupsByLabel[groupLabel].filesBylabel[fileLabel].sectionsByLabel[sectionLabel].fieldsByLabel[fieldLabel]
     }
 
     ; --- "Private"  methods ---------------------------------------------------

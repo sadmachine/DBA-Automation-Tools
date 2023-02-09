@@ -46,6 +46,11 @@ class Dashboard
         this._buildModuleSections()
         Gui, dashboard: +OwnDialogs +AlwaysOnTop HWNDhChild
 
+        ; Build/Add menus
+        openSettingsEvent := ObjBindMethod(this, "_openSettings")
+        Menu, DashboardMenuBar, Add, &Settings, % openSettingsEvent
+        Gui, dashboard:Menu, DashboardMenuBar
+
         ; Get a reference to the "parent" and "child" window
         this.hwnd["parent"] := WinExist(DBA.Windows.Main)
         this.hwnd["child"] := hChild
@@ -155,4 +160,9 @@ class Dashboard
         }
     }
 
+    _openSettings()
+    {
+        settingsGui := new UI.Settings("DBA AutoTools Settings")
+        settingsGui.Show()
+    }
 }

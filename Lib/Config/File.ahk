@@ -4,6 +4,7 @@ class File
 {
     group := ""
     sections := {}
+    sectionsByLabel := {}
     slug := ""
     loaded := false
     hasLock := false
@@ -41,6 +42,7 @@ class File
         for sectionSlug, section in this.sections {
             section.file := this
             section.initialize(force)
+            this.sectionsByLabel[section.label] := section
         }
         this.initialized := true
     }
@@ -48,6 +50,7 @@ class File
     add(section)
     {
         this.sections[section.slug] := section
+        this.sectionsByLabel[section.label] := section
         return this
     }
 
