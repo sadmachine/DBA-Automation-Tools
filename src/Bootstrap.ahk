@@ -18,8 +18,13 @@
 UI.Base.defaultFont := {options: "S12", fontName: ""}
 Config.BaseField.defaultRequirementValue := true
 
-IniRead, globalConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-IniRead, localConfigLocation, % @File.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+configIniLocation := @File.parseDirectory(A_LineFile) "/config.ini"
+if (A_ScriptName == "DBA AutoTools.exe") {
+    configIniLocation := @File.parseDirectory(A_LineFile) "/modules/config.ini"
+}
+
+IniRead, globalConfigLocation, % configIniLocation, % "location", % "global"
+IniRead, localConfigLocation, % configIniLocation, % "location", % "local"
 Config.setLocalConfigLocation(localConfigLocation)
 Config.setGlobalConfigLocation(globalConfigLocation)
 Config.register(new DatabaseGroup())
