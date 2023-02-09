@@ -10,8 +10,8 @@ class DatabaseGroup extends Config.Group
 
         mainSection := new Config.Section("Main")
         mainSection.add(new Config.StringField("DSN")
-            .setOption("scope", Config.Scope.LOCAL)
-            .setOption("description", "The ODBC identifier for the database connection."))
+            .setScope(Config.Scope.LOCAL)
+            .setDescription("The ODBC identifier for the database connection."))
 
         connectionFile.add(mainSection)
         this.add(connectionFile)
