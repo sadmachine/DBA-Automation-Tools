@@ -25,7 +25,7 @@ class BaseField
         }
     }
 
-    __New(type, label, scope := "", optionis := "")
+    __New(type, label, scope := "", options := "")
     {
         if (this.options != "") {
             this.options := options
