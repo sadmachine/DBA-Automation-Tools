@@ -1,12 +1,12 @@
 #Include <@>
-#Include <Config>
-#Include <ADOSQL>
-#Include <Query>
-#include <UI>
 #Include <@File>
-#Include <String>
+#Include <ADOSQL>
+#Include <Config>
 #Include <DBA>
 #Include <Excel>
+#Include <Query>
+#Include <String>
+#include <UI>
 #Include src/Models.ahk
 #Include src/Controllers.ahk
 #Include src/Views.ahk
@@ -18,9 +18,16 @@
 UI.Base.defaultFont := {options: "S12", fontName: ""}
 Config.BaseField.defaultRequirementValue := true
 
-configIniLocation := @File.parseDirectory(A_LineFile) "/config.ini"
-if (A_ScriptName == "DBA AutoTools.exe") {
-    configIniLocation := @File.parseDirectory(A_LineFile) "/modules/config.ini"
+if (FileExist("C:\DBA Help\DBA Autotools") == "D") {
+    configIniLocation := "C:\DBA Help\DBA Autotools\modules\config.ini"
+} else {
+    configIniLocation := @File.parseDirectory(A_LineFile) "/config.ini"
+    if (!FileExist(configIniLocation)) {
+        configIniLocation := @File.parseDirectory(A_LineFile) "/modules/config.ini"
+    }
+    if (!FileExist(configIniLocation)) {
+        throw new @.FilesystemException("Could not locate the config.ini file.")
+    }
 }
 
 IniRead, globalConfigLocation, % configIniLocation, % "location", % "global"
