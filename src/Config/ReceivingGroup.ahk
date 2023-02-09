@@ -61,7 +61,7 @@ class ReceivingGroup extends Config.Group
 
     _defineLogFile()
     {
-        logFile := new Config.File("Log")
+        logFile := new Config.File("Incoming Inspection")
 
         excelColumnMappingSection := new Config.Section("Excel Column Mapping")
         excelColumnMappingSection.add(new Config.StringField("Date")
@@ -89,13 +89,13 @@ class ReceivingGroup extends Config.Group
             .setDefault("H")
             .setDescription("The column to insert the C of C Received. Example: 'H' for column H."))
 
-        fileSection := new Config.Section("File")
+        fileSection := new Config.Section("Log File")
         fileSection.add(new Config.PathField("Template")
             .setScope(Config.Scope.LOCAL)
-            .setDescription("The template file to use for the receiving log, if the receiving log destination file does not already exist."))
-        fileSection.add(new Config.PathField("Destination")
+            .setDescription("The template file to use for the Incoming Inspection Log if the Incoming Inspection Log does not already exist. This should be an .xlsx file."))
+        fileSection.add(new Config.PathField("Destination", "folder")
             .setScope(Config.Scope.LOCAL)
-            .setDescription("The directory that the receiving log file is found. If the file does not exist already, it will be created from the template specified by 'Receiving.Log.File.Template'."))
+            .setDescription("The directory where the Incoming Inspection Log file is found. If the file does not exist already, it will be created from the template specified by 'Receiving.Incoming Inspection.Log File.Template'."))
 
         logFile.add(excelColumnMappingSection)
         logFile.add(fileSection)
