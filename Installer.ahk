@@ -23,13 +23,7 @@
 ; TODO - Detect install vs update
 ; ==============================================================================
 
-#NoEnv
-#SingleInstance, Force
-SendMode, Input
-SetBatchLines, -1
-SetWorkingDir, %A_ScriptDir%
-
-#Include <@File>
+#Include src/Bootstrap.ahk
 
 GetInstallationLocation()
 
@@ -83,5 +77,6 @@ InstallFiles()
     FileInstall, dist\modules\PO_Verification.exe, % @File.concat(modulesPath, "PO_Verification.exe"), 1
     FileInstall, dist\modules\config.example.ini, % @File.concat(modulesPath, "config.example.ini"), 1
     FileInstall, dist\modules\mods.ini, % @File.concat(modulesPath, "mods.ini"), 1
-    FileInstall, dist\modules\templates\Incoming Inspection Log.xlsx, % @File.concat(templatesPath, "Incoming Inspection Log.xlsx"), 1
+    FileInstall, dist\modules\templates\Incoming Inspection Log Template.xlsx, % @File.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
+    FileInstall, dist\modules\templates\Incoming Inspection Report Template.xlsx, % @File.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
 }
