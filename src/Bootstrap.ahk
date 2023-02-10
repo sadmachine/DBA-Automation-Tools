@@ -24,8 +24,8 @@ SetWorkingDir, %A_ScriptDir%
 UI.Base.defaultFont := {options: "S12", fontName: ""}
 Config.BaseField.defaultRequirementValue := true
 
-if (FileExist("C:\DBA Help\DBA Autotools") == "D") {
-    configIniLocation := "C:\DBA Help\DBA Autotools\modules\config.ini"
+if (FileExist("C:\DBA Help\DBA AutoTools") == "D") {
+    configIniLocation := "C:\DBA Help\DBA AutoTools\modules\config.ini"
 } else {
     configIniLocation := @File.parseDirectory(A_LineFile) "/config.ini"
     if (!FileExist(configIniLocation)) {

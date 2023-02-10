@@ -38,12 +38,19 @@ return
 GetInstallationLocation()
 {
     Global
-    installationPath := A_MyDocuments
+    if (!FileExist("C:\DBA Help")) {
+        FileCreateDir, % "C:\DBA Help"
+    }
+    installationPath := "C:\DBA Help"
+
+    installationGui := new UI.Base("DBA AutoTools Installer")
+    installationGui.Add("Text", "w460", "Installation Location")
+    installationGui.Add("Edit", "w400", installationPath)
+    installationGui.Add("Text", "w400", installationPath)
 
     FileSelectFolder, installationPath, *%installationPath%, 3
 
     installationPath := RTrim(installationPath, "/\")
-    MsgBox % installationPath
 }
 
 CreateDirectories()
@@ -74,6 +81,7 @@ InstallFiles()
 {
     Global
     FileInstall, dist\DBA AutoTools.exe, % @File.concat(installationPath, "DBA AutoTools.exe"), 1
+    FileInstall, dist\Settings.exe, % @File.concat(installationPath, "Settings.exe"), 1
     FileInstall, dist\modules\PO_Verification.exe, % @File.concat(modulesPath, "PO_Verification.exe"), 1
     FileInstall, dist\modules\config.example.ini, % @File.concat(modulesPath, "config.example.ini"), 1
     FileInstall, dist\modules\mods.ini, % @File.concat(modulesPath, "mods.ini"), 1
