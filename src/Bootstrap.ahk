@@ -32,7 +32,7 @@ if (FileExist("C:\DBA Help\DBA AutoTools") == "D") {
         configIniLocation := @File.parseDirectory(A_LineFile) "/modules/config.ini"
     }
     if (!FileExist(configIniLocation)) {
-        throw new @.FilesystemException("Could not locate the config.ini file.")
+        throw new @.FilesystemException(A_ThisFunc, "Could not locate the config.ini file.")
     }
 }
 

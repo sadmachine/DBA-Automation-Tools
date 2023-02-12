@@ -10,12 +10,12 @@ class ReceivingLog extends Actions.Base
         filePath := RTrim(fileDestination, "/\") "\Receiving Log.xlsx"
 
         if (!FileExist(fileDestination) == "D") {
-            throw new @.FilesystemException("The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
+            throw new @.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
         }
 
         if (!FileExist(filePath)) {
             if (!FileExist(templateFile)) {
-                throw new @.FilesystemException("The template file for the Receiving Log either could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Template' to be a valid .xlsx file.")
+                throw new @.FilesystemException(A_ThisFunc, "The template file for the Receiving Log either could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Template' to be a valid .xlsx file.")
             }
             FileCopy, % templateFile, % filePath
         }
