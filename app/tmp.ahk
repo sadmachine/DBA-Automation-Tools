@@ -1,15 +1,22 @@
-#NoEnv
-#SingleInstance, Force
-#Persistent
-SendMode, Input
-SetBatchLines, -1
-SetWorkingDir, %A_ScriptDir%
+; === Script Information =======================================================
+; Name .........: Temporary scripts
+; Description ..: A file used for trying things out and testing
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 02/13/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: tmp.ahk
+; ==============================================================================
 
-#Include <DBA>
-#Include <UI>
-#Include src/Config/All.ahk
-#Include <Config>
-#Include <#>
+; === Revision History =========================================================
+; Revision 1 (02/13/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; TODO - Cleanup/organize better
+; ==============================================================================
+#Include src/Bootstrap.ahk
 
 path := "C:\Users\austi"
 path2 := "C:\Users\austi\test\test"

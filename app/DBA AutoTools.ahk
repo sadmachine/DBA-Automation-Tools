@@ -1,7 +1,7 @@
 ; === Script Information =======================================================
 ; Name .........: DBA Automation Tools
 ; Description ..: Set of general automation tools for DBA Manufacturing
-; AHK Version ..: 1.1.32.00 (Unicode 64-bit)
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
 ; Start Date ...: 09/02/2022
 ; OS Version ...: Windows 10
 ; Language .....: English - United States (en-US)
@@ -15,6 +15,9 @@
 ; * Add basic structure of file
 ; * Setup prototype of main hub gui overlay
 ; * Initial prototype of module loading system
+;
+; === TO-DOs ===================================================================
+; TODO - Use Bootstrap.ahk
 ; ==============================================================================
 
 #NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
