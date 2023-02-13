@@ -5,7 +5,7 @@ SetBatchLines, -1
 SetWorkingDir, %A_ScriptDir%
 
 #Include <@>
-#Include <@File>
+#Include <#>
 #Include <ADOSQL>
 #Include <Config>
 #Include <DBA>
@@ -21,20 +21,21 @@ SetWorkingDir, %A_ScriptDir%
 
 @.registerExceptionHandler()
 
+PROJECT_ROOT := ""
+if (InStr("DBA AutoTools.exe,Settings.exe,Installer.exe", A_ScriptName)) {
+    PROJECT_ROOT := #.Path.normalize(A_ScriptDir)
+} else {
+    PROJECT_ROOT := #.Path.parentOf(A_ScriptDir)
+}
+
+configIniLocation := #.Path.concat(PROJECT_ROOT, "modules\config.ini")
+
+if (!FileExist(configIniLocation)) {
+    throw new @.FilesystemException(A_ThisFunc, "Could not locate the config.ini file.")
+}
+
 UI.Base.defaultFont := {options: "S12", fontName: ""}
 Config.BaseField.defaultRequirementValue := true
-
-if (FileExist("C:\DBA Help\DBA AutoTools") == "D") {
-    configIniLocation := "C:\DBA Help\DBA AutoTools\modules\config.ini"
-} else {
-    configIniLocation := @File.parseDirectory(A_LineFile) "/config.ini"
-    if (!FileExist(configIniLocation)) {
-        configIniLocation := @File.parseDirectory(A_LineFile) "/modules/config.ini"
-    }
-    if (!FileExist(configIniLocation)) {
-        throw new @.FilesystemException("Could not locate the config.ini file.")
-    }
-}
 
 IniRead, globalConfigLocation, % configIniLocation, % "location", % "global"
 IniRead, localConfigLocation, % configIniLocation, % "location", % "local"
@@ -66,3 +67,6 @@ while (!Config.initialized) {
 }
 
 DBA.DbConnection.DSN := Config.get("database.connection.main.dsn")
+
+#.Logger.setLocation(#.Path.concat(PROJECT_ROOT, "modules\"))
+#.Logger.info(A_ThisFunc, "Finished Bootstrapping '" A_ScriptName "'")

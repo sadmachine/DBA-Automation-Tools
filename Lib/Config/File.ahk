@@ -124,12 +124,12 @@ class File
         }
         if (scope == "" || scope == Config.Scope.GLOBAL) {
             if (FileExist(this.path["global"])) {
-                @File.createLock(this.path["global"])
+                #.Path.createLock(this.path["global"])
             }
         }
         if (scope == "" || scope == Config.Scope.LOCAL) {
             if (FileExist(this.path["local"])) {
-                @File.createLock(this.path["local"])
+                #.Path.createLock(this.path["local"])
             }
         }
         this.hasLock := true
@@ -143,12 +143,12 @@ class File
 
         if (scope == "" || scope == Config.Scope.GLOBAL) {
             if (FileExist(this.path["global"])) {
-                @File.freeLock(this.path["global"])
+                #.Path.freeLock(this.path["global"])
             }
         }
         if (scope == "" || scope == Config.Scope.LOCAL) {
             if (FileExist(this.path["local"])) {
-                @File.freeLock(this.path["local"])
+                #.Path.freeLock(this.path["local"])
             }
         }
         this.hasLock := false
@@ -156,7 +156,7 @@ class File
 
     awaitLock(fieldPath)
     {
-        while (@File.isLocked(fieldPath) && !this.hasLock) {
+        while (#.Path.isLocked(fieldPath) && !this.hasLock) {
             Sleep 200
         }
     }

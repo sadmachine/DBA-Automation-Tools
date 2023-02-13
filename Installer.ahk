@@ -65,9 +65,9 @@ CreateDirectories()
 {
     Global
 
-    modulesPath := @File.concat(installationPath, "modules")
-    configPath := @File.concat(modulesPath, "config")
-    templatesPath := @File.concat(modulesPath, "templates")
+    modulesPath := #.Path.concat(installationPath, "modules")
+    configPath := #.Path.concat(modulesPath, "config")
+    templatesPath := #.Path.concat(modulesPath, "templates")
 
     if (FileExist(modulesPath) != "D") {
         FileCreateDir % modulesPath
@@ -88,13 +88,13 @@ CreateDirectories()
 InstallFiles()
 {
     Global
-    FileInstall, dist\DBA AutoTools.exe, % @File.concat(installationPath, "DBA AutoTools.exe"), 1
-    FileInstall, dist\Settings.exe, % @File.concat(installationPath, "Settings.exe"), 1
-    FileInstall, dist\modules\PO_Verification.exe, % @File.concat(modulesPath, "PO_Verification.exe"), 1
-    FileInstall, dist\modules\config.example.ini, % @File.concat(modulesPath, "config.example.ini"), 1
-    FileInstall, dist\modules\mods.ini, % @File.concat(modulesPath, "mods.ini"), 1
-    FileInstall, dist\modules\templates\Incoming Inspection Log Template.xlsx, % @File.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
-    FileInstall, dist\modules\templates\Incoming Inspection Report Template.xlsx, % @File.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
+    FileInstall, dist\DBA AutoTools.exe, % #.Path.concat(installationPath, "DBA AutoTools.exe"), 1
+    FileInstall, dist\Settings.exe, % #.Path.concat(installationPath, "Settings.exe"), 1
+    FileInstall, dist\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
+    FileInstall, dist\modules\config.example.ini, % #.Path.concat(modulesPath, "config.example.ini"), 1
+    FileInstall, dist\modules\mods.ini, % #.Path.concat(modulesPath, "mods.ini"), 1
+    FileInstall, dist\modules\templates\Incoming Inspection Log Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
+    FileInstall, dist\modules\templates\Incoming Inspection Report Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
 }
 
 SetupConfigIni()

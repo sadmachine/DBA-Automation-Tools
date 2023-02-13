@@ -7,6 +7,7 @@ tests/**/*.ini
 tests/*.ini
 dist/**/*.ini
 dist/modules/data/templates/*Incoming Inspection Log.xlsx
+**/*.log
 
 !dist/**/mods.ini
 !dist/**/*.example.ini
