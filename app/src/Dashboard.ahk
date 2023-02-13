@@ -1,3 +1,22 @@
+; === Script Information =======================================================
+; Name .........: Dashboard Interface
+; Description ..: The main "DBA AutoTools" dashboard
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 02/13/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: Dashboard.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (02/13/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; TODO - Abstract out to a controller and a view
+; TODO - Update to actually handle modules (old way is broken, only works for single module)
+; ==============================================================================
 class Dashboard
 {
     static built := false
