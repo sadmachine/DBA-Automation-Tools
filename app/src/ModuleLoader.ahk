@@ -1,3 +1,22 @@
+; === Script Information =======================================================
+; Name .........: Module Loader
+; Description ..: Handles loading and general module operations
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 02/13/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: ModuleLoader.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (02/13/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; TODO - Possibly turn this into a controller
+; TODO - Revisit/refactor/optimize
+; ==============================================================================
 #Include src\ModuleObj.ahk
 
 class ModuleLoader
