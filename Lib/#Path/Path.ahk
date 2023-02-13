@@ -1,9 +1,10 @@
-class @File
+; DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+; #.Path
+class Path
 {
-
     ; --- Include any subclasses -----------------------------------------------
 
-    getFullPath(path)
+    makeAbsolute(path)
     {
         global
         cc := DllCall("GetFullPathName", "str", path, "uint", 0, "ptr", 0, "ptr", 0, "uint")
@@ -18,22 +19,20 @@ class @File
         return dir
     }
 
-    parseFilename(path)
+    parseFilename(path, extension := true)
     {
-        SplitPath, path, filename
-        return filename
+        if (extension) {
+            SplitPath, path, filename
+            return filename
+        }
+        SplitPath, path, , , , filenameWithExtension
+        return filenameWithExtension
     }
 
     parseExtension(path)
     {
         SplitPath, path,,, extension
         return extension
-    }
-
-    parseFilenameNoExtension(path)
-    {
-        SplitPath, path, , , , filenameWithExtension
-        return filenameWithExtension
     }
 
     parseDrive(path)
@@ -88,7 +87,7 @@ class @File
         return true
     }
 
-    pathIs(path, pathType)
+    isType(path, pathType)
     {
         local exists
         exists := FileExist(path)
@@ -98,5 +97,25 @@ class @File
     concat(path1, path2)
     {
         return RTrim(path1, "/\") "\" LTrim(path2, "/\")
+    }
+
+    normalize(path)
+    {
+        path := this.makeAbsolute(path)
+        ; Standardize on backslashes for paths
+        path := StrReplace(path, "/", "\")
+
+        ; Directories should end in a backslash (easier to identify as a directory, not a file without an extension)
+        if (this.isType(path, "D")) {
+            path := RTrim(path, "\") "\"
+        }
+
+        return path
+    }
+
+    parentOf(path)
+    {
+        path := this.normalize(path)
+        return this.normalize(RegExReplace(path,"[^\\]+\\?$"))
     }
 }

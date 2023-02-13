@@ -20,7 +20,7 @@ class ReceivingLog extends Actions.Base
             FileCopy, % templateFile, % filePath
         }
 
-        @File.createLock(filepath)
+        #.Path.createLock(filepath)
 
         Process, Exist, EXCEL.EXE
         while(ErrorLevel)
@@ -64,6 +64,6 @@ class ReceivingLog extends Actions.Base
         CurrWbk.Save()
         xlApp.Quit()
 
-        @File.freeLock(filepath)
+        #.Path.freeLock(filepath)
     }
 }

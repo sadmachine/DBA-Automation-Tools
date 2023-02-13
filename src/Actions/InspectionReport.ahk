@@ -23,7 +23,7 @@ class InspectionReport extends Actions.Base
             filepath := inspectionFolder "\" lot.inspectionNumber " - Inspection Report.xlsx"
             FileCopy, % template, % filepath
 
-            iReport := new Excel(@File.getFullPath(filepath))
+            iReport := new Excel(#.Path.makeAbsolute(filepath))
 
             excelColumns := inspectionReportConfig.get("excelColumnMapping")
 
