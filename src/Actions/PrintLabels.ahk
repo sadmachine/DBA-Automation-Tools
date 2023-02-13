@@ -23,15 +23,15 @@ class PrintLabels extends Actions.Base
         }
 
         ; Pull together data to add to csv
-        printJobFile.writeLine("partNum,lotNum,printQty,label")
+        printJobFile.writeLine("partNum,partDescription,lotNum,printQty,label")
 
         ; Loop over data and put into csv
         for n, lot in receiver.lots {
             printQtyDialog := new UI.NumberDialog("Lot Label Qty", {min: 1, max: 100})
             result := printQtyDialog.prompt("How many labels should be printed for lot # " lot.lotNumber "?")
             printQty := result.value
-            waterMark := (lot.hasCert == "Yes" ? "Main" : "QA HOLD")
-            printJobFile.writeLine(Format("{:i},""{:s}"",{:i},""{:s}""", receiver.partNumber, lot.lotNumber, printQty, waterMark))
+            labelName := (lot.hasCert == "Yes" ? "Main" : "QA HOLD")
+            printJobFile.writeLine(Format("""{:s}"",""{:s}"",""{:s}"",{:i},""{:s}""", receiver.partNumber, receiver.partDescription, lot.lotNumber, printQty, labelName))
         }
 
         printJobFile.Close(), printJobFile := ""

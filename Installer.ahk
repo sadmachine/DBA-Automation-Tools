@@ -14,10 +14,14 @@
 ; * Initial creation
 ; * Create basic installer for Receiving program
 ; * Get installation location, create directories, install the files
+; Revision 2 (02/10/2023)
+; * Work on Installer GUI
+; 
 ; ==============================================================================
 
 ; === TO-DOs ===================================================================
 ; TODO - Initialize config files on installation
+; TODO - Utilize settings ui to set required values, isntead of dialogs
 ; TODO - Allow picking of which modules to install
 ; TODO - Implement a migration/change handling system for updating between versions
 ; TODO - Detect install vs update
@@ -31,6 +35,8 @@ CreateDirectories()
 
 InstallFiles()
 
+SetupConfigIni()
+
 MsgBox % "Finished Installation"
 
 return
@@ -42,13 +48,15 @@ GetInstallationLocation()
         FileCreateDir, % "C:\DBA Help"
     }
     installationPath := "C:\DBA Help"
+    globalConfigPath := "C:\"
 
     installationGui := new UI.Base("DBA AutoTools Installer")
     installationGui.Add("Text", "w460", "Installation Location")
     installationGui.Add("Edit", "w400", installationPath)
-    installationGui.Add("Text", "w400", installationPath)
+    installationGui.Add("Button", "w400", installationPath)
 
-    FileSelectFolder, installationPath, *%installationPath%, 3
+    FileSelectFolder, installationPath, *%installationPath%, 3, % "Installation Location"
+    FileSelectFolder, globalConfigPath, *%globalConfigPath%, 3, % "Global Config Path"
 
     installationPath := RTrim(installationPath, "/\")
 }
@@ -87,4 +95,12 @@ InstallFiles()
     FileInstall, dist\modules\mods.ini, % @File.concat(modulesPath, "mods.ini"), 1
     FileInstall, dist\modules\templates\Incoming Inspection Log Template.xlsx, % @File.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
     FileInstall, dist\modules\templates\Incoming Inspection Report Template.xlsx, % @File.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
+}
+
+SetupConfigIni()
+{
+    Global
+    localConfigPath := configPath
+    IniWrite, % localConfigPath, % @File.concat(modulesPath, "config.ini"), % "location", % "local"
+    IniWrite, % globalConfigPath, % @File.concat(modulesPath, "config.ini"), % "location", % "global"
 }
