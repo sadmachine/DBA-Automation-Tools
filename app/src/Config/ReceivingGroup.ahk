@@ -88,9 +88,9 @@ class ReceivingGroup extends Config.Group
         excelColumnMappingSection.add(new Config.StringField("C of C Received")
             .setDefault("H")
             .setDescription("The column to insert the C of C Received. Example: 'H' for column H."))
-        excelColumnMappingSection.add(new Config.StringField("Receiver ID")
-            .setDefault("I")
-            .setDescription("The column to insert the Receiver ID. Example: 'I' for column I."))
+        ; excelColumnMappingSection.add(new Config.StringField("Receiver ID")
+        ;     .setDefault("I")
+        ;     .setDescription("The column to insert the Receiver ID. Example: 'I' for column I."))
 
         fileSection := new Config.Section("File")
         fileSection.add(new Config.PathField("Template")

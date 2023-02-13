@@ -56,7 +56,7 @@ class ReceivingLog extends Actions.Base
             emptyRow.Range(excelColumns.get("poNumber") "1").Value := receiver.poNumber
             emptyRow.Range(excelColumns.get("inspectionNumber") "1").Value := lot.inspectionNumber
             emptyRow.Range(excelColumns.get("cOfCReceived") "1").Value := (lot.hasCert == "Yes" ? "Y" : "N")
-            emptyRow.Range(excelColumns.get("receiverId") "1").Value := receiver.identification
+            ;emptyRow.Range(excelColumns.get("receiverId") "1").Value := receiver.identification
 
             lastRow := emptyRow
             emptyRow := lastRow.Offset(1, 0).Rows(1)
