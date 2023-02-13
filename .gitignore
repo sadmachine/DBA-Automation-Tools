@@ -3,8 +3,8 @@
 **/modules/config/*.ini
 **/modules/data/*.xlsx
 **/modules/data/*.csv
-tests/**/*.ini
-tests/*.ini
+app/tests/**/*.ini
+app/tests/*.ini
 dist/**/*.ini
 dist/modules/data/templates/*Incoming Inspection Log.xlsx
 **/*.log
