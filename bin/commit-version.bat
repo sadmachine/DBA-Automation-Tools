@@ -3,21 +3,23 @@
 set OLDPROMPT=%PROMPT%
 set COMPILER="%AHK_COMPILER%"
 set BINFILE="%AHK_COMPILER_BINFILE%"
-setlocal EnableDelayedExpansion
 PROMPT $G$S
 
-if "%1" == "" (
-  echo You must supply a version number.
+echo %2
+if "%~1" == "" (
+  echo You must supply a version number as argument 1.
 )
 
-if "%2" == "" (
-  echo You must supply a commit message.
+if "%~2" == "" (
+  echo You must supply a commit message as argument 2.
 )
 
-call .\build.bat %1
+call %~dp0\build.bat %~1
 
-git tag -a %1 -m %2
-git push origin %1
+git add .
+git commit -m "%~2"
+git tag -a %~1 -m "%~2"
+git push origin %~1
 
 :: Reset the prompt
 @PROMPT %OLDPROMPT%
