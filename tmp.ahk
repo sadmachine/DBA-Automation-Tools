@@ -9,9 +9,15 @@ SetWorkingDir, %A_ScriptDir%
 #Include <UI>
 #Include src/Config/All.ahk
 #Include <Config>
-#Include <@File>
-IniRead, globalConfigLocation, % @File.parseDirectory(A_LineFile) "/dist/modules/config.ini", % "location", % "global"
-IniRead, localConfigLocation, % @File.parseDirectory(A_LineFile) "/dist/modules/config.ini", % "location", % "local"
+#Include <#>
+
+path := "C:\Users\austi"
+path2 := "C:\Users\austi\test\test"
+
+MsgBox,% RegExReplace(path,"[^\\]+\\?$")
+MsgBox,% RegExReplace(path2,"[^\\]+\\?$")
+IniRead, globalConfigLocation, % #.Path.parseDirectory(A_LineFile) "/dist/modules/config.ini", % "location", % "global"
+IniRead, localConfigLocation, % #.Path.parseDirectory(A_LineFile) "/dist/modules/config.ini", % "location", % "local"
 Config.setLocalConfigLocation(localConfigLocation)
 Config.setGlobalConfigLocation(globalConfigLocation)
 Config.register(new DatabaseGroup())
