@@ -3,10 +3,12 @@
 class Logger
 {
     static logPath := ""
+    static logFilename := ""
 
-    setLocation(path)
+    setLocation(path, filename)
     {
         this.logPath := #.Path.normalize(path)
+        this.logFilename := filename
         this._assertLogPathExists()
     }
 
@@ -17,7 +19,7 @@ class Logger
         StringUpper, level, level
         FileAppend
             , % dateAndTime " [" level "] [" (!where ? "<global>" : where) "] : " message "`n"
-            , % #.Path.concat(this.logPath, "application.log")
+            , % #.Path.concat(this.logPath, this.logFilename)
     }
 
     info(where, message, data := "")
