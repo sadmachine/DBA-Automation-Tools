@@ -1,0 +1,14 @@
+#Include <@>
+#Include <#>
+#Include <ADOSQL>
+#Include <Config>
+#Include <DBA>
+#Include <Excel>
+#Include <Query>
+#Include <String>
+#include <UI>
+#Include src/Models.ahk
+#Include src/Controllers.ahk
+#Include src/Views.ahk
+#Include src/Actions.ahk
+#Include src/Config/All.ahk
