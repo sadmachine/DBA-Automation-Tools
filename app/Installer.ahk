@@ -32,9 +32,12 @@
 ; TODO - Implement a migration/change handling system for updating between versions
 ; TODO - Detect install vs update
 ; ==============================================================================
-IS_INSTALLATION := true
 
-#Include src/Bootstrap.ahk
+#Include src/Autoload.ahk
+
+CURRENT_VERSION := "0.9.2"
+
+@.registerExceptionHandler()
 
 GetInstallationLocation()
 
