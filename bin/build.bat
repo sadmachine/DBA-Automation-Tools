@@ -19,26 +19,26 @@ if "%1" NEQ "" (
 tasklist /fi "imagename eq DBA AutoTools.exe" |find ":" > nul
 if errorlevel 1 (
   taskkill /f /im "DBA AutoTools.exe"
-  echo > Killing existing 'DBA AutoTools.exe' process...
+  echo ^> Killing existing 'DBA AutoTools.exe' process...
 )
 
 tasklist /fi "imagename eq PO_Verification.exe" |find ":" > nul
 if errorlevel 1 (
   taskkill /f /im "PO_Verification.exe"
-  echo > Killing existing 'PO_Verification.exe' process...
+  echo ^> Killing existing 'PO_Verification.exe' process...
 )
 
 tasklist /fi "imagename eq tmp.exe" |find ":" > nul
 if errorlevel 1 (
   taskkill /f /im "tmp.exe"
-  echo > Killing existing 'tmp.exe' process...
+  echo ^> Killing existing 'tmp.exe' process...
 )
 if errorlevel 1 taskkill /f /im "tmp.exe"
 
 tasklist /fi "imagename eq Settings.exe" |find ":" > nul
 if errorlevel 1 (
   taskkill /f /im "Settings.exe"
-  echo > Killing existing 'Settings.exe' process...
+  echo ^> Killing existing 'Settings.exe' process...
 )
 
 @echo on
