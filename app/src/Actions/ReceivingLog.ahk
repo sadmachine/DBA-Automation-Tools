@@ -7,7 +7,7 @@ class ReceivingLog extends Actions.Base
         receivingLogConfig := Config.load("receiving.incomingInspectionLog")
         fileDestination := receivingLogConfig.get("file.destination")
         templateFile := receivingLogConfig.get("file.template")
-        filePath := RTrim(fileDestination, "/\") "\Receiving Log.xlsx"
+        filePath := RTrim(fileDestination, "/\") "\Incoming Inspection Log.xlsx"
 
         if (!FileExist(fileDestination) == "D") {
             throw new @.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
