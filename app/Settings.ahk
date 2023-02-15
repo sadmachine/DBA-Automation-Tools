@@ -9,5 +9,12 @@ SetWorkingDir, %A_ScriptDir%
 settingsGui := new UI.Settings("DBA AutoTools Settings")
 settingsGui.show()
 
+GuiClose(guiHwnd)
+{
+    global
+    if (guiHwnd == settingsGui.hwnd) {
+        ExitApp
+    }
+}
 WinWaitClose, % "DBA AutoTools Settings"
 ExitApp
