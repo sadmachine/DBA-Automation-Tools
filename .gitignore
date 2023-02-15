@@ -14,3 +14,4 @@ dist/modules/data/templates/*Incoming Inspection Log.xlsx
 !**/modules/config/*.default.ini
 !dist/**/*.exe
 !*.example.ini
+!installers/*.exe
