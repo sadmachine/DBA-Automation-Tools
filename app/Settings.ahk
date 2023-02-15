@@ -16,5 +16,3 @@ GuiClose(guiHwnd)
         ExitApp
     }
 }
-WinWaitClose, % "DBA AutoTools Settings"
-ExitApp
