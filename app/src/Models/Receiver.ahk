@@ -81,8 +81,8 @@ class Receiver
 
     assertPoHasCorrectStatus()
     {
-        if (!InStr("Open,Printed", this.related["porder"][1].status)) {
-            throw new @.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' has status '" this.related["porder"][1].status "'. Status should be either 'Open' or 'Printed'")
+        if (!InStr("Opened,Printed", this.related["porder"][1].status)) {
+            throw new @.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' has status '" this.related["porder"][1].status "'. Status should be either 'Opened' or 'Printed'")
         }
     }
 
