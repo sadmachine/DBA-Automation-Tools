@@ -11,6 +11,7 @@ class Base
     _hwnd := ""
     _autoSize := false
     _built := false
+    _label := ""
 
     static _defaultOptions := ""
     static _defaultFont := {"options": "", "fontName": ""}
@@ -30,6 +31,20 @@ class Base
         }
     }
 
+    label[] {
+        get {
+            if (this._label == "") {
+                topLevelClass := StrSplit(this.__Class, ".")[2]
+                Random, randomNum
+                this._label := topLevelClass "" A_TickCount "" randomNum
+            }
+            return this._label
+        }
+        set {
+            return this._label
+        }
+    }
+
     options[init := false] {
         get {
             if (this._options == "") {
@@ -38,11 +53,10 @@ class Base
             return this._options
         }
         set {
-            local thisHwnd := this.hwnd
-            this._options := value
-            options := this._options " hwnd" thisHwnd
+            this._options := value " hwnd" this.label
+            options := this._options
             if (!init) {
-                Gui, %thisHwnd%:%options%
+                Gui, %thisLabel%:%options%
             }
             return this._options
         }
@@ -63,13 +77,13 @@ class Base
             throw new @.ProgrammerException(A_ThisFunc, "Invalid key for font options: " key)
         }
         set {
-            local thisHwnd := this.hwnd
+            local thisLabel := this.label
             if (key == "") {
                 if (!IsObject(value)) {
                     throw new @.ProgrammerException(A_ThisFunc, "You must supply an object (keys: options, fontName) if you're setting font without a key.")
                 }
                 this._font := value
-                Gui, %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
+                Gui, %thisLabel%:Font, % this.font["options"], % this.font["fontName"]
                 return this._font
             }
             if (!InStr("options fontName", key)) {
@@ -78,7 +92,7 @@ class Base
 
             this._font[key] := value
 
-            Gui, %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
+            Gui, %thisLabel%:Font, % this.font["options"], % this.font["fontName"]
             return this._font
         }
     }
@@ -104,9 +118,9 @@ class Base
             return this._margin
         }
         set {
-            local thisHwnd := this.hwnd
+            local thisLabel := this.label
             this._margin := value
-            Gui, %thisHwnd%:Margin, % this.margin, % this.margin
+            Gui, %thisLabel%:Margin, % this.margin, % this.margin
             return this._margin
         }
     }
@@ -126,7 +140,7 @@ class Base
             throw new @.ProgrammerException(A_ThisFunc, "Invalid key for color: " key)
         }
         set {
-            local thisHwnd := this.hwnd
+            local thisLabel := this.label
             if (key == "") {
                 if (!IsObject(value)) {
                     throw new @.ProgrammerException(A_ThisFunc, "You must supply an object (keys: windowColor, controlColor) if you're setting color without a key.")
@@ -139,23 +153,19 @@ class Base
 
             this._color[key] := value
 
-            Gui, %thisHwnd%:Color, % this.color["windowColor"], % this.color["controlColor"]
+            Gui, %thisLabel%:Color, % this.color["windowColor"], % this.color["controlColor"]
             return this._color
         }
     }
 
     hwnd[] {
         get {
-            if (this._hwnd == "") {
-                topLevelClass := StrSplit(this.__Class, ".")[2]
-                Random, randomNum
-                this._hwnd := topLevelClass "" A_TickCount "" randomNum
-            }
-            return this._hwnd
+            thisLabel := this.label
+            thisHwnd := %thisLabel%
+            return thisHwnd
         }
         set {
-            this._hwnd := value
-            return this._hwnd
+            return this.hwnd
         }
     }
 
@@ -220,11 +230,11 @@ class Base
     __New(title := "", options := "")
     {
         Global
-        local thisHwnd := this.hwnd
-        this.title := title
+        local thisLabel := this.label
         this.options[true] := options
-        thisHwnd := this.hwnd
-        Gui, %thisHwnd%:New, % this.options, % this.title
+        this.title := title
+        thisLabel := this.label
+        Gui, %thisLabel%:New, % this.options, % this.title
         return this
     }
 
@@ -238,70 +248,70 @@ class Base
     Add(ControlType, cOptions := "", text := "")
     {
         global
-        local thisHwnd := this.hwnd
+        local thisLabel := this.label
 
         Random, rand
         cHwnd := ControlType "" A_TickCount "" rand
         cOptions .= " hwnd" cHwnd
 
-        Gui %thisHwnd%:Add, % ControlType, % cOptions, % text
+        Gui %thisLabel%:Add, % ControlType, % cOptions, % text
         return % %cHwnd%
     }
 
     Show(options := "", title := -1)
     {
         global
-        thisHwnd := this.hwnd
+        thisLabel := this.label
         if (title != -1) {
             this.title := title
         }
-        Gui %thisHwnd%:Show, % options, % this.title
+        Gui %thisLabel%:Show, % options, % this.title
     }
 
     Submit(NoHide := false)
     {
         global
-        local thisHwnd := this.hwnd
+        local thisLabel := this.label
         if (NoHide) {
-            Gui %thisHwnd%:Submit, NoHide
+            Gui %thisLabel%:Submit, NoHide
         }
-        Gui %thisHwnd%:Submit
+        Gui %thisLabel%:Submit
     }
 
     Cancel()
     {
         global
-        local thisHwnd := this.hwnd
-        Gui %thisHwnd%:Cancel
+        local thisLabel := this.label
+        Gui %thisLabel%:Cancel
     }
 
     Hide()
     {
         global
-        local thisHwnd := this.hwnd
-        Gui %thisHwnd%:Hide
+        local thisLabel := this.label
+        Gui %thisLabel%:Hide
     }
 
     Destroy()
     {
         global
-        local thisHwnd := this.hwnd
-        Gui %thisHwnd%:Destroy
+        local thisLabel := this.label
+        Gui %thisLabel%:Destroy
         this._built := false
     }
 
     Default()
     {
         global
-        local thisHwnd := this.hwnd
-        Gui %thisHwnd%:Default
+        local thisLabel := this.label
+        Gui %thisLabel%:Default
     }
 
     ApplyFont()
     {
         global
-        local thisHwnd := this.hwnd
-        Gui %thisHwnd%:Font, % this.font["options"], % this.font["fontName"]
+        local thisLabel := this.label
+        Gui %thisLabel%:Font, % this.font["options"], % this.font["fontName"]
     }
 
     FocusControl(CtrlHwnd)
@@ -312,13 +322,13 @@ class Base
 
     WaitClose()
     {
-        WinWaitClose, % this.title
+        WinWaitClose, % "ahk_id " this.hwnd
     }
 
     OwnDialogs()
     {
-        local thisHwnd := this.hwnd
-        Gui %thisHwnd%: +OwnDialogs
+        local thisLabel := this.label
+        Gui %thisLabel%: +OwnDialogs
     }
 
     updateText(ctrlHwnd, newText)
