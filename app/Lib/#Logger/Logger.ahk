@@ -18,7 +18,7 @@ class Logger
         FormatTime, dateAndTime,, % "yyyy-MM-dd hh:mm:ss"
         StringUpper, level, level
         FileAppend
-            , % dateAndTime " [" level "] [" (!where ? "<global>" : where) "] : " message "`n"
+            , % dateAndTime " [" level "] [" (!where ? "<global>" : where) "] " message "`n" (data == "" ?: this._prepareData(data))
             , % #.Path.normalize(#.Path.concat(this.logPath, this.logFilename))
     }
 
@@ -43,5 +43,39 @@ class Logger
             this.logPath := ""
             throw new @.ProgrammerException(A_ThisFunc, "Log Location must be a directory, non-directory specified: `n" path)
         }
+    }
+
+    _prepareData(data, level := 0)
+    {
+        if (!IsObject(data)) {
+            if (@.typeof(data) == "String") {
+                return """" data """,`n"
+            }
+            return data ",`n"
+        }
+
+        indentStep := "` ` ` ` "
+        indentMore := "| " indentStep
+        indent := "| "
+        Loop % level {
+            indent .= indentStep
+            indentMore .= indentStep
+        }
+
+        dataStr := ""
+
+        if (level == 0) {
+            dataStr .= "| context = "
+        }
+        dataStr .= "{`n"
+        for index, value in data {
+            dataStr .= indentMore index ": " this._prepareData(value, level+1)
+        }
+        dataStr .= indent "}"
+        if (level != 0) {
+            dataStr .= ","
+        }
+        dataStr .= "`n"
+        return dataStr
     }
 }
