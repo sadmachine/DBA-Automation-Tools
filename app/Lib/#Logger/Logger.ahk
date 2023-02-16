@@ -19,7 +19,7 @@ class Logger
         StringUpper, level, level
         FileAppend
             , % dateAndTime " [" level "] [" (!where ? "<global>" : where) "] : " message "`n"
-            , % #.Path.concat(this.logPath, this.logFilename)
+            , % #.Path.normalize(#.Path.concat(this.logPath, this.logFilename))
     }
 
     info(where, message, data := "")

@@ -35,7 +35,7 @@
 
 #Include src/Autoload.ahk
 
-CURRENT_VERSION := "0.9.4"
+CURRENT_VERSION := "0.9.5"
 
 @.registerExceptionHandler()
 
@@ -72,10 +72,19 @@ GetInstallationLocation()
         MsgBox % "You must supply an installation location to continue. Exiting..."
         ExitApp
     }
-    FileSelectFolder, globalConfigPath, *%globalConfigPath%, 3, % "Global Config Path"
-    if (ErrorLevel) {
-        MsgBox % "You must supply a global config path to continue. Exiting..."
-        ExitApp
+
+    configFilePath := #.Path.concat(installationPath, "DBA AutoTools\modules\config.ini")
+    if (FileExist(configFilePath)) {
+        IniRead, globalConfigValue, % configFilePath, % "location", % "global", % __UNDEFINED__
+        if (globalConfigValue == "__UNDEFINED__") {
+            FileSelectFolder, globalConfigPath, *%globalConfigPath%, 3, % "Global Config Path"
+            if (ErrorLevel) {
+                MsgBox % "You must supply a global config path to continue. Exiting..."
+                ExitApp
+            }
+        } else {
+            globalConfigPath := globalConfigValue
+        }
     }
 
     installationPath := RTrim(installationPath, "/\")
