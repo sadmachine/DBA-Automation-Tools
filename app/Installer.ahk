@@ -68,7 +68,15 @@ GetInstallationLocation()
     ; installationGui.Add("Button", "w400", installationPath)
 
     FileSelectFolder, installationPath, *%installationPath%, 3, % "Installation Location"
+    if (ErrorLevel) {
+        MsgBox % "You must supply an installation location to continue. Exiting..."
+        ExitApp
+    }
     FileSelectFolder, globalConfigPath, *%globalConfigPath%, 3, % "Global Config Path"
+    if (ErrorLevel) {
+        MsgBox % "You must supply a global config path to continue. Exiting..."
+        ExitApp
+    }
 
     installationPath := RTrim(installationPath, "/\")
 }
