@@ -14,6 +14,7 @@ class Receiving extends Controllers.Base
         UI.Base.defaultFont := {options: "s12", fontName: ""}
         UI.Base.defaultMargin := 5
         UI.MsgBoxObj.defaultWidth := 320
+        #.Logger.info(A_ThisFunc, "Complete")
     }
 
     bootstrapReceiver(receiver)

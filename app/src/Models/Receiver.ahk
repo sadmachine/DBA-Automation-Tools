@@ -108,6 +108,7 @@ class Receiver
             nextInspectionNumber := inspectionNumberfile.get("last.number") + 1
             lot.inspectionNumber := nextInspectionNumber
             inspectionNumberFile.set("last.number", nextInspectionNumber)
+            #.Logger.info(A_ThisFunc, "Got inspection number: " nextInspectionNumber)
         }
         inspectionNumberFile.store()
         Config.unlock("receiving.inspectionNumber", Config.Scope.GLOBAL)

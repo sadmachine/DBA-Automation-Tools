@@ -1,8 +1,3 @@
-#SingleInstance, Force
-#NoEnv
-SendMode Input
-SetWorkingDir, %A_ScriptDir%
-
 #Include src/Bootstrap.ahk
 
 try {
@@ -15,6 +10,8 @@ try {
     @.friendlyException(e)
     receivingController.cleanup()
 }
+
+#.Logger.info(A_LineFile, "Before ExitApp")
 
 ExitApp
 

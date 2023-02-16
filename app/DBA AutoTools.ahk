@@ -37,8 +37,6 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 DEBUG_MODE := false
 ; The folder where modules can be found
 MODS_FOLDER := A_ScriptDir "/modules"
-; Will be used to hold a list of available modules to load
-AVAILABLE_MODS := []
 
 ; --- Setup steps --------------------------------------------------------------
 
@@ -56,6 +54,9 @@ for n, param in A_Args
         MODS_FOLDER := "/" parts[2]
     }
 }
+
+#.Logger.info(A_LineFile, "`DEBUG_MODE` = " DEBUG_MODE)
+#.Logger.info(A_LineFile, "`MODS_FOLDER` = " MODS_FOLDER)
 
 ModuleLoader.boot(MODS_FOLDER)
 Dashboard.initialize()
