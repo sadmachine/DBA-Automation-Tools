@@ -45,9 +45,9 @@ if errorlevel 1 (
 :: Build both AHK files to EXEs
 %COMPILER% /base %BINFILE% /in "%CD%\app\DBA AutoTools.ahk" /out "%CD%\dist\DBA AutoTools.exe" /icon "%CD%\assets\Prag Logo.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\PO_Verification.ahk" /out "%CD%\dist\modules\PO_Verification.exe" /icon "%CD%\assets\Prag Logo.ico" 
-%COMPILER% /base %BINFILE% /in "%CD%\app\Installer.ahk" /out "%CD%\installers\Installer-DBA-AutoTools-%CURRENT_VERSION%.exe" /icon "%CD%\assets\Installer.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\tmp.ahk" /out "%CD%\tmp.exe" /icon "%CD%\assets\Prag Logo.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\Settings.ahk" /out "%CD%\dist\Settings.exe" /icon "%CD%\assets\Settings5.ico" 
+%COMPILER% /base %BINFILE% /in "%CD%\app\Installer.ahk" /out "%CD%\installers\Installer-DBA-AutoTools-%CURRENT_VERSION%.exe" /icon "%CD%\assets\Installer.ico" 
 
 :: Reset the prompt
 @PROMPT %OLDPROMPT%
