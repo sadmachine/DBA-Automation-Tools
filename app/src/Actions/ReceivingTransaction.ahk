@@ -70,7 +70,7 @@ class ReceivingTransaction extends Actions.Base
             ExitApp
         }
 
-        Send {Alt Down}pR{Alt Up}
+        WinMenuSelectItem, % DBA.Windows.Main,, % "Purch", % "PO Receipts"
         WinWaitActive, % DBA.Windows.POReceiptLookup,, 5
         if ErrorLevel
         {
