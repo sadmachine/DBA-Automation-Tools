@@ -78,5 +78,7 @@ class ReceivingLog extends Actions.Base
 
         #.Path.freeLock(filepath)
         #.Logger.info(A_ThisFunc, "Released file lock")
+
+        xlApp := "", CurrWbk := "", CurrSht := ""
     }
 }

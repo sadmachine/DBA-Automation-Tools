@@ -23,22 +23,36 @@ class InspectionReport extends Actions.Base
             filepath := inspectionFolder "\" lot.inspectionNumber " - Inspection Report.xlsx"
             FileCopy, % template, % filepath
 
-            iReport := new Excel(#.Path.makeAbsolute(filepath))
+            #.Path.createLock(filepath)
+            #.Logger.info(A_ThisFunc, "Acquired file lock")
+
+            xlApp := ComObjCreate("Excel.Application")
+            #.Logger.info(A_ThisFunc, "Created excel app")
+            CurrWbk := xlApp.Workbooks.Open(filepath) ; Open the master file
+            #.Logger.info(A_ThisFunc, "Opened workbook")
+            CurrSht := CurrWbk.Sheets(1)
 
             excelColumns := inspectionReportConfig.get("excelColumnMapping")
 
-            iReport.range[excelColumns.get("inspectionFormNumber")].Value := lot.inspectionNumber
-            iReport.range[excelColumns.get("reportDate")].Value := dateOfGeneration
-            iReport.range[excelColumns.get("stelrayMaterialNumber")].Value := receiver.partNumber
-            iReport.range[excelColumns.get("materialDescription")].Value := receiver.partDescription
-            iReport.range[excelColumns.get("lotNumber")].Value := lot.lotNumber
-            iReport.range[excelColumns.get("poNumber")].Value := receiver.poNumber
-            iReport.range[excelColumns.get("vendorName")].Value := receiver.supplier
-            iReport.range[excelColumns.get("quantityOnPo")].Value := receiver.lineQuantity
-            iReport.range[excelColumns.get("quantityReceived")].Value := lot.quantity
+            CurrSht.range[excelColumns.get("inspectionFormNumber")].Value := lot.inspectionNumber
+            CurrSht.range[excelColumns.get("reportDate")].Value := dateOfGeneration
+            CurrSht.range[excelColumns.get("stelrayMaterialNumber")].Value := receiver.partNumber
+            CurrSht.range[excelColumns.get("materialDescription")].Value := receiver.partDescription
+            CurrSht.range[excelColumns.get("lotNumber")].Value := lot.lotNumber
+            CurrSht.range[excelColumns.get("poNumber")].Value := receiver.poNumber
+            CurrSht.range[excelColumns.get("vendorName")].Value := receiver.supplier
+            CurrSht.range[excelColumns.get("quantityOnPo")].Value := receiver.lineQuantity
+            CurrSht.range[excelColumns.get("quantityReceived")].Value := lot.quantity
 
-            iReport.Save()
-            iReport.Quit()
+            CurrWbk.Save()
+            #.Logger.info(A_ThisFunc, "Saved Workbook")
+
+            xlApp.Quit()
+            #.Logger.info(A_ThisFunc, "Quit Excel App")
+            xlApp := "", CurrWbk := "", CurrSht := ""
+
+            #.Path.freeLock(filepath)
+            #.Logger.info(A_ThisFunc, "Released file lock")
 
             this.progressGui.Increment()
         }
