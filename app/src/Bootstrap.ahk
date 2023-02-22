@@ -1,3 +1,21 @@
+; === Script Information =======================================================
+; Name .........: Bootstrap Script
+; Description ..: Includes common libraries/files and configures them
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 02/13/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: Bootstrap.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (02/13/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; TODO - Clean/Organize better
+; ==============================================================================
 #NoEnv
 #SingleInstance, Force
 SendMode, Input

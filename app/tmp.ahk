@@ -1,5 +1,20 @@
-#Include src/Autoload.ahk
+; === Script Information =======================================================
+; Name .........: Temporary scripts
+; Description ..: A file used for trying things out and testing
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 02/13/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: tmp.ahk
+; ==============================================================================
 
-data := {hello: ["test", 1, 0.5], 2: "yippee", "yarg": {fast: "paced", lifestyle: "is dangerous"}}
+; === Revision History =========================================================
+; Revision 1 (02/13/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
+#Include src/Autoload.ahk
 
 MsgBox % #.Logger._prepareData(data)
