@@ -20,19 +20,45 @@
 ; Views.Installer
 class Installer extends UI.Base
 {
-    __New()
+    actions := {}
+    fields := {}
+    model := ""
+    currentScreen := 1
+
+    __New(model)
     {
-        base.__New("DBA AutoTools Installer")
+        base.__New("DBA AutoTools Server Installer")
+        this.model := model
         this.build()
     }
 
-    build()
+    build(screenIndex)
     {
         this.Add("Text", "w460", "Installation Location")
-        this.Add("Edit", "w400", installationPath)
-        this.Add("Button", "w60 Default", )
-
+        this.fields["installationPath"] := this.Add("Edit", "w400", this.model.defaultInstallationPath)
+        this.actions["browse"] := this.Add("Button", "w60 Default", "Browse")
         base.build()
     }
 
+    buildNext()
+    {
+        currentScreen += 1
+        this.build(currentScreen)
+    }
+
+    buildPrev()
+    {
+        currentScreen -=1
+        this.build(currentScreen)
+    }
+
+    show()
+    {
+        base.Show("w640 h480")
+    }
+
+    updateModel(model)
+    {
+
+    }
 }

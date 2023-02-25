@@ -21,4 +21,5 @@ class Models {
     #Include src/Models/DBA.ahk
     #Include src/Models/Receiver.ahk
     #Include src/Models/LotInfo.ahk
+    #Include src/Models/Installation.ahk
 }
