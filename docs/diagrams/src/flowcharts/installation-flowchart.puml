@@ -1,0 +1,50 @@
+
+@startuml
+
+skinparam LegendBackgroundColor #FAFAFA
+
+start
+
+:New version of DBA AutoTools ready to install;
+
+partition Server Installation {
+
+  :Copy Server Installation .exe to server;
+
+  :Run Server Installation program;
+
+  if (Existing Server Installation?) then (yes)
+    while (installed version != current version)
+      :Perform intermediate version migrations;
+    endwhile
+  else (no)
+    :Perform fresh install (write all files from current version);
+    :Initialize Global Configuration;
+  endif
+}
+
+partition Client Installation {
+  switch (Existing Client Installation?)
+    case ( Yes, Explicit Upgrade )
+      :Run the Client Installation program from a client;
+      while (installed version != current version)
+        :Perform intermediate version migrations;
+      endwhile
+    case ( Yes, Implicit Upgrade )
+      :Next time user opens program, check for program version;
+      if (Update available?) then (yes)
+        while (installed version != current version)
+          :Perform intermediate version migrations;
+        endwhile
+      endif
+    case ( No, Standard Installation )
+      :Run the Client Installation program from a client;
+      :Perform fresh install (write all config files from current version);
+      :Initialize Global Configuration;
+      :Create Shortcuts;
+  endswitch
+}
+
+stop
+
+@enduml

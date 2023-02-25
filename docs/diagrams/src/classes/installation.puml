@@ -1,0 +1,70 @@
+@startuml
+
+'--- Controllers.ServerInstallation --------------------------------------------
+class Controllers.ServerInstallation <extends Controllers.Base> {
+  +model: Models.Installation
+  +view: Views.Installation
+
+  +__New(defaultInstallationPath: string): <<constructor>>
+  +@browse(): void
+  +@next(): void
+  +@prev(): void
+  +@finish(): void
+  +@cancel(): void
+  +install(): void
+  +migrate(): void
+  #_bindControls(): void
+}
+
+Controllers.ServerInstallation --> Models.Installation
+Controllers.ServerInstallation --> Views.Installation
+
+'--- Controllers.ClientInstallation --------------------------------------------
+class Controllers.ClientInstallation <extends Controllers.Base> {
+  +model: Models.Installation
+  +view: Views.Installation
+
+  +__New(defaultInstallationPath: string): <<constructor>>
+  +@browse(): void
+  +@next(): void
+  +@prev(): void
+  +@finish(): void
+  +@cancel(): void
+  +install(): void
+  +migrate(): void
+}
+
+Controllers.ClientInstallation --> Models.Installation
+Controllers.ClientInstallation --> Views.Installation
+
+'--- Models.Installation -------------------------------------------------------
+class Models.Installation {
+  +installationPath: string
+  +defaultInstallationPath: string
+  +registeredMigrations: Migrations[0..*]
+
+  +__New(defaultInstallationPath: string): <<constructor>>
+  +isAlreadyInstalled(): boolean
+  +registerMigration(migration: Migration): void
+}
+
+
+'--- Views.Installation --------------------------------------------------------
+class Views.Installation <extends UI.Base> {
+  +actions: Hwnd[0..*]
+  +fields: Hwnd[0..*]
+  +model: Models.Installation
+  +currentScreen: integer
+
+  +__New(model: Models.Installation): <<constructor>>
+  +build(screenIndex: integer)
+  +buildNext(): void
+  +buildPrevious(): void
+  +show(): void
+  +updateModel(model: Models.Installation): void
+}
+
+Views.Installation --> Models.Installation
+
+
+@enduml
