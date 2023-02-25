@@ -230,11 +230,7 @@ class Base
     __New(title := "", options := "")
     {
         Global
-        local thisLabel := this.label
-        this.options[true] := options
-        this.title := title
-        thisLabel := this.label
-        Gui, %thisLabel%:New, % this.options, % this.title
+        this.Initialize(title, options)
         return this
     }
 
@@ -244,6 +240,16 @@ class Base
     }
 
     ; --- Methods --------------------------------------------------------------
+
+    Initialize(title := "", options := "")
+    {
+        global
+        local thisLabel := this.label
+        this.options[true] := options
+        this.title := title
+        thisLabel := this.label
+        Gui, %thisLabel%:New, % this.options, % this.title
+    }
 
     Add(ControlType, cOptions := "", text := "")
     {
