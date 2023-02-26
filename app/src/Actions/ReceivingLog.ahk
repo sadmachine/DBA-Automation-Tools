@@ -7,7 +7,8 @@ class ReceivingLog extends Actions.Base
         receivingLogConfig := Config.load("receiving.incomingInspectionLog")
         fileDestination := receivingLogConfig.get("file.destination")
         templateFile := receivingLogConfig.get("file.template")
-        filePath := RTrim(fileDestination, "/\") "\Incoming Inspection Log.xlsx"
+        copyPath := RTrim(fileDestination, "/\") "\Incoming Inspection Log.xlsx"
+        filePath := RTrim(fileDestination, "/\") "\.Incoming Inspection Log.xlsx"
 
         #.Logger.info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
 
@@ -22,7 +23,7 @@ class ReceivingLog extends Actions.Base
             FileCopy, % templateFile, % filePath
         }
 
-        #.Path.createLock(filepath)
+        #.Path.createLock(filePath)
         #.Logger.info(A_ThisFunc, "Acquired file lock")
 
         ; Process, Exist, EXCEL.EXE
@@ -37,7 +38,7 @@ class ReceivingLog extends Actions.Base
         ; }
         xlApp := ComObjCreate("Excel.Application")
         #.Logger.info(A_ThisFunc, "Created excel app")
-        CurrWbk := xlApp.Workbooks.Open(filepath) ; Open the master file
+        CurrWbk := xlApp.Workbooks.Open(filePath) ; Open the master file
         #.Logger.info(A_ThisFunc, "Opened workbook")
         CurrSht := CurrWbk.Sheets(1)
         ; Get the last cell in column A, then save a reference to the cell next to it (column B)
@@ -76,7 +77,11 @@ class ReceivingLog extends Actions.Base
         xlApp.Quit()
         #.Logger.info(A_ThisFunc, "Quit Excel App")
 
-        #.Path.freeLock(filepath)
+        if (!#.Path.inUse(copyPath)) {
+            FileCopy, % filePath, % copyPath, 1
+        }
+
+        #.Path.freeLock(filePath)
         #.Logger.info(A_ThisFunc, "Released file lock")
 
         xlApp := "", CurrWbk := "", CurrSht := ""
