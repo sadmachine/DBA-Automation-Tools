@@ -54,12 +54,15 @@ class Views.Installation <extends UI.Base> {
   +actions: Hwnd[0..*]
   +fields: Hwnd[0..*]
   +model: Models.Installation
-  +currentScreen: integer
+  +pages: BoundFunc[0..*]
+  +currentPage: integer
 
   +__New(model: Models.Installation): <<constructor>>
-  +build(screenIndex: integer)
-  +buildNext(): void
-  +buildPrevious(): void
+  +registerPage(index: integer, page: BoundFunc) : void
+  +build(): void
+  +buildPage(Index: integer) : void 
+  +buildNextPage(): void
+  +buildPrevPage(): void
   +show(): void
   +updateModel(model: Models.Installation): void
 }
