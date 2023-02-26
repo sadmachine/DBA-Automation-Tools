@@ -118,4 +118,10 @@ class Path
         path := this.normalize(path)
         return this.normalize(RegExReplace(path,"[^\\]+\\?$"))
     }
+
+    inUse(path)
+    {
+        path := this.normalize(path)
+        return FileExist(path) && !FileOpen(path, "rw")
+    }
 }
