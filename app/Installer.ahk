@@ -35,7 +35,7 @@
 
 #Include src/Autoload.ahk
 
-CURRENT_VERSION := "0.9.6"
+CURRENT_VERSION := "0.9.7"
 
 @.registerExceptionHandler()
 
