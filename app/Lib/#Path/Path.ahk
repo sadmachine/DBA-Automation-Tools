@@ -68,6 +68,7 @@ class Path
             }
         }
         FileAppend,, % lockPath
+        FileSetAttrib, +H, % lockPath
         return true
     }
 
@@ -122,6 +123,12 @@ class Path
     inUse(path)
     {
         path := this.normalize(path)
+        directory := this.parseDirectory(path)
+        filename := this.parseFilename(path)
+        temporaryFile := this.concat(directory, "~$" filename)
+        if (FileExist(temporaryFile)) {
+            return true
+        }
         return FileExist(path) && !FileOpen(path, "rw")
     }
 }
