@@ -23,6 +23,11 @@ class ReceivingLog extends Actions.Base
             FileCopy, % templateFile, % filePath
         }
 
+        FileGetAttrib, fileAttributes, % filePath
+        if (!InStr(fileAttributes, "H")) {
+            FileSetAttrib, +H, % filePath
+        }
+
         #.Path.createLock(filePath)
         #.Logger.info(A_ThisFunc, "Acquired file lock")
 
@@ -79,6 +84,8 @@ class ReceivingLog extends Actions.Base
 
         if (!#.Path.inUse(copyPath)) {
             FileCopy, % filePath, % copyPath, 1
+            FileSetAttrib, -H, % copyPath
+            FileSetAttrib, +H, % filePath
         }
 
         #.Path.freeLock(filePath)
