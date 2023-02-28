@@ -88,6 +88,9 @@ class ProgressBoxObj extends UI.Base
             GuiControl,, % %progressBar%, +1
         } else {
             this._currentCount += 1
+            if (this._currentCount > this._maxCount) {
+                return
+            }
             GuiControl,, % %progressBar%, % this._currentCount
             GuiControl,, % %progressText%, % this._currentCount " / " this._maxCount
         }
