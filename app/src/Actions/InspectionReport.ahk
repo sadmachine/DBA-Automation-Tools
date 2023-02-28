@@ -13,6 +13,10 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (02/27/2023)
+; * Write to temporary excel file on local maachine, then copy to real location
+;
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
