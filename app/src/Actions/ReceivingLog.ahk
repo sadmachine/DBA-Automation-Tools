@@ -7,8 +7,9 @@ class ReceivingLog extends Actions.Base
         receivingLogConfig := Config.load("receiving.incomingInspectionLog")
         fileDestination := receivingLogConfig.get("file.destination")
         templateFile := receivingLogConfig.get("file.template")
-        copyPath := RTrim(fileDestination, "/\") "\Incoming Inspection Log.xlsx"
-        filePath := RTrim(fileDestination, "/\") "\.Incoming Inspection Log.xlsx"
+        copyPath := #.Path.concat(fileDestination, "Incoming Inspection Log.xlsx")
+        filePath := #.Path.concat(fileDestination, ".Incoming Inspection Log.xlsx")
+        tempFilePath := #.Path.concat(A_Temp, ".Incoming Inspection Log.xlsx")
 
         #.Logger.info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
 
@@ -31,6 +32,14 @@ class ReceivingLog extends Actions.Base
         #.Path.createLock(filePath)
         #.Logger.info(A_ThisFunc, "Acquired file lock")
 
+        #.Logger.info(A_ThisFunc, "Copying Incoming Inspection... ", {filepath: filePath, tempFilePath: tempFilePath})
+        FileCopy, % filePath, % tempFilePath, 1
+        #.Logger.info(A_ThisFunc, "Success")
+
+        if (ErrorLevel) {
+            throw new @.FilesystemException(A_ThisFunc, "Could not copy '" filePath "' to '" tempFilePath "'")
+        }
+
         ; Process, Exist, EXCEL.EXE
         ; while(ErrorLevel)
         ; {
@@ -43,7 +52,7 @@ class ReceivingLog extends Actions.Base
         ; }
         xlApp := ComObjCreate("Excel.Application")
         #.Logger.info(A_ThisFunc, "Created excel app")
-        CurrWbk := xlApp.Workbooks.Open(filePath) ; Open the master file
+        CurrWbk := xlApp.Workbooks.Open(tempFilePath) ; Open the master file
         #.Logger.info(A_ThisFunc, "Opened workbook")
         CurrSht := CurrWbk.Sheets(1)
         ; Get the last cell in column A, then save a reference to the cell next to it (column B)
@@ -82,6 +91,16 @@ class ReceivingLog extends Actions.Base
         xlApp.Quit()
         #.Logger.info(A_ThisFunc, "Quit Excel App")
 
+        xlApp := "", CurrWbk := "", CurrSht := ""
+
+        #.Logger.info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
+        FileMove, % tempFilePath, % filePath, 1
+        #.Logger.info(A_ThisFunc, "Success")
+
+        if (ErrorLevel) {
+            throw new @.FilesystemException(A_ThisFunc, "Could not copy incoming inspection log from the temp directory to its destination.")
+        }
+
         if (!#.Path.inUse(copyPath)) {
             FileCopy, % filePath, % copyPath, 1
             FileSetAttrib, -H, % copyPath
@@ -90,7 +109,5 @@ class ReceivingLog extends Actions.Base
 
         #.Path.freeLock(filePath)
         #.Logger.info(A_ThisFunc, "Released file lock")
-
-        xlApp := "", CurrWbk := "", CurrSht := ""
     }
 }

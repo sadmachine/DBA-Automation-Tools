@@ -20,15 +20,18 @@ class InspectionReport extends Actions.Base
         for n, lot in receiver.lots {
             inspectionFolder := RTrim(destination, "/\") "\" lot.inspectionNumber
             FileCreateDir, % inspectionFolder
-            filepath := inspectionFolder "\" lot.inspectionNumber " - Inspection Report.xlsx"
+            filename := lot.inspectionNumber " - Inspection Report.xlsx"
+            filepath := #.Path.concat(inspectionFolder, filename)
+            tempFilepath := #.Path.concat(A_Temp, filename)
             FileCopy, % template, % filepath
+            FileCopy, % template, % tempFilepath
 
             #.Path.createLock(filepath)
             #.Logger.info(A_ThisFunc, "Acquired file lock")
 
             xlApp := ComObjCreate("Excel.Application")
             #.Logger.info(A_ThisFunc, "Created excel app")
-            CurrWbk := xlApp.Workbooks.Open(filepath) ; Open the master file
+            CurrWbk := xlApp.Workbooks.Open(tempFilepath) ; Open the master file
             #.Logger.info(A_ThisFunc, "Opened workbook")
             CurrSht := CurrWbk.Sheets(1)
 
@@ -50,6 +53,14 @@ class InspectionReport extends Actions.Base
             xlApp.Quit()
             #.Logger.info(A_ThisFunc, "Quit Excel App")
             xlApp := "", CurrWbk := "", CurrSht := ""
+
+            #.Logger.info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
+            FileMove, % tempFilePath, % filePath, 1
+            #.Logger.info(A_ThisFunc, "Success")
+
+            if (ErrorLevel) {
+                throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.")
+            }
 
             #.Path.freeLock(filepath)
             #.Logger.info(A_ThisFunc, "Released file lock")
