@@ -31,6 +31,49 @@ class Installer extends UI.Base
         base.__New(title, options)
         this.model := model
         this.registerPage(1, ObjBindMethod(this, "SelectInstallationPath"))
+        this.build()
+    }
+
+    build()
+    {
+        ; Gui Font, s9, Segoe UI
+        this.Font := {options: "s9", fontName: "Segoe UI"}
+        ; Gui Add, Text, x1 y80 w480 h2 +0x10
+        this.Add("Picture", "x16 y8 w64 h64 +BackgroundTrans +AltSubmit", "..\assets\Prag Logo.ico")
+        ; Gui Add, Picture, x16 y8 w64 h64 +BackgroundTrans +AltSubmit, C:\Users\austi\Documents\AutoHotKey\icons\Prag Logo.ico
+        ; Gui Font
+        ; Gui Font, s16
+        ; Gui Add, Text, x104 y16 w306 h32, DBA AutoTools Server Installer
+        ; Gui Font
+        ; Gui Font, s9, Segoe UI
+        ; Gui Font
+        ; Gui Font, cGreen
+        ; Gui Add, Text, x104 y40 w120 h23 +0x200, Version 0.9.7
+        ; Gui Font
+        ; Gui Font, s9, Segoe UI
+        ; Gui Add, Text, x0 y320 w480 h2 +0x10
+        ; Gui Add, Button, x200 y328 w59 h23, < &Prev
+        ; Gui Add, Button, x264 y328 w59 h23, &Next >
+        ; Gui Add, Button, x344 y328 w59 h23, &Finish
+        ; Gui Add, Button, x408 y328 w59 h23, &Cancel
+        ; Gui Font
+        ; Gui Font, cNavy
+        ; Gui Add, Text, x392 y56 w81 h23 +0x200 +0x1, Page 1 / 4
+        ; Gui Font
+
+        ; Gui Show, w480 h360, Window
+        ; Return
+
+        ; GuiSize:
+        ;     If (A_EventInfo == 1) {
+        ;         Return
+        ;     }
+
+        ; Return
+
+        ; GuiEscape:
+        ; GuiClose:
+        ; ExitApp
     }
 
     registerPage(index, page)
