@@ -1,7 +1,7 @@
 ; === Script Information =======================================================
 ; Name .........: Installer.ahk
 ; Description ..: Handles installation/updating of DBA AutoTools
-; AHK Version ..: 1.1.32.00 (Unicode 64-bit)
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
 ; Start Date ...: 01/29/2023
 ; OS Version ...: Windows 10
 ; Language .....: English - United States (en-US)
@@ -23,8 +23,6 @@
 ; * Add more template files on installation
 ; * Add current program version to config.ini
 ;
-; ==============================================================================
-
 ; === TO-DOs ===================================================================
 ; TODO - Initialize config files on installation
 ; TODO - Utilize settings ui to set required values, isntead of dialogs

@@ -1,4 +1,22 @@
-; DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+; === Script Information =======================================================
+; Name .........: Inspection Report Action
+; Description ..: Generates Inspection Reports from a given receiver model
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 02/13/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: InspectionReport.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (02/13/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; TODO - Decouple from Receiver model
+; ==============================================================================
+; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Actions.InspectionReport
 class InspectionReport extends Actions.Base
 {
