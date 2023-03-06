@@ -15,6 +15,8 @@ if "%1" NEQ "" (
   )
 )
 
+inifile "%CD%\dist\modules\config.ini" [version] current=%CURRENT_VERSION%
+
 :: Kill existing processes that will affect builds
 tasklist /fi "imagename eq DBA AutoTools.exe" |find ":" > nul
 if errorlevel 1 (

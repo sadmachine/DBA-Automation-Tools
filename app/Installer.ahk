@@ -33,8 +33,6 @@
 
 #Include src/Autoload.ahk
 
-CURRENT_VERSION := "0.9.8"
-
 @.registerExceptionHandler()
 
 GetInstallationLocation()
@@ -73,8 +71,8 @@ GetInstallationLocation()
 
     configFilePath := #.Path.concat(installationPath, "DBA AutoTools\modules\config.ini")
     if (FileExist(configFilePath)) {
-        IniRead, globalConfigValue, % configFilePath, % "location", % "global", % __UNDEFINED__
-        if (globalConfigValue == "__UNDEFINED__") {
+        IniRead, globalConfigValue, % configFilePath, % "location", % "global", % Config.UNDEFINED
+        if (globalConfigValue == Config.UNDEFINED) {
             FileSelectFolder, globalConfigPath, *%globalConfigPath%, 3, % "Global Config Path"
             if (ErrorLevel) {
                 MsgBox % "You must supply a global config path to continue. Exiting..."
@@ -125,6 +123,7 @@ InstallFiles()
     FileInstall, ..\dist\Settings.exe, % #.Path.concat(projectPath, "Settings.exe"), 1
     FileInstall, ..\dist\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
     FileInstall, ..\dist\modules\config.example.ini, % #.Path.concat(modulesPath, "config.example.ini"), 1
+    FileInstall, ..\dist\modules\config.ini, % #.Path.concat(modulesPath, "config.ini"), 1
     FileInstall, ..\dist\modules\mods.ini, % #.Path.concat(modulesPath, "mods.ini"), 1
     FileInstall, ..\dist\modules\templates\Incoming Inspection Log Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
     FileInstall, ..\dist\modules\templates\Incoming Inspection Report Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
@@ -136,5 +135,4 @@ SetupConfigIni()
     localConfigPath := configPath
     IniWrite, % localConfigPath, % #.Path.concat(modulesPath, "config.ini"), % "location", % "local"
     IniWrite, % globalConfigPath, % #.Path.concat(modulesPath, "config.ini"), % "location", % "global"
-    IniWrite, % CURRENT_VERSION, % #.Path.concat(modulesPath, "config.ini"), % "version", % "current"
 }
