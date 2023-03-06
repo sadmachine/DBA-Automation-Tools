@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/05/2023)
+; * Implement temp dir and CMD copy/move
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -33,7 +36,9 @@ class PrintLabels extends Actions.Base
         FormatTime, fileDateTime, , % "yyyy-MM-dd+HH-mm-ss"
         Random, fileRandomNumber, 0, 10000
         filename := Format("{1:s}_{2:i}_{3:s}.csv", fileDateTime, fileRandomNumber, receiver.identification)
-        filepath := RTrim(printJobLocation, "/\") "\" LTrim(filename, "/\")
+        tempDir := new #.Path.Temp("DBA AutoTools")
+        finalFilepath := #.Path.concat(printJobLocation, filename)
+        filepath := tempDir.concat(filename)
         printJobFile := FileOpen(filepath, "w")
 
         if (!printJobFile) {
@@ -56,5 +61,7 @@ class PrintLabels extends Actions.Base
 
         printJobFile.Close()
         printJobFile := ""
+
+        #.Cmd.move(filePath, finalFilepath)
     }
 }

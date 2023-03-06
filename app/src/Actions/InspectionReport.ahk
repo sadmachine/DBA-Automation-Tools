@@ -14,8 +14,10 @@
 ; * Added This Banner
 ;
 ; Revision 2 (02/27/2023)
-; * Write to temporary excel file on local maachine, then copy to real location
+; * Write to temporary excel file on local machine, then copy to real location
 ;
+; Revision 3 (03/05/2023)
+; * Add progress gui, implement CMD copy/move
 ;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
@@ -31,12 +33,13 @@ class InspectionReport extends Actions.Base
 
         this.progressGui := new UI.ProgressBoxObj("Creating Inspection Reports, please wait...", "Creating Inspection Reports")
         this.progressGui.SetRange(0, this.reportCount)
-        this.progressGui.SetStartValue(1)
+        this.progressGui.SetStartValue(0)
         this.progressGui.Show()
 
         inspectionReportConfig := Config.load("receiving.inspectionReport")
         template := inspectionReportConfig.get("file.template")
         destination := inspectionReportConfig.get("file.destinationFolder")
+        tempDir := new #.Path.Temp("DBA AutoTools")
         FormatTime, dateOfGeneration,, ShortDate
 
         for n, lot in receiver.lots {
@@ -44,9 +47,9 @@ class InspectionReport extends Actions.Base
             FileCreateDir, % inspectionFolder
             filename := lot.inspectionNumber " - Inspection Report.xlsx"
             filepath := #.Path.concat(inspectionFolder, filename)
-            tempFilepath := #.Path.concat(A_Temp, filename)
-            FileCopy, % template, % filepath
-            FileCopy, % template, % tempFilepath
+            tempFilepath := tempDir.concat(filename)
+            #.Cmd.copy(template, filepath)
+            #.Cmd.copy(template, tempFilepath)
 
             #.Path.createLock(filepath)
             #.Logger.info(A_ThisFunc, "Acquired file lock")
@@ -77,7 +80,7 @@ class InspectionReport extends Actions.Base
             xlApp := "", CurrWbk := "", CurrSht := ""
 
             #.Logger.info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-            FileMove, % tempFilePath, % filePath, 1
+            #.Cmd.move(tempFilePath, filePath)
             #.Logger.info(A_ThisFunc, "Success")
 
             if (ErrorLevel) {
