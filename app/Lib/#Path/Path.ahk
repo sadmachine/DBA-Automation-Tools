@@ -1,8 +1,35 @@
+; === Script Information =======================================================
+; Name .........: Path
+; Description ..: Utility class for working with paths
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 02/28/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: Path.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (02/28/2023)
+; * Added This Banner
+;
+; Revision 2 (02/28/2023)
+; * Include Temp as subclass (Path.Temp)
+;
+; Revision 4 (03/05/2023)
+; * Add lockPaths variable, and cleanup all lockfiles on exit
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; #.Path
 class Path
 {
     ; --- Include any subclasses -----------------------------------------------
+
+    #Include <#Path/Path/Temp>
+
+    static lockPaths := {}
 
     makeAbsolute(path)
     {
@@ -53,6 +80,11 @@ class Path
 
     createLock(path, waitPeriod := 200)
     {
+        if (#.Path.lockPaths.Count() == 0) {
+            cleanupMethod := ObjBindMethod(this, "_cleanup")
+            OnExit(cleanupMethod, -1)
+            OnError(cleanupMethod, -1)
+        }
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
             throw new @.FilesystemException(A_ThisFunc, "'" path "' does not exist or is a directory")
@@ -68,6 +100,8 @@ class Path
             }
         }
         FileAppend,, % lockPath
+        #.Path.lockPaths[lockPath] := lockPath
+        FileSetAttrib, +H, % lockPath
         return true
     }
 
@@ -84,6 +118,7 @@ class Path
         }
 
         FileDelete, % lockPath
+        #.Path.lockPaths.Delete(lockPath)
         return true
     }
 
@@ -117,5 +152,25 @@ class Path
     {
         path := this.normalize(path)
         return this.normalize(RegExReplace(path,"[^\\]+\\?$"))
+    }
+
+    inUse(path)
+    {
+        path := this.normalize(path)
+        directory := this.parseDirectory(path)
+        filename := this.parseFilename(path)
+        temporaryFile := this.concat(directory, "~$" filename)
+        if (FileExist(temporaryFile)) {
+            return true
+        }
+        return FileExist(path) && !FileOpen(path, "rw")
+    }
+
+    _cleanup()
+    {
+        for index, path in #.Path.lockPaths {
+            FileDelete, % path
+        }
+        return 0
     }
 }

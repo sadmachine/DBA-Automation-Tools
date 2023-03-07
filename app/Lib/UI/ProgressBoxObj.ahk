@@ -1,3 +1,24 @@
+; === Script Information =======================================================
+; Name .........: ProgressBoxObj
+; Description ..: Utility class for easily creating progress GUIs
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 02/27/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: ProgressBoxObj.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (02/27/2023)
+; * Added This Banner
+;
+; Revision 2 (02/27/2023)
+; * Don't allow count to show more than max count
+;
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
 class ProgressBoxObj extends UI.Base
 {
 
@@ -88,6 +109,9 @@ class ProgressBoxObj extends UI.Base
             GuiControl,, % %progressBar%, +1
         } else {
             this._currentCount += 1
+            if (this._currentCount > this._maxCount) {
+                this._currentCount := this._maxCount
+            }
             GuiControl,, % %progressBar%, % this._currentCount
             GuiControl,, % %progressText%, % this._currentCount " / " this._maxCount
         }

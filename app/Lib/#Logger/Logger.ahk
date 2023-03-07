@@ -17,8 +17,11 @@ class Logger
         this._assertLogPathExists()
         FormatTime, dateAndTime,, % "yyyy-MM-dd hh:mm:ss"
         StringUpper, level, level
+        if (data != "") {
+            data := this._prepareData(data)
+        }
         FileAppend
-            , % dateAndTime " [" level "] [" (!where ? "<global>" : where) "] " message "`n" (data == "" ?: this._prepareData(data))
+            , % dateAndTime " [" level "] [" (!where ? "<global>" : where) "] " message "`n" data
             , % #.Path.normalize(#.Path.concat(this.logPath, this.logFilename))
     }
 

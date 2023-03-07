@@ -16,6 +16,9 @@
 ; * Setup prototype of main hub gui overlay
 ; * Initial prototype of module loading system
 ;
+; Revision 2 (03/07/2023)
+; * Remove redundant imports
+;
 ; === TO-DOs ===================================================================
 ; TODO - Use Bootstrap.ahk
 ; ==============================================================================
@@ -27,12 +30,9 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #SingleInstance force
 
 ; --- Includes -----------------------------------------------------------------
-#Include <DBA>
-#Include <UI>
-
+#Include src\Bootstrap.ahk
 #Include src\ModuleLoader.ahk
 #Include src\Dashboard.ahk
-#Include src\Bootstrap.ahk
 
 ; --- Global var setup ---------------------------------------------------------
 
