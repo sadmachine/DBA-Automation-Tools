@@ -16,6 +16,9 @@
 ; * Setup prototype of main hub gui overlay
 ; * Initial prototype of module loading system
 ;
+; Revision 2 (03/07/2023)
+; * Remove redundant imports
+;
 ; === TO-DOs ===================================================================
 ; TODO - Use Bootstrap.ahk
 ; ==============================================================================
