@@ -66,9 +66,7 @@ class Dashboard
         Gui, dashboard: +OwnDialogs +AlwaysOnTop HWNDhChild
 
         ; Build/Add menus
-        openSettingsEvent := ObjBindMethod(this, "_openSettings")
-        Menu, DashboardMenuBar, Add, &Settings, % openSettingsEvent
-        Gui, dashboard:Menu, DashboardMenuBar
+        this._setupMenus()
 
         ; Get a reference to the "parent" and "child" window
         this.hwnd["parent"] := WinExist(DBA.Windows.Main)
@@ -97,6 +95,27 @@ class Dashboard
         WinWaitClose, % DBA.Windows.Main
         Gui, dashboard:Destroy
         this.built := false
+    }
+
+    _setupMenus()
+    {
+        global
+
+        ; Get a reference to our events
+        openSettingsEvent := ObjBindMethod(this, "@openSettings")
+        applicationLogEvent := ObjBindMethod(this, "@applicationLog")
+        exitProgramEvent := ObjBindMethod(this, "@exitProgram")
+
+        ; Gui Menu setup
+        Menu, DashboardMenuBar, Add, &Settings, % openSettingsEvent
+        Gui, dashboard:Menu, DashboardMenuBar
+
+        ; Tray Menu Setup
+        Menu, Tray, NoStandard
+        Menu, Tray, Add, Settings, % openSettingsEvent
+        Menu, AdvancedSubMenu, Add, Application Log, % applicationLogEvent
+        Menu, Tray, Add, Advanced, :AdvancedSubMenu
+        Menu, Tray, Add, Exit, % exitProgramEvent
     }
 
     _buildModuleSections()
@@ -179,9 +198,25 @@ class Dashboard
         }
     }
 
-    _openSettings()
+    @openSettings()
     {
-        settingsGui := new UI.Settings("DBA AutoTools Settings")
-        settingsGui.Show()
+        global PROJECT_ROOT
+        Run, % #.Path.concat(PROJECT_ROOT, "Settings.exe")
+    }
+
+    @exitProgram()
+    {
+        global
+        ExitApp
+    }
+
+    @applicationLog()
+    {
+        global PROJECT_ROOT
+        tempDir := new #.Path.Temp("DBA AutoTools")
+        tempApplicationLogPath := tempDir.concat("application.log")
+        applicationLogPath := #.Path.concat(PROJECT_ROOT, "modules\application.log")
+        #.Cmd.copy(applicationLogPath, tempApplicationLogPath)
+        Run, % "notepad.exe """ tempApplicationLogPath """"
     }
 }

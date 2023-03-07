@@ -27,12 +27,9 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #SingleInstance force
 
 ; --- Includes -----------------------------------------------------------------
-#Include <DBA>
-#Include <UI>
-
+#Include src\Bootstrap.ahk
 #Include src\ModuleLoader.ahk
 #Include src\Dashboard.ahk
-#Include src\Bootstrap.ahk
 
 ; --- Global var setup ---------------------------------------------------------
 
