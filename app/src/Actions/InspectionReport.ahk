@@ -39,27 +39,25 @@ class InspectionReport extends Actions.Base
         Global
 
         queueDir := #.Path.concat(PROJECT_ROOT, "queue")
+        queueDir := #.Path.concat(queueDir, "inspection-reports")
+        FormatTime, dateStr,, % "yyyyMMddHHmmss"
         FormatTime, dateOfGeneration,, ShortDate
+        Random, salt, 0, 100000
 
         for n, lot in receiver.lots {
-            inspectionFolder := RTrim(destination, "/\") "\" lot.inspectionNumber
-            FileCreateDir, % inspectionFolder
-            filename := lot.inspectionNumber " - Inspection Report.xlsx"
-            filepath := #.Path.concat(inspectionFolder, filename)
-            tempFilepath := tempDir.concat(filename)
-            #.Cmd.copy(template, filepath)
-            #.Cmd.copy(template, tempFilepath)
 
-            #.Path.createLock(filepath)
-            #.Logger.info(A_ThisFunc, "Acquired file lock")
+            if (!InStr(FileExist(queueDir), "D")) {
+                FileCreateDir, % queueDir
+            }
+            filename := dateStr "-" salt "-" n
+            filepath := #.Path.concat(queueDir, filename)
 
-            xlApp := ComObjCreate("Excel.Application")
-            #.Logger.info(A_ThisFunc, "Created excel app")
-            CurrWbk := xlApp.Workbooks.Open(tempFilepath) ; Open the master file
-            #.Logger.info(A_ThisFunc, "Opened workbook")
-            CurrSht := CurrWbk.Sheets(1)
-
-            excelColumns := inspectionReportConfig.get("excelColumnMapping")
+            IniWrite, % lot.inspectionNumber, % filepath, % "data", % "inspectionFormNumber"
+            IniWrite, % dateOfGeneration, % filepath, % "data", % "reportDate"
+            IniWrite, % receiver.partNumber, % filepath, % "data", % "stelrayMaterialNumber"
+            IniWrite, % receiver.partDescription, % filepath, % "data", % "materialDescription"
+            IniWrite, % lot.lotNumber, % filepath, % "data", % "lotNumber"
+            IniWrite, % , % filepath, % "data", % "materialDescription"
 
             CurrSht.range[excelColumns.get("inspectionFormNumber")].Value := lot.inspectionNumber
             CurrSht.range[excelColumns.get("reportDate")].Value := dateOfGeneration
@@ -71,28 +69,10 @@ class InspectionReport extends Actions.Base
             CurrSht.range[excelColumns.get("quantityOnPo")].Value := receiver.lineQuantity
             CurrSht.range[excelColumns.get("quantityReceived")].Value := lot.quantity
 
-            CurrWbk.Save()
-            #.Logger.info(A_ThisFunc, "Saved Workbook")
-
-            xlApp.Quit()
-            #.Logger.info(A_ThisFunc, "Quit Excel App")
-            xlApp := "", CurrWbk := "", CurrSht := ""
-
-            #.Logger.info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-            #.Cmd.move(tempFilePath, filePath)
-            #.Logger.info(A_ThisFunc, "Success")
-
             if (ErrorLevel) {
                 throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.")
             }
-
-            #.Path.freeLock(filepath)
-            #.Logger.info(A_ThisFunc, "Released file lock")
-
-            this.progressGui.Increment()
         }
-
-        this.progressGui.Destroy()
     }
 
     watch(directory)
