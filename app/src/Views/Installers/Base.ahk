@@ -1,36 +1,38 @@
 ; === Script Information =======================================================
-; Name .........: Installer View
+; Name .........: Views.Installers.Base
 ; Description ..: The GUI interface used for installation
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
 ; Start Date ...: 02/13/2023
 ; OS Version ...: Windows 10
 ; Language .....: English - United States (en-US)
 ; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
-; Filename .....: Installer.ahk
+; Filename .....: Base.ahk
 ; ==============================================================================
 
 ; === Revision History =========================================================
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/09/2023)
+; * Get the base gui setup and test out page functionality
+; * Convert to Views.Installers.Base structure for extensibility
+;
 ; === TO-DOs ===================================================================
-; TODO - Implement
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
-; Views.Installer
-class Installer extends UI.Base
+; Views.Installers.Base
+class Base extends UI.Base
 {
     actions := {}
     fields := {}
     model := ""
     pages := []
-    currentPage := 1
+    currentPageIndex := 1
 
-    __New(model, title := "", options := "")
+    __New(model, title, options := "")
     {
         base.__New(title, options)
         this.model := model
-        this.registerPage(1, ObjBindMethod(this, "SelectInstallationPath"))
         this.build()
     }
 
@@ -39,26 +41,46 @@ class Installer extends UI.Base
         ; Gui Font, s9, Segoe UI
         this.Font := {options: "s9", fontName: "Segoe UI"}
         ; Gui Add, Text, x1 y80 w480 h2 +0x10
-        this.Add("Picture", "x16 y8 w64 h64 +BackgroundTrans +AltSubmit", "..\assets\Prag Logo.ico")
+        this.Add("Text", "x1 y80 w480 h2 +0x10")
         ; Gui Add, Picture, x16 y8 w64 h64 +BackgroundTrans +AltSubmit, C:\Users\austi\Documents\AutoHotKey\icons\Prag Logo.ico
+        this.Add("Picture", "x16 y8 w64 h64 +BackgroundTrans +AltSubmit", "..\assets\Prag Logo.ico")
         ; Gui Font
         ; Gui Font, s16
+        this.Font["options"] := "s16"
         ; Gui Add, Text, x104 y16 w306 h32, DBA AutoTools Server Installer
+        this.Add("Text", "x104 y16 w306 h32", this.title)
         ; Gui Font
         ; Gui Font, s9, Segoe UI
+        this.Font["options"] := "s9"
         ; Gui Font
         ; Gui Font, cGreen
+        this.ResetFont()
+        this.Font["options"] := "cGreen"
         ; Gui Add, Text, x104 y40 w120 h23 +0x200, Version 0.9.7
+        this.Add("Text", "x104 y40 w120 h23 +0x200", "Version 0.9.7")
         ; Gui Font
         ; Gui Font, s9, Segoe UI
+        this.ResetFont()
+        this.Font := {options: "s9", fontName: "Segoe UI"}
         ; Gui Add, Text, x0 y320 w480 h2 +0x10
+        this.Add("Text", "x0 y320 w480 h2 +0x10")
         ; Gui Add, Button, x200 y328 w59 h23, < &Prev
+        this.actions["@prev"] := this.Add("Button", "x200 y328 w59 h23", "< &Prev")
+
         ; Gui Add, Button, x264 y328 w59 h23, &Next >
+        this.actions["@next"] := this.Add("Button", "x264 y328 w59 h23", "&Next >")
+        nextButtonEvent := ObjBindMethod(this, "@next")
+        GuiControl, +g, % %nextButton%, % nextButtonEvent
         ; Gui Add, Button, x344 y328 w59 h23, &Finish
+        this.actions["@finish"] := this.Add("Button", "x344 y328 w59 h23", "&Finish")
         ; Gui Add, Button, x408 y328 w59 h23, &Cancel
+        this.actions["@cancel"] := this.Add("Button", "x408 y328 w59 h23", "&Cancel")
         ; Gui Font
         ; Gui Font, cNavy
+        this.ResetFont()
+        this.Font["options"] := "cNavy"
         ; Gui Add, Text, x392 y56 w81 h23 +0x200 +0x1, Page 1 / 4
+        this.fields["pageCount"] := this.Add("Text", "x392 y56 w81 h23 +0x200 +0x1", "Page x / y")
         ; Gui Font
 
         ; Gui Show, w480 h360, Window
@@ -74,17 +96,22 @@ class Installer extends UI.Base
         ; GuiEscape:
         ; GuiClose:
         ; ExitApp
+        base.build()
     }
 
     registerPage(index, page)
     {
         this.pages.InsertAt(index, page)
+        this.updatePageCount()
     }
 
-    buildPage(pageIndex)
+    buildPage(pageIndex := "")
     {
         if (!this.built) {
             this.build()
+        }
+        if (pageIndex == "") {
+            pageIndex := this.currentPageIndex
         }
         if (pageIndex < 1) {
             pageIndex := 1
@@ -92,25 +119,25 @@ class Installer extends UI.Base
             pageIndex := this.pages.Count()
         }
 
-        this.pages[pageIndex].call()
-
+        this.DestroyChild(this.currentPageIndex)
+        this.currentPageIndex := pageIndex
+        this.pages[pageIndex].call(pageIndex)
+        this._updatePageCount()
     }
 
     buildNextPage()
     {
-        currentPage += 1
-        this.buildPage(currentPage)
+        this.buildPage(this.currentPageIndex + 1)
     }
 
     buildPrevPage()
     {
-        currentPage -=1
-        this.buildPage(currentPage)
+        this.buildPage(this.currentPageIndex - 1)
     }
 
     show()
     {
-        base.Show("w640 h480")
+        base.Show("w480 h360")
     }
 
     updateModel(model)
@@ -118,12 +145,9 @@ class Installer extends UI.Base
         this.model := model
     }
 
-    SelectInstallationPath()
+    _updatePageCount()
     {
-        this.Add("Text", "w460 +multiline", "You are installating the Server version of DBA AutoTools. Make sure to install this on a central location that all clients will have access to over the network. Its recommended to install it in the DBA Manufacturing directory in a subfolder, as all DBA Clients need access to that location anyways.")
-        this.Add("Text", "w460", "Installation Location")
-        this.fields["installationPath"] := this.Add("Edit", "w400", this.model.defaultInstallationPath)
-        this.actions["browse"] := this.Add("Button", "w60", "Browse")
-        this.actions["prev"] := this.Add("Button", "w60")
+        pageCountStr := "Page " this.currentPageIndex " / " this.pages.count()
+        GuiControl, Text, % this.fields["pageCount"], % pageCountStr
     }
 }
