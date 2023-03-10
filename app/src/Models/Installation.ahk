@@ -19,5 +19,14 @@
 ; Models.Installation
 class Installation
 {
+    installationPath := ""
 
+    __New(defaultValues := "")
+    {
+        if (defaultValues != "") {
+            for key, value in defaultValues {
+                this[key] := value
+            }
+        }
+    }
 }
