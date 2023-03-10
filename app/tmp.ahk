@@ -17,4 +17,13 @@
 ; ==============================================================================
 #Include src/Autoload.ahk
 
-MsgBox % #.Logger._prepareData(data)
+test := []
+
+test.insertAt(1, "hello")
+test.insertAt(2, "hi")
+
+MsgBox % #.Logger._prepareData(test)
+
+installation := new Controllers.Installations.Base()
+
+return
