@@ -1,5 +1,60 @@
+; === Script Information =======================================================
+; Name .........: UI.Base
+; Description ..: Base UI class, basically a wrapper around GUI commands + some
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 03/08/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: Base.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (03/08/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; TODO - Create an actual `Font` Object to interface with (Reset, Apply, etc)
+; TODO - Add child UI concept and helpers
+; ==============================================================================
 class Base
 {
+    ; ; --- Subclass -------------------------------------------------------------
+    ; class Font {
+    ;     guiLabel := ""
+    ;     options := ""
+    ;     fontName := ""
+
+    ;     __New(guiLabel, options := "", fontName := "")
+    ;     {
+    ;         this.guiLabel := guiLabel
+    ;         this.options := options
+    ;         this.fontName := fontName
+    ;     }
+
+    ;     Apply(options := "", fontName := "")
+    ;     {
+    ;         guiLabel := this.guiLabel
+
+    ;         if (options == "") {
+    ;             options := this.options
+    ;         }
+
+    ;         if (fontName == "") {
+    ;             fontName := this.fontName
+    ;         }
+
+    ;         Gui %guiLabel%:Font, % options, % fontName
+    ;     }
+
+    ;     Reset()
+    ;     {
+    ;         guiLabel := this.guiLabel
+    ;         Gui %guiLabel%:Font
+    ;     }
+
+    ; }
+
     ; --- Variables ------------------------------------------------------------
 
     _title := ""
@@ -12,6 +67,7 @@ class Base
     _autoSize := false
     _built := false
     _label := ""
+    _children := {}
 
     static _defaultOptions := ""
     static _defaultFont := {"options": "", "fontName": ""}
@@ -225,6 +281,21 @@ class Base
         }
     }
 
+    children[key := ""] {
+        get {
+            if (key == "") {
+                return this._children
+            }
+            return this._children[key]
+        }
+        set {
+            if (key == "") {
+                return this._children := value
+            }
+            return this._children[key] := value
+        }
+    }
+
     ; --- Meta Methods ---------------------------------------------------------
 
     __New(title := "", options := "")
@@ -320,6 +391,13 @@ class Base
         Gui %thisLabel%:Font, % this.font["options"], % this.font["fontName"]
     }
 
+    ResetFont()
+    {
+        global
+        local thisLabel := this.label
+        Gui %thisLabel%:Font
+    }
+
     FocusControl(CtrlHwnd)
     {
         Global
@@ -335,6 +413,18 @@ class Base
     {
         local thisLabel := this.label
         Gui %thisLabel%: +OwnDialogs
+    }
+
+    AddChild(slug, title, options := "")
+    {
+        options := options " +Parent" this.hwnd
+        return this.children[slug] := new UI.Base(title, options)
+    }
+
+    DestroyChild(slug)
+    {
+        this.children[slug].Destroy()
+        this.children.Delete(slug)
     }
 
     updateText(ctrlHwnd, newText)
