@@ -40,6 +40,7 @@ class Dashboard
     initialize()
     {
         Global
+        this._setupTrayMenu()
         daemon := ObjBindMethod(Dashboard, "_daemon")
         SetTimer, % daemon, 250
     }
@@ -69,7 +70,7 @@ class Dashboard
         Gui, dashboard: +OwnDialogs +AlwaysOnTop HWNDhChild
 
         ; Build/Add menus
-        this._setupMenus()
+        this._setupApplicationMenu()
 
         ; Get a reference to the "parent" and "child" window
         this.hwnd["parent"] := WinExist(DBA.Windows.Main)
@@ -100,18 +101,25 @@ class Dashboard
         this.built := false
     }
 
-    _setupMenus()
+    _setupApplicationMenu()
     {
         global
 
         ; Get a reference to our events
         openSettingsEvent := ObjBindMethod(this, "@openSettings")
-        applicationLogEvent := ObjBindMethod(this, "@applicationLog")
-        exitProgramEvent := ObjBindMethod(this, "@exitProgram")
 
         ; Gui Menu setup
         Menu, DashboardMenuBar, Add, &Settings, % openSettingsEvent
         Gui, dashboard:Menu, DashboardMenuBar
+
+    }
+
+    _setupTrayMenu()
+    {
+        ; Get a reference to our events
+        openSettingsEvent := ObjBindMethod(this, "@openSettings")
+        applicationLogEvent := ObjBindMethod(this, "@applicationLog")
+        exitProgramEvent := ObjBindMethod(this, "@exitProgram")
 
         ; Tray Menu Setup
         Menu, Tray, NoStandard
