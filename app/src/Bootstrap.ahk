@@ -70,5 +70,6 @@ while (!Config.initialized) {
 }
 
 DBA.DbConnection.DSN := Config.get("database.connection.main.dsn")
-#.Logger.setLocation(#.Path.concat(PROJECT_ROOT, "modules"), "application.log")
-#.Logger.info(A_LineFile, "Finished Bootstrapping '" A_ScriptName "'", "")
+#.Logger.addChannel("app", #.Path.concat(PROJECT_ROOT, "modules"), "application.log")
+#.Logger.AddChannel("queue", #.Path.concat(PROJECT_ROOT, "modules"), "queue.log")
+#.log("app").info(A_LineFile, "Finished Bootstrapping '" A_ScriptName "'", "")

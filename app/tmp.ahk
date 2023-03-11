@@ -17,4 +17,4 @@
 ; ==============================================================================
 #Include src/Autoload.ahk
 
-MsgBox % #.Logger._prepareData(data)
+MsgBox % #.log("app")._prepareData(data)

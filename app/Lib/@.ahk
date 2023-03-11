@@ -99,7 +99,7 @@ Class @
             output .= "Exception: `t" e.what "`n"
             output .= "Where: `t`t" e.where "`n`n"
             output .= "Details: `n" e.message
-            #.Logger.error(e.where, "<" e.what "> " e.message)
+            #.log("app").error(e.where, "<" e.what "> " e.message)
             UI.MsgBox(output, "Exception Occurred")
             return 1
         }

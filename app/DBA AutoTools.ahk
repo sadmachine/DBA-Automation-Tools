@@ -58,7 +58,7 @@ for n, param in A_Args
     }
 }
 
-#.Logger.info(A_LineFile, "", {DEBUG_MODE: DEBUG_MODE, MODS_FOLDER: MODS_FOLDER})
+#.log("app").info(A_LineFile, "", {DEBUG_MODE: DEBUG_MODE, MODS_FOLDER: MODS_FOLDER})
 
 ModuleLoader.boot(MODS_FOLDER)
 Dashboard.initialize()

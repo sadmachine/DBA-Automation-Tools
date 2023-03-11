@@ -44,7 +44,7 @@ class ReceivingLog extends Actions.Base
         this.progressGui.SetStartValue(0)
         this.progressGui.Show()
 
-        #.Logger.info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
+        #.log("app").info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
 
         if (!FileExist(fileDestination) == "D") {
             throw new @.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
@@ -63,11 +63,11 @@ class ReceivingLog extends Actions.Base
         }
 
         #.Path.createLock(filePath)
-        #.Logger.info(A_ThisFunc, "Acquired file lock")
+        #.log("app").info(A_ThisFunc, "Acquired file lock")
 
-        #.Logger.info(A_ThisFunc, "Copying Incoming Inspection... ", {filepath: filePath, tempFilePath: tempFilePath})
+        #.log("app").info(A_ThisFunc, "Copying Incoming Inspection... ", {filepath: filePath, tempFilePath: tempFilePath})
         #.Cmd.copy(filePath, tempFilePath)
-        #.Logger.info(A_ThisFunc, "Success")
+        #.log("app").info(A_ThisFunc, "Success")
 
         if (ErrorLevel) {
             throw new @.FilesystemException(A_ThisFunc, "Could not copy '" filePath "' to '" tempFilePath "'")
@@ -93,10 +93,10 @@ class ReceivingLog extends Actions.Base
         emptyRowOffset := ""
         emptyRow := ""
         xlApp := ComObjCreate("Excel.Application")
-        #.Logger.info(A_ThisFunc, "Created excel app")
+        #.log("app").info(A_ThisFunc, "Created excel app")
         xlWorkbooks := xlApp.Workbooks
         xlWorkbook := xlWorkbooks.Open(tempFilePath) ; Open the master file
-        #.Logger.info(A_ThisFunc, "Opened workbook")
+        #.log("app").info(A_ThisFunc, "Opened workbook")
         xlSheet := xlWorkbook.Sheets(1)
         ; Get the last cell in column A, then save a reference to the cell next to it (column B)
 
@@ -156,17 +156,17 @@ class ReceivingLog extends Actions.Base
             emptyRowOffset := ""
             emptyRowOffset := lastRow.Offset(1, 0)
             emptyRow := emptyRowOffset.Rows(1)
-            #.Logger.info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
+            #.log("app").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
             this.progressGui.Increment()
         }
 
-        #.Logger.info(A_ThisFunc, "Finished Loop")
+        #.log("app").info(A_ThisFunc, "Finished Loop")
 
         xlWorkbook.Save()
-        #.Logger.info(A_ThisFunc, "Saved Workbook")
+        #.log("app").info(A_ThisFunc, "Saved Workbook")
 
         xlApp.Quit()
-        #.Logger.info(A_ThisFunc, "Quit Excel App")
+        #.log("app").info(A_ThisFunc, "Quit Excel App")
         emptyRow := ""
         emptyRowOffset := ""
         lastRow := ""
@@ -177,9 +177,9 @@ class ReceivingLog extends Actions.Base
         xlWorkbooks := ""
         xlApp := ""
 
-        #.Logger.info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
+        #.log("app").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
         #.Cmd.move(tempFilePath, filePath)
-        #.Logger.info(A_ThisFunc, "Success")
+        #.log("app").info(A_ThisFunc, "Success")
 
         if (ErrorLevel) {
             throw new @.FilesystemException(A_ThisFunc, "Could not copy incoming inspection log from the temp directory to its destination.")
@@ -192,7 +192,7 @@ class ReceivingLog extends Actions.Base
         }
 
         #.Path.freeLock(filePath)
-        #.Logger.info(A_ThisFunc, "Released file lock")
+        #.log("app").info(A_ThisFunc, "Released file lock")
 
         this.progressGui.Destroy()
     }

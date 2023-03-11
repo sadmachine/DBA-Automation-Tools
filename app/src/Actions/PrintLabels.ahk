@@ -56,7 +56,7 @@ class PrintLabels extends Actions.Base
             labelName := (lot.hasCert == "Yes" ? "Main" : "QA HOLD")
             outputLine := Format("""{:s}"",""{:s}"",""{:s}"",{:i},""{:s}""", receiver.partNumber, receiver.partDescription, lot.lotNumber, printQty, labelName)
             printJobFile.writeLine(outputLine)
-            #.Logger.info(A_ThisFunc, "Wrote line: " outputLine)
+            #.log("app").info(A_ThisFunc, "Wrote line: " outputLine)
         }
 
         printJobFile.Close()
