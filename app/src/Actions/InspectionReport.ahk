@@ -49,30 +49,34 @@ class InspectionReport extends Actions.Base
             if (!InStr(FileExist(queueDir), "D")) {
                 FileCreateDir, % queueDir
             }
-            filename := dateStr "-" salt "-" n
-            filepath := #.Path.concat(queueDir, filename)
+            filename := dateStr "-" n "-" salt
+            this.filepath := #.Path.concat(queueDir, filename)
 
-            IniWrite, % lot.inspectionNumber, % filepath, % "data", % "inspectionFormNumber"
-            IniWrite, % dateOfGeneration, % filepath, % "data", % "reportDate"
-            IniWrite, % receiver.partNumber, % filepath, % "data", % "stelrayMaterialNumber"
-            IniWrite, % receiver.partDescription, % filepath, % "data", % "materialDescription"
-            IniWrite, % lot.lotNumber, % filepath, % "data", % "lotNumber"
-            IniWrite, % , % filepath, % "data", % "materialDescription"
-
-            CurrSht.range[excelColumns.get("inspectionFormNumber")].Value := lot.inspectionNumber
-            CurrSht.range[excelColumns.get("reportDate")].Value := dateOfGeneration
-            CurrSht.range[excelColumns.get("stelrayMaterialNumber")].Value := receiver.partNumber
-            CurrSht.range[excelColumns.get("materialDescription")].Value := receiver.partDescription
-            CurrSht.range[excelColumns.get("lotNumber")].Value := lot.lotNumber
-            CurrSht.range[excelColumns.get("poNumber")].Value := receiver.poNumber
-            CurrSht.range[excelColumns.get("vendorName")].Value := receiver.supplier
-            CurrSht.range[excelColumns.get("quantityOnPo")].Value := receiver.lineQuantity
-            CurrSht.range[excelColumns.get("quantityReceived")].Value := lot.quantity
+            this.writeToJob("inspectionFormNumber", lot.inspectionNumber)
+            this.writeToJob("reportDate", dateOfGeneration)
+            this.writeToJob("stelrayMaterialNumber", receiver.partNumber)
+            this.writeToJob("materialDescription", receiver.partDescription)
+            this.writeToJob("lotNumber", lot.lotNumber)
+            this.writeToJob("poNumber", receiver.poNumber)
+            this.writeToJob("vendorName", receiver.supplier)
+            this.writeToJob("quantityOnPo", receiver.lineQuantity)
+            this.writeToJob("quantityReceived", lot.quantity)
 
             if (ErrorLevel) {
-                throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.")
+                throw new @.FilesystemException(A_ThisFunc, "Could not create Inspection Report queue job.")
             }
         }
+    }
+
+    writeToJob(key, value)
+    {
+        IniWrite, % value, % this.filepath, % "data", % key
+    }
+
+    readFromJob(filepath, key)
+    {
+        IniRead, output, % filepath, % "data", % key, % "__UNDEFINED__"
+        return output
     }
 
     watch(directory)
@@ -84,67 +88,69 @@ class InspectionReport extends Actions.Base
 
     poll(directory)
     {
-        this.reportCount := receiver.lots.Count()
+        try {
+            queueDir := #.Path.concat(PROJECT_ROOT, "queue")
+            queueDir := #.Path.concat(queueDir, "inspection-reports")
 
-        queueDir := #.Path.concat(PROJECT_ROOT, "queue")
+            inspectionReportConfig := Config.load("receiving.inspectionReport")
+            template := inspectionReportConfig.get("file.template")
+            destination := inspectionReportConfig.get("file.destinationFolder")
+            tempDir := new #.Path.Temp("DBA AutoTools")
 
-        inspectionReportConfig := Config.load("receiving.inspectionReport")
-        template := inspectionReportConfig.get("file.template")
-        destination := inspectionReportConfig.get("file.destinationFolder")
-        tempDir := new #.Path.Temp("DBA AutoTools")
-        FormatTime, dateOfGeneration,, ShortDate
+            Loop, Files, % #.path.concat(queueDir, "*"), F
+            {
+                inspectionFolder := #.Path.concat(destination, lot.inspectionNumber)
+                FileCreateDir, % inspectionFolder
+                filename := lot.inspectionNumber " - Inspection Report.xlsx"
+                filepath := #.Path.concat(inspectionFolder, filename)
+                tempFilepath := tempDir.concat(filename)
+                #.Cmd.copy(template, filepath)
+                #.Cmd.copy(template, tempFilepath)
 
-        for n, lot in receiver.lots {
-            inspectionFolder := RTrim(destination, "/\") "\" lot.inspectionNumber
-            FileCreateDir, % inspectionFolder
-            filename := lot.inspectionNumber " - Inspection Report.xlsx"
-            filepath := #.Path.concat(inspectionFolder, filename)
-            tempFilepath := tempDir.concat(filename)
-            #.Cmd.copy(template, filepath)
-            #.Cmd.copy(template, tempFilepath)
+                #.Path.createLock(filepath)
+                #.log("queue").info(A_ThisFunc, "Acquired file lock")
 
-            #.Path.createLock(filepath)
-            #.Logger.info(A_ThisFunc, "Acquired file lock")
+                xlApp := ComObjCreate("Excel.Application")
+                #.log("queue").info(A_ThisFunc, "Created excel app")
+                CurrWbk := xlApp.Workbooks.Open(tempFilepath) ; Open the master file
+                #.log("queue").info(A_ThisFunc, "Opened workbook")
+                CurrSht := CurrWbk.Sheets(1)
 
-            xlApp := ComObjCreate("Excel.Application")
-            #.Logger.info(A_ThisFunc, "Created excel app")
-            CurrWbk := xlApp.Workbooks.Open(tempFilepath) ; Open the master file
-            #.Logger.info(A_ThisFunc, "Opened workbook")
-            CurrSht := CurrWbk.Sheets(1)
+                excelColumns := inspectionReportConfig.get("excelColumnMapping")
 
-            excelColumns := inspectionReportConfig.get("excelColumnMapping")
+                queueFilepath := A_LoopFileLongPath
 
-            CurrSht.range[excelColumns.get("inspectionFormNumber")].Value := lot.inspectionNumber
-            CurrSht.range[excelColumns.get("reportDate")].Value := dateOfGeneration
-            CurrSht.range[excelColumns.get("stelrayMaterialNumber")].Value := receiver.partNumber
-            CurrSht.range[excelColumns.get("materialDescription")].Value := receiver.partDescription
-            CurrSht.range[excelColumns.get("lotNumber")].Value := lot.lotNumber
-            CurrSht.range[excelColumns.get("poNumber")].Value := receiver.poNumber
-            CurrSht.range[excelColumns.get("vendorName")].Value := receiver.supplier
-            CurrSht.range[excelColumns.get("quantityOnPo")].Value := receiver.lineQuantity
-            CurrSht.range[excelColumns.get("quantityReceived")].Value := lot.quantity
+                CurrSht.range[excelColumns.get("inspectionFormNumber")].Value := this.readFromJob(queueFilepath, "inspectionFormNumber")
+                CurrSht.range[excelColumns.get("reportDate")].Value := this.readFromJob(queueFilepath, "reportDate")
+                CurrSht.range[excelColumns.get("stelrayMaterialNumber")].Value := this.readFromJob(queueFilepath, "stelrayMaterialNumber")
+                CurrSht.range[excelColumns.get("materialDescription")].Value := this.readFromJob(queueFilepath, "materialDescription")
+                CurrSht.range[excelColumns.get("lotNumber")].Value := this.readFromJob(queueFilepath, "lotNumber")
+                CurrSht.range[excelColumns.get("poNumber")].Value := this.readFromJob(queueFilepath, "poNumber")
+                CurrSht.range[excelColumns.get("vendorName")].Value := this.readFromJob(queueFilepath, "vendorName")
+                CurrSht.range[excelColumns.get("quantityOnPo")].Value := this.readFromJob(queueFilepath, "quantityOnPo")
+                CurrSht.range[excelColumns.get("quantityReceived")].Value := this.readFromJob(queueFilepath, "quantityReceived")
 
-            CurrWbk.Save()
-            #.Logger.info(A_ThisFunc, "Saved Workbook")
+                CurrWbk.Save()
+                #.log("queue").info(A_ThisFunc, "Saved Workbook")
 
-            xlApp.Quit()
-            #.Logger.info(A_ThisFunc, "Quit Excel App")
-            xlApp := "", CurrWbk := "", CurrSht := ""
+                xlApp.Quit()
+                #.log("queue").info(A_ThisFunc, "Quit Excel App")
+                xlApp := "", CurrWbk := "", CurrSht := ""
 
-            #.Logger.info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-            #.Cmd.move(tempFilePath, filePath)
-            #.Logger.info(A_ThisFunc, "Success")
+                #.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
+                #.Cmd.move(tempFilePath, filePath)
+                #.log("queue").info(A_ThisFunc, "Success")
 
-            if (ErrorLevel) {
-                throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.")
+                if (ErrorLevel) {
+                    throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.", {tempFilePath: tempFilePath, filePath: filePath})
+                }
+
+                #.Path.freeLock(filepath)
+                #.log("queue").info(A_ThisFunc, "Released file lock")
+                FileDelete, % queueFilepath
             }
-
-            #.Path.freeLock(filepath)
-            #.Logger.info(A_ThisFunc, "Released file lock")
-
-            this.progressGui.Increment()
+        } catch e {
+            #.log("queue").error(A_ThisFunc, e.message, e.data)
         }
-
-        this.progressGui.Destroy()
     }
 }
