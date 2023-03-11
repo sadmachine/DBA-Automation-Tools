@@ -2,8 +2,8 @@
 ; @.ConnectivityException
 class ConnectivityException extends @.UnexpectedException
 {
-    __New(where, message)
+    __New(where, message, data := "")
     {
-        base.__New("ConnectivityException", where, message)
+        base.__New("ConnectivityException", where, message, data)
     }
 }

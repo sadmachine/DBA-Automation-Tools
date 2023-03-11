@@ -2,8 +2,8 @@
 ; @.SQLException
 class SQLException extends @.UnexpectedException
 {
-    __New(where, message)
+    __New(where, message, data := "")
     {
-        base.__New("SQLException", where, message)
+        base.__New("SQLException", where, message, data)
     }
 }

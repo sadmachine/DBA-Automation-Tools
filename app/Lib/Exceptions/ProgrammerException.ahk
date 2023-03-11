@@ -2,8 +2,8 @@
 ; @.ProgrammerException
 class ProgrammerException extends @.UnexpectedException
 {
-    __New(where, message)
+    __New(where, message, data := "")
     {
-        base.__New("ProgrammerException", where, message)
+        base.__New("ProgrammerException", where, message, data)
     }
 }

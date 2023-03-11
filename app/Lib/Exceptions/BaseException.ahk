@@ -2,11 +2,12 @@
 ; @.BaseException
 class BaseException
 {
-    __New(type, what, where, message)
+    __New(type, what, where, message, data := "")
     {
         this.what := what
         this.where := where
         this.message := message
         this.type := type
+        this.data := ""
     }
 }

@@ -2,8 +2,8 @@
 ; @.EnvironmentException
 class EnvironmentException extends @.UnexpectedException
 {
-    __New(where, message)
+    __New(where, message, data := "")
     {
-        base.__New("EnvironmentException", where, message)
+        base.__New("EnvironmentException", where, message, data)
     }
 }

@@ -2,8 +2,8 @@
 ; @.UnexpectedException
 class UnexpectedException extends @.BaseException
 {
-    __New(what, where, message)
+    __New(what, where, message, data := "")
     {
-        base.__New("Unexpected", what, where, message)
+        base.__New("Unexpected", what, where, message, data)
     }
 }

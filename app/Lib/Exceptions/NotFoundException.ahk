@@ -2,8 +2,8 @@
 ; @.NotFoundException
 class NotFoundException extends @.ExpectedException
 {
-    __New(where, message)
+    __New(where, message, data := "")
     {
-        base.__New("NotFoundException", "Expected", where, message)
+        base.__New("NotFoundException", where, message, data)
     }
 }

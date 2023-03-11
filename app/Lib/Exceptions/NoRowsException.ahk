@@ -2,8 +2,8 @@
 ; @.NoRowsException
 class NoRowsException extends @.ExpectedException
 {
-    __New(where, message)
+    __New(where, message, data := "")
     {
-        base.__New("NoRowsException", "Expected", where, message)
+        base.__New("NoRowsException", where, message, data)
     }
 }

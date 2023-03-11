@@ -2,8 +2,8 @@
 ; @.ValidationException
 class ValidationException extends @.ExpectedException
 {
-    __New(where, message)
+    __New(where, message, data := "")
     {
-        base.__New("ValidationException", where, message)
+        base.__New("ValidationException", where, message, data)
     }
 }
