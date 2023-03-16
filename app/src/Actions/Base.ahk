@@ -20,5 +20,4 @@
 
 class Base
 {
-    pollPeriod := 500
 }
