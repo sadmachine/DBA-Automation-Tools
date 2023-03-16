@@ -211,8 +211,7 @@ class Dashboard
 
     @openSettings()
     {
-        global PROJECT_ROOT
-        Run, % #.Path.concat(PROJECT_ROOT, "Settings.exe")
+        Run, % #.Path.concat($.PROJECT_ROOT, "Settings.exe")
     }
 
     @exitProgram()
@@ -223,10 +222,9 @@ class Dashboard
 
     @applicationLog()
     {
-        global PROJECT_ROOT
         tempDir := new #.Path.Temp("DBA AutoTools")
         tempApplicationLogPath := tempDir.concat("application.log")
-        applicationLogPath := #.Path.concat(PROJECT_ROOT, "modules\application.log")
+        applicationLogPath := #.Path.concat($.PROJECT_ROOT, "modules\application.log")
         #.Cmd.copy(applicationLogPath, tempApplicationLogPath)
         Run, % "notepad.exe """ tempApplicationLogPath """"
     }
