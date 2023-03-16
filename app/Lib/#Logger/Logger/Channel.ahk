@@ -16,13 +16,13 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
-; Logger.Channel
+; #.Logger.Channel
 class Channel
 {
     logPath := ""
     logFilename := ""
 
-    __New(logPath, logFilename)
+    __New(path, filename)
     {
         this.logPath := #.Path.normalize(path)
         this.logFilename := filename
