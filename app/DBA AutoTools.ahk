@@ -19,6 +19,12 @@
 ; Revision 2 (03/07/2023)
 ; * Remove redundant imports
 ;
+; Revision 3 (03/15/2023)
+; * Run queue manager on startup
+;
+; Revision 4 (03/16/2023)
+; * Run queue manager on an interval
+;
 ; === TO-DOs ===================================================================
 ; TODO - Use Bootstrap.ahk
 ; ==============================================================================
@@ -64,6 +70,8 @@ ModuleLoader.boot(MODS_FOLDER)
 Dashboard.initialize()
 ;initialize_hub_gui()
 
+SetTimer, RunQueueManager, 1000
+
 Return
 
 ; --- Labels -------------------------------------------------------------------
@@ -86,4 +94,14 @@ LaunchModule(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "")
     GuiControlGet, module_title,, % CtrlHwnd
     mod := ModuleLoader.get(module_title)
     Run % MODS_FOLDER "/" ModuleLoader.get(module_title).file
+}
+
+RunQueueManager()
+{
+    Global
+    Process, Exist, QueueManager.exe
+    ; If QueueManager.exe isn't running, run it
+    if (!ErrorLevel) {
+        Run, % #.path.concat($.PROJECT_ROOT, "QueueManager.exe")
+    }
 }
