@@ -1,32 +1,25 @@
 ; === Script Information =======================================================
-; Name .........: Bootstrap Script
-; Description ..: Includes common libraries/files and configures them
+; Name .........: Constants
+; Description ..: A file containing all runtime constant declarations
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
-; Start Date ...: 02/13/2023
+; Start Date ...: 03/15/2023
 ; OS Version ...: Windows 10
 ; Language .....: English - United States (en-US)
 ; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
-; Filename .....: Bootstrap.ahk
+; Filename .....: Constants.ahk
 ; ==============================================================================
 
 ; === Revision History =========================================================
-; Revision 1 (02/13/2023)
+; Revision 1 (03/15/2023)
 ; * Added This Banner
 ;
 ; === TO-DOs ===================================================================
-; TODO - Clean/Organize better
 ; ==============================================================================
-#NoEnv
-#SingleInstance, Force
-SendMode, Input
-SetBatchLines, -1
-SetWorkingDir, %A_ScriptDir%
+$.PROJECT_ROOT := ""
+if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe,Installer.exe", A_ScriptName)) {
+    $.PROJECT_ROOT := #.Path.normalize(A_ScriptDir)
+} else {
+    $.PROJECT_ROOT := #.Path.parentOf(A_ScriptDir)
+}
 
-#Include src/Autoload.ahk
-
-#Include src/Bootstrap/constants.ahk
-#Include src/Bootstrap/config.ahk
-#Include src/Bootstrap/ui.ahk
-#Include src/Bootstrap/database.ahk
-#Include src/Bootstrap/logger.ahk
-#Include src/Bootstrap/queue.ahk
+$.QUEUE_PATH := #.Path.concat($.PROJECT_ROOT, "queue")
