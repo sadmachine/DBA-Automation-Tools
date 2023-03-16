@@ -23,6 +23,9 @@
 ; * Add more template files on installation
 ; * Add current program version to config.ini
 ;
+; Revision 4 (03/16/2023)
+; * Install QueueManager.exe
+;
 ; === TO-DOs ===================================================================
 ; TODO - Initialize config files on installation
 ; TODO - Utilize settings ui to set required values, isntead of dialogs
@@ -120,6 +123,7 @@ InstallFiles()
 {
     Global
     FileInstall, ..\dist\DBA AutoTools.exe, % #.Path.concat(projectPath, "DBA AutoTools.exe"), 1
+    FileInstall, ..\dist\QueueManager.exe, % #.Path.concat(projectPath, "QueueManager.exe"), 1
     FileInstall, ..\dist\Settings.exe, % #.Path.concat(projectPath, "Settings.exe"), 1
     FileInstall, ..\dist\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
     FileInstall, ..\dist\modules\config.example.ini, % #.Path.concat(modulesPath, "config.example.ini"), 1
