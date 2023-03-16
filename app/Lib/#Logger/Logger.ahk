@@ -8,7 +8,7 @@ class Logger
 
     addChannel(slug, logPath, logFilename)
     {
-        this.channels[slug] := new Logger.Channel(logPath, logFilename)
+        this.channels[slug] := new #.Logger.Channel(logPath, logFilename)
     }
 
     getChannel(slug)
