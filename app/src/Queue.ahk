@@ -18,6 +18,7 @@
 class Queue
 {
     static registeredHandlers := {}
+    static interval := 1000
 
     registerHandler(priority, handler)
     {
