@@ -25,15 +25,23 @@
 #NoTrayIcon
 #Include src/Bootstrap.ahk
 
-for priority, priorityQueue in Queue.getHandlers() {
-    MsgBox % priority
-    for n, queueHandler in priorityQueue {
-        try {
-            queueHandler.call()
-        } catch e {
-            #.log("queue").error(e.where, e.what ": " e.message, e.data)
+while (true) {
+    for priority, priorityQueue in Queue.getHandlers() {
+        for n, queueHandler in priorityQueue {
+            try {
+                queueHandler.call()
+            } catch e {
+                #.log("queue").error(e.where, e.what ": " e.message, e.data)
+            }
         }
     }
+
+    Process, Exist, DBA AutoTools.exe
+    ; If DBA AutoTools.exe isn't running, Break out of loop
+    if (!ErrorLevel) {
+        Break
+    }
+    Sleep % Queue.interval
 }
 
 ExitApp
