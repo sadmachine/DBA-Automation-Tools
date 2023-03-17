@@ -19,6 +19,7 @@
 ; Revision 3 (03/16/2023)
 ; * Move registration to bootstrap file
 ; * Loop over priority array
+; * Autoclose (gracefully) if DBA AutoTools.exe no longer exists
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
