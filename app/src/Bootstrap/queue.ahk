@@ -16,8 +16,4 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
-Queue.registerHandler("5" , ObjBindMethod(Actions.InspectionReport, "poll", #.Path.concat($.PROJECT_ROOT, "queue\inspection-reports")))
 Queue.registerHandler("1" , ObjBindMethod(Actions.InspectionReport, "poll", #.Path.concat($.PROJECT_ROOT, "queue\inspection-reports")))
-Queue.registerHandler("3" , ObjBindMethod(Actions.InspectionReport, "poll", #.Path.concat($.PROJECT_ROOT, "queue\inspection-reports")))
-Queue.registerHandler("4" , ObjBindMethod(Actions.InspectionReport, "poll", #.Path.concat($.PROJECT_ROOT, "queue\inspection-reports")))
-Queue.registerHandler("2" , ObjBindMethod(Actions.InspectionReport, "poll", #.Path.concat($.PROJECT_ROOT, "queue\inspection-reports")))
