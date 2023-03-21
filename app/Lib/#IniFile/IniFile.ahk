@@ -13,6 +13,9 @@
 ; Revision 1 (03/15/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/21/2023)
+; * Added helper `readObject` and `writeObject` methods for getting/setting
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -62,5 +65,31 @@ class IniFile
     deleteSection(section)
     {
         IniDelete, % this.path, % section
+    }
+
+    readObject()
+    {
+        sections := this.readSections()
+        object := {}
+        for n, sectionName in sections {
+            object[sectionName] := this.readSection(sectionName)
+        }
+        return object
+    }
+
+    writeObject(object)
+    {
+        if (@.typeOf(object) != "Object") {
+            throw new @.ProgrammerException(A_ThisFunc, "Passed value must be an object", object)
+        }
+
+        for section, pair in object {
+            if (@.typeOf(pair) != "Object") {
+                throw new @.ProgrammerException(A_ThisFunc, "Inner value must be an object", {parent: object, pair: pair})
+            }
+            for key, value in pair {
+                this.write(section, key, value)
+            }
+        }
     }
 }
