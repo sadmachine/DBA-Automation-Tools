@@ -25,8 +25,14 @@ class Queue
     ; --- Instance/Static Variables --------------------------------------------
     static registeredHandlers := {}
     static interval := 1000
+    static fileDriver := {}
 
     ; --- Methods --------------------------------------------------------------
+    setFileDriver(fileDriver)
+    {
+        this.fileDriver := fileDriver
+    }
+
     registerHandler(priority, handler)
     {
         if (!this.registeredHandlers.hasKey(priority)) {
@@ -38,5 +44,42 @@ class Queue
     getHandlers()
     {
         return this.registeredHandlers
+    }
+
+    createJob(jobInstance)
+    {
+        namespace := queueJobClass.getNamespace()
+        data := queueJobClass.create()
+
+        this.fileDriver.createFile(namespace, data)
+    }
+
+    getWaitingJobs()
+    {
+        queueFiles := {}
+        for namespace, handlers in this.getHandlers() {
+            namespace := handler.getNamespace()
+            queueFiles[namespace] := this.fileDriver.readFiles(namespace)
+        }
+
+        return queueFiles
+    }
+
+    executeJobs()
+    {
+        jobFiles := this.getWaitingJobs()
+        for priority, priorityQueue in Queue.getHandlers() {
+            for n, queueHandler in priorityQueue {
+                for n, jobData in jobFiles[queueHandler.getNamespace()] {
+                    try {
+                        job := new queueHandler()
+                        job.setData(jobData)
+                        job.execute()
+                    } catch e {
+                        #.log("queue").error(e.where, e.what ": " e.message, e.data)
+                    }
+                }
+            }
+        }
     }
 }
