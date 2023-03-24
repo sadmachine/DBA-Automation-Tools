@@ -62,7 +62,7 @@ class Queue
         queueFiles := {}
         for namespace, handlers in this.getHandlers() {
             namespace := handler.getNamespace()
-            queueFiles[namespace] := this.fileDriver.readFiles(namespace)
+            queueFiles[namespace] := this.fileDriver.retrieveFiles(namespace)
         }
 
         return queueFiles
@@ -73,11 +73,13 @@ class Queue
         jobFiles := this.getWaitingJobs()
         for priority, priorityQueue in Queue.getHandlers() {
             for n, queueHandler in priorityQueue {
-                for n, jobData in jobFiles[queueHandler.getNamespace()] {
+                for n, jobFile in jobFiles[queueHandler.getNamespace()] {
                     try {
+                        jobData := this.fileDriver.readFile(jobFile)
                         job := new queueHandler()
                         job.setData(jobData)
                         job.execute()
+                        this.fileDriver.deleteFile(jobFile)
                     } catch e {
                         #.log("queue").error(e.where, e.what ": " e.message, e.data)
                     }
