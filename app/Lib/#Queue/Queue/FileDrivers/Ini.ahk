@@ -13,6 +13,9 @@
 ; Revision 1 (03/23/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/24/2023)
+; * Implement the createFile and readFile methods
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -28,9 +31,12 @@ class Ini extends #.Queue.FileDrivers.Base
         file.writeObject(data)
     }
 
-    retrieveFiles(namespace)
+    readFile(filePath)
     {
-
+        local file
+        file := #.IniFile(filePath)
+        data := file.readObject()
+        return data
     }
 
     _getUniqueFilename(namespace)
