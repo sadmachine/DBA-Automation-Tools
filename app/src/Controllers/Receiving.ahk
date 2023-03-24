@@ -78,7 +78,11 @@ class Receiving extends Controllers.Base
             receiver.acquireInspectionNumbers()
             new Actions.PrintLabels(receiver)
             new Actions.ReceivingLog(receiver)
-            new Actions.InspectionReport(receiver)
+            for n, lot in receiver.lots {
+                ; Queue.createJob(new Actions.PrintLabels(receiver, n))
+                ; Queue.createJob(new Actions.ReceivingLog(receiver, n))
+                Queue.createJob(new Actions.InspectionReport(receiver, n))
+            }
             this.receiver := receiver
         } catch e {
             @.friendlyException(e)
