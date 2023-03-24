@@ -13,6 +13,9 @@
 ; Revision 1 (03/20/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/23/2023)
+; * Updated api, fileExtension, getFileExtension, retrieveFiles, readFile
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -20,9 +23,12 @@
 class Base
 {
     basePath := ""
-    __New(path)
+    fileExtension := ""
+
+    __New(path, extension)
     {
         this.basePath := path
+        this.fileExtension := extension
     }
 
     createFile(namespace, data)
@@ -32,6 +38,29 @@ class Base
 
     retrieveFiles(namespace)
     {
+        filePaths := []
+        queueGlob := "*" this.getFileExtension()
+        queuePath := #.Path.concat(this.basePath, namespace)
+        Loop, Files, % #.path.concat(queuePath, queueGlob), F
+        {
+            this.filePaths.push(A_LoopFileLongPath)
+        }
+        return filePaths
+    }
 
+    readFile(filePath)
+    {
+
+    }
+
+    deleteFile(filePath)
+    {
+        FileDelete % filePath
+    }
+
+    getFileExtension()
+    {
+        ext := Trim(LTrim(this.fileExtension, "."))
+        return "." ext
     }
 }
