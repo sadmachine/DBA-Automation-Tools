@@ -21,21 +21,16 @@
 ; * Loop over priority array
 ; * Autoclose (gracefully) if DBA AutoTools.exe no longer exists
 ;
+; Revision 4 (03/24/2023)
+; * Delegate most of the queue logic to the actual Queue class
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 #NoTrayIcon
 #Include src/Bootstrap.ahk
 
 while (true) {
-    for priority, priorityQueue in Queue.getHandlers() {
-        for n, queueHandler in priorityQueue {
-            try {
-                queueHandler.call()
-            } catch e {
-                #.log("queue").error(e.where, e.what ": " e.message, e.data)
-            }
-        }
-    }
+    Queue.executeJobs()
 
     Process, Exist, DBA AutoTools.exe
     ; If DBA AutoTools.exe isn't running, Break out of loop
