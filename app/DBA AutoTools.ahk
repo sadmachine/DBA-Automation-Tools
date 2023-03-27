@@ -25,6 +25,9 @@
 ; Revision 4 (03/16/2023)
 ; * Run queue manager on an interval
 ;
+; Revision 5 (03/26/2023)
+; * Use global var with a different syntax
+;
 ; === TO-DOs ===================================================================
 ; TODO - Use Bootstrap.ahk
 ; ==============================================================================
@@ -102,6 +105,6 @@ RunQueueManager()
     Process, Exist, QueueManager.exe
     ; If QueueManager.exe isn't running, run it
     if (!ErrorLevel) {
-        Run, % #.path.concat($.PROJECT_ROOT, "QueueManager.exe")
+        Run, % #.path.concat($["PROJECT_ROOT"], "QueueManager.exe")
     }
 }
