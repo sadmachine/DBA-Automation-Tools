@@ -13,8 +13,11 @@
 ; Revision 1 (03/15/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/27/2023)
+; * Use new global var syntax
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#.Logger.addChannel("app", #.Path.concat($.PROJECT_ROOT, "modules"), "application.log")
-#.Logger.addChannel("queue", #.Path.concat($.PROJECT_ROOT, "modules"), "queue.log")
+#.Logger.addChannel("app", #.Path.concat($["PROJECT_ROOT"], "modules"), "application.log")
+#.Logger.addChannel("queue", #.Path.concat($["PROJECT_ROOT"], "modules"), "queue.log")
 #.log("app").info(A_LineFile, "Finished Bootstrapping '" A_ScriptName "'", "")

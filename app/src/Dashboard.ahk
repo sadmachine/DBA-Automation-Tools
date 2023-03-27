@@ -16,6 +16,9 @@
 ; Revision 2 (03/07/2023)
 ; * Update tray menu and menu actions
 ;
+; Revision 3 (03/27/2023)
+; * Use new global var syntax
+;
 ; === TO-DOs ===================================================================
 ; TODO - Abstract out to a controller and a view
 ; TODO - Update to actually handle modules (old way is broken, only works for single module)
@@ -211,7 +214,7 @@ class Dashboard
 
     @openSettings()
     {
-        Run, % #.Path.concat($.PROJECT_ROOT, "Settings.exe")
+        Run, % #.Path.concat($["PROJECT_ROOT"], "Settings.exe")
     }
 
     @exitProgram()
@@ -224,7 +227,7 @@ class Dashboard
     {
         tempDir := new #.Path.Temp("DBA AutoTools")
         tempApplicationLogPath := tempDir.concat("application.log")
-        applicationLogPath := #.Path.concat($.PROJECT_ROOT, "modules\application.log")
+        applicationLogPath := #.Path.concat($["PROJECT_ROOT"], "modules\application.log")
         #.Cmd.copy(applicationLogPath, tempApplicationLogPath)
         Run, % "notepad.exe """ tempApplicationLogPath """"
     }

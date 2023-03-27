@@ -13,9 +13,12 @@
 ; Revision 1 (03/15/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/27/2023)
+; * Use new global var syntax
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-configIniLocation := #.Path.concat($.PROJECT_ROOT, "modules\config.ini")
+configIniLocation := #.Path.concat($["PROJECT_ROOT"], "modules\config.ini")
 
 if (!FileExist(configIniLocation)) {
     throw new @.FilesystemException(A_ThisFunc, "Could not locate the config.ini file.")

@@ -14,7 +14,13 @@
 ; * Added This Banner
 ; * Add Inspection Report queue handler
 ;
+; Revision 2 (03/27/2023)
+; * Use new global var syntax
+; * Set file driver, and use new queue handler syntax
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
-Queue.registerHandler("1" , ObjBindMethod(Actions.InspectionReport, "poll", #.Path.concat($.PROJECT_ROOT, "queue\inspection-reports")))
+Queue.setFileDriver(new #.Queue.FileDrivers.Ini($["QUEUE_PATH"]))
+
+Queue.registerHandler("1", Actions.InspectionReport)

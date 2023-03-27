@@ -13,13 +13,16 @@
 ; Revision 1 (03/15/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/27/2023)
+; * Use new global var syntax
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-$.PROJECT_ROOT := ""
+$["PROJECT_ROOT"] := ""
 if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe,Installer.exe", A_ScriptName)) {
-    $.PROJECT_ROOT := #.Path.normalize(A_ScriptDir)
+    $["PROJECT_ROOT"] := #.Path.normalize(A_ScriptDir)
 } else {
-    $.PROJECT_ROOT := #.Path.parentOf(A_ScriptDir)
+    $["PROJECT_ROOT"] := #.Path.parentOf(A_ScriptDir)
 }
 
-$.QUEUE_PATH := #.Path.concat($.PROJECT_ROOT, "queue")
+$["QUEUE_PATH"] := #.Path.concat($["PROJECT_ROOT"], "queue")
