@@ -12,6 +12,7 @@
 ; === Revision History =========================================================
 ; Revision 1 (03/31/2023)
 ; * Added This Banner
+; * Improved value parsing (true/false, strings), _parseValue() method added
 ;
 ; === TO-DOs ===================================================================
 ; TODO - Make more robust and validate keys/values
@@ -41,8 +42,23 @@ class DotEnv
                 continue
             }
             parts := StrSplit(line, "=")
-            ret[parts[1]] := parts[2]
+            ret[parts[1]] := this._parseValue(parts[2])
         }
         return ret
+    }
+
+    _parseValue(value)
+    {
+        firstChar := SubStr(value, 1, 1)
+        lastChar := SubStr(value, 0, 1)
+        if (firstChar == """" && lastChar == """") {
+            value := Trim(value, """")
+            value := StrReplace(value, """", """""")
+        }
+        if (InStr("true false", value, false)) {
+            StringLower, value, value
+            value := (value == "true" ? true : false)
+        }
+        return value
     }
 }
