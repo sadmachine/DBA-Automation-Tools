@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (03/31/2023)
+; * Update how global vars are access
+;
 ; === TO-DOs ===================================================================
 ; TODO - Possibly turn this into a controller
 ; TODO - Revisit/refactor/optimize
@@ -56,7 +59,7 @@ class ModuleLoader
             }
         }
 
-        if (DEBUG_MODE)
+        if ($["DEBUG_MODE"])
         {
             output := "Loaded modules: `n"
             for _n, _mod in this.modules
