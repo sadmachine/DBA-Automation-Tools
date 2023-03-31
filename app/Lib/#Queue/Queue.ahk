@@ -16,6 +16,9 @@
 ; Revision 2 (03/22/2023)
 ; * Add fileDriver variable/methods
 ;
+; Revision 3 (03/31/2023)
+; * Major fixes and logging added
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -24,9 +27,11 @@ class Queue
 {
     ; --- Sub-classes ----------------------------------------------------------
     #Include <#Queue/Queue/Job>
+    #Include <#Queue/Queue/FileDrivers>
 
     ; --- Instance/Static Variables --------------------------------------------
     static registeredHandlers := {}
+    static namespaces := []
     static interval := 1000
     static fileDriver := {}
 
@@ -42,6 +47,7 @@ class Queue
             this.registeredHandlers[priority] := []
         }
         this.registeredHandlers[priority].push(handler)
+        this.namespaces.push(handler.getNamespace())
     }
 
     getHandlers()
@@ -51,27 +57,25 @@ class Queue
 
     createJob(jobInstance)
     {
-        namespace := queueJobClass.getNamespace()
-        data := queueJobClass.create()
-
+        namespace := jobInstance.getNamespace()
+        data := jobInstance.create()
+        #.log("queue").info(A_ThisFunc, "Creating Job", {namespace: namespace, data: data})
         this.fileDriver.createFile(namespace, data)
     }
 
     getWaitingJobs()
     {
         queueFiles := {}
-        for namespace, handlers in this.getHandlers() {
-            namespace := handler.getNamespace()
+        for n, namespace in this.namespaces {
             queueFiles[namespace] := this.fileDriver.retrieveFiles(namespace)
         }
-
         return queueFiles
     }
 
     executeJobs()
     {
         jobFiles := this.getWaitingJobs()
-        for priority, priorityQueue in Queue.getHandlers() {
+        for priority, priorityQueue in this.getHandlers() {
             for n, queueHandler in priorityQueue {
                 for n, jobFile in jobFiles[queueHandler.getNamespace()] {
                     try {
