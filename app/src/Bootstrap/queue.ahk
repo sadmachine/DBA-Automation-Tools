@@ -18,9 +18,14 @@
 ; * Use new global var syntax
 ; * Set file driver, and use new queue handler syntax
 ;
+; Revision 3 (03/31/2023)
+; * Add some logging for Queue bootstrapping
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
-Queue.setFileDriver(new #.Queue.FileDrivers.Ini($["QUEUE_PATH"]))
+#.Queue.setFileDriver(new #.Queue.FileDrivers.Ini($["QUEUE_PATH"]))
+#.log("queue").info(A_ScriptName, "Set File Driver", {queuePath: $["QUEUE_PATH"]})
 
-Queue.registerHandler("1", Actions.InspectionReport)
+#.Queue.registerHandler("1", Actions.InspectionReport)
+#.log("queue").info(A_ScriptName, "Finished registering Queue Handlers")
