@@ -16,14 +16,18 @@
 ; Revision 2 (03/21/2023)
 ; * Added Queue class library
 ;
+; Revision 3 (03/31/2023)
+; * Add dotenv class
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 class #
 {
+    #Include <#Cmd\Cmd>
+    #Include <#DotEnv\DotEnv>
+    #Include <#IniFile\IniFile>
     #Include <#Logger\Logger>
     #Include <#Path\Path>
-    #Include <#Cmd\Cmd>
-    #Include <#IniFile\IniFile>
     #Include <#Queue\Queue>
 
     log(channelSlug)
