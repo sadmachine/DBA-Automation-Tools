@@ -17,6 +17,9 @@
 ; * Created vardump helper for turning any variable into a string for output
 ; * Vardump get used for data that is passed to exceptions for displaying
 ;
+; Revision 3 (03/31/2023)
+; * Update how global vars are handled
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 Class @
@@ -103,8 +106,7 @@ Class @
 
     friendlyException(e)
     {
-        GLOBAL DEBUG_MODE
-        if (DEBUG_MODE || @.inheritsFrom(e, "UnexpectedException")) {
+        if ($["DEBUG_MODE"] || @.inheritsFrom(e, "UnexpectedException")) {
             if (!@.handleException(e)) {
                 throw e
             }
