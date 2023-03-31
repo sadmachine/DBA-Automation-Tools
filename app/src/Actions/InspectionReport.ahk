@@ -23,6 +23,10 @@
 ; * Converted to creating a queued job instead of immediately creating
 ; * Moved some methods from here to IniFile utility class
 ;
+; Revision 5 (03/31/2023)
+; * Near finished implementing queue job interface
+; * Removed legacy poll() method
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -65,6 +69,8 @@ class InspectionReport extends Actions.Base
 
     execute()
     {
+        inspectionReportConfig := Config.load("receiving.inspectionReport")
+        template := inspectionReportConfig.get("file.template")
         destination := inspectionReportConfig.get("file.destinationFolder")
         tempDir := new #.Path.Temp("DBA AutoTools")
 
@@ -91,7 +97,7 @@ class InspectionReport extends Actions.Base
         excelColumns := inspectionReportConfig.get("excelColumnMapping")
 
         for columnName, value in reportData {
-            CurrSht.range[excelColumns.get(columnName)].Value := reportData[columnName]
+            CurrSht.range[excelColumns.get(columnName)].Value := value
         }
 
         CurrWbk.Save()
@@ -111,69 +117,5 @@ class InspectionReport extends Actions.Base
 
         #.Path.freeLock(filepath)
         #.log("queue").info(A_ThisFunc, "Released file lock")
-    }
-
-    poll(directory)
-    {
-        queueDir := directory
-
-        inspectionReportConfig := Config.load("receiving.inspectionReport")
-        template := inspectionReportConfig.get("file.template")
-        tempDir := new #.Path.Temp("DBA AutoTools")
-
-        Loop, Files, % #.path.concat(queueDir, "*"), F
-        {
-            queueFilepath := A_LoopFileLongPath
-            inspectionNumber := jobFile.read(queueFilepath, "inspectionFormNumber")
-            inspectionFolder := #.Path.concat(destination, inspectionNumber)
-            FileCreateDir, % inspectionFolder
-            filename := inspectionNumber " - Inspection Report.xlsx"
-            filepath := #.Path.concat(inspectionFolder, filename)
-            tempFilepath := tempDir.concat(filename)
-            #.Cmd.copy(template, filepath)
-            #.Cmd.copy(template, tempFilepath)
-
-            #.Path.createLock(filepath)
-            #.log("queue").info(A_ThisFunc, "Acquired file lock")
-
-            xlApp := ComObjCreate("Excel.Application")
-            #.log("queue").info(A_ThisFunc, "Created excel app")
-            CurrWbk := xlApp.Workbooks.Open(tempFilepath) ; Open the master file
-            #.log("queue").info(A_ThisFunc, "Opened workbook")
-            CurrSht := CurrWbk.Sheets(1)
-
-            excelColumns := inspectionReportConfig.get("excelColumnMapping")
-
-            jobFile := new #.IniFile(queueFilePath)
-
-            CurrSht.range[excelColumns.get("inspectionFormNumber")].Value := jobFile.read("data", "inspectionFormNumber")
-            CurrSht.range[excelColumns.get("reportDate")].Value := jobFile.read("data", "reportDate")
-            CurrSht.range[excelColumns.get("stelrayMaterialNumber")].Value := jobFile.read("data", "stelrayMaterialNumber")
-            CurrSht.range[excelColumns.get("materialDescription")].Value := jobFile.read("data", "materialDescription")
-            CurrSht.range[excelColumns.get("lotNumber")].Value := jobFile.read("data", "lotNumber")
-            CurrSht.range[excelColumns.get("poNumber")].Value := jobFile.read("data", "poNumber")
-            CurrSht.range[excelColumns.get("vendorName")].Value := jobFile.read("data", "vendorName")
-            CurrSht.range[excelColumns.get("quantityOnPo")].Value := jobFile.read("data", "quantityOnPo")
-            CurrSht.range[excelColumns.get("quantityReceived")].Value := jobFile.read("data", "quantityReceived")
-
-            CurrWbk.Save()
-            #.log("queue").info(A_ThisFunc, "Saved Workbook")
-
-            xlApp.Quit()
-            #.log("queue").info(A_ThisFunc, "Quit Excel App")
-            xlApp := "", CurrWbk := "", CurrSht := ""
-
-            #.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-            #.Cmd.move(tempFilePath, filePath)
-            #.log("queue").info(A_ThisFunc, "Success")
-
-            if (ErrorLevel) {
-                throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.", {tempFilePath: tempFilePath, filePath: filePath})
-            }
-
-            #.Path.freeLock(filepath)
-            #.log("queue").info(A_ThisFunc, "Released file lock")
-            FileDelete, % queueFilepath
-        }
     }
 }
