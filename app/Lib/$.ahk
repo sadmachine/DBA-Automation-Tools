@@ -17,5 +17,16 @@
 ; ==============================================================================
 class $
 {
+    __Get(key, default := "")
+    {
+        this.get(key, default)
+    }
 
+    get(key, default := "")
+    {
+        if (!this.hasKey(key)) {
+            return default
+        }
+        return this[key]
+    }
 }
