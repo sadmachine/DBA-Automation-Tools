@@ -16,8 +16,12 @@
 ; Revision 2 (03/27/2023)
 ; * Use new global var syntax
 ;
+; Revision 3 (03/31/2023)
+; * Add .env file support for adding global vars
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
+
 $["PROJECT_ROOT"] := ""
 if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe,Installer.exe", A_ScriptName)) {
     $["PROJECT_ROOT"] := #.Path.normalize(A_ScriptDir)
@@ -26,3 +30,15 @@ if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe,Installer.exe", A_Scr
 }
 
 $["QUEUE_PATH"] := #.Path.concat($["PROJECT_ROOT"], "queue")
+if (!InStr(FileExist($["QUEUE_PATH"]), "D")) {
+    FileCreateDir % $["QUEUE_PATH"]
+}
+
+dotEnvPath := #.Path.concat($["PROJECT_ROOT"], ".env")
+if (InStr("AN", FileExist(dotEnvPath))) {
+    dotEnvFile := new #.DotEnv(dotEnvPath)
+    dotEnvValues := dotEnvFile.toObject()
+    for key, value in dotEnvValues {
+        $[key] := value
+    }
+}
