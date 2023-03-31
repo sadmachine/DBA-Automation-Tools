@@ -16,32 +16,41 @@
 ; Revision 2 (03/24/2023)
 ; * Implement the createFile and readFile methods
 ;
+; Revision 3 (03/31/2023)
+; * Add constructor
+; * Major bug fixes and optimizations
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; #.Queue.FileDrivers.Ini
 class Ini extends #.Queue.FileDrivers.Base
 {
+    __New(path)
+    {
+        base.__New(path, ".ini")
+    }
+
     createFile(namespace, data)
     {
         local file
         filePath := this._getUniqueFilename(namespace)
 
-        file := #.IniFile(filePath)
+        file := new #.IniFile(filePath)
         file.writeObject(data)
     }
 
     readFile(filePath)
     {
         local file
-        file := #.IniFile(filePath)
+        file := new #.IniFile(filePath)
         data := file.readObject()
         return data
     }
 
     _getUniqueFilename(namespace)
     {
-        filePathBase := #.Path.concat(this.basePath, namespace)
+        filePathBase := this.getNamespacePath(namespace)
         FormatTime, dateStr,, % "yyyyMMddHHmmss"
         index := -1
         loop {
