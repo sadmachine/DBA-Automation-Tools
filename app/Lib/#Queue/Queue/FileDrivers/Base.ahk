@@ -17,6 +17,10 @@
 ; * Updated api, fileExtension, getFileExtension, retrieveFiles, readFile
 ; * ... deleteFile
 ;
+; Revision 3 (03/31/2023)
+; * Update how files are retrieved
+; * Added getNamespacePath()
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -40,11 +44,10 @@ class Base
     retrieveFiles(namespace)
     {
         filePaths := []
-        queueGlob := "*" this.getFileExtension()
-        queuePath := #.Path.concat(this.basePath, namespace)
-        Loop, Files, % #.path.concat(queuePath, queueGlob), F
+        queueGlob := #.Path.concat(this.getNamespacePath(namespace), "*" this.getFileExtension())
+        Loop, Files, % queueGlob, F
         {
-            this.filePaths.push(A_LoopFileLongPath)
+            filePaths.push(A_LoopFileLongPath)
         }
         return filePaths
     }
@@ -63,5 +66,15 @@ class Base
     {
         ext := Trim(LTrim(this.fileExtension, "."))
         return "." ext
+    }
+
+    getNamespacePath(namespace)
+    {
+        filePathBase := #.Path.concat(this.basePath, namespace)
+        if (!InStr(FileExist(filePathBase), "D")) {
+            #.log("queue").info(A_ThisFunc, "Namespace path did not exist, creating it", {namespacePath: filePathBase})
+            FileCreateDir % filePathBase
+        }
+        return filePathBase
     }
 }
