@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/06/2023)
+; * Add in checks to validate the location was entered correctly for each lot
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -158,24 +161,43 @@ class ReceivingTransaction extends Actions.Base
         Send % this.receiver.lots["current"].lotNumber
         Send {Shift Down}{Tab}{Shift Up}
         Send {Shift Down}{Tab}{Shift Up}
-        Send {Enter}
-        Sleep 100
-        Send % "\"
-        WinWaitActive, % "FrmPopDrpLocationLook_sub",, 5
-        if ErrorLevel
-        {
-            throw new @.WindowException(A_ThisFunc, "Location submenu never became active (waited 5 seconds).")
-        }
-        Sleep 200
-        ControlClick, TCheckBox1, % "FrmPopDrpLocationLook_sub",,,,NA
-        Sleep 200
-        ControlSend, TdxButtonEdit1, % this.receiver.lots["current"].location, % "FrmPopDrpLocationLook_sub"
-        Sleep 100
-        ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
-        Sleep 100
-        ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
-        Sleep 100
-        Send {Enter}
+        this._enterLocation(this.receiver.lots["current"].location)
+    }
+
+    _enterLocation(location)
+    {
+        Loop {
+            Send {Enter}
+            Sleep 100
+            Send % "\"
+            WinWaitActive, % "FrmPopDrpLocationLook_sub",, 5
+            if ErrorLevel
+            {
+                throw new @.WindowException(A_ThisFunc, "Location submenu never became active (waited 5 seconds).")
+            }
+            Sleep 200
+            ControlClick, TCheckBox1, % "FrmPopDrpLocationLook_sub",,,,NA
+            Sleep 200
+            ControlSend, TdxButtonEdit1, % location, % "FrmPopDrpLocationLook_sub"
+            Sleep 100
+            ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
+            Sleep 100
+            ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
+            Sleep 100
+            Send {Enter}
+            ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
+            ControlSend, TdxDBGrid1, {Enter}, % DBA.Windows.POReceipts
+            ControlGetText textCheck, TdxInplaceDBTreeListButtonEdit1, % DBA.Windows.POReceipts
+            if (textCheck != location) {
+                ControlSetText, TdxInplaceDBTreeListButtonEdit1, % locaiton, % DBA.Windows.POReceipts
+                ControlGetText textCheck, TdxInplaceDBTreeListButtonEdit1, % DBA.Windows.POReceipts
+                if (textCheck == location) {
+                    break
+                }
+            } else {
+                break
+            }
+        } Until (this._checkLocation(location))
     }
 
     _nextReceiptLine()
@@ -188,5 +210,19 @@ class ReceivingTransaction extends Actions.Base
         }
         ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
         Send {Down}
+    }
+
+    _checkLocation(expected)
+    {
+        ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
+        ControlSend, TdxDBGrid1, {Home}, % DBA.Windows.POReceipts
+        ControlSend, TdxDBGrid1, {Right}, % DBA.Windows.POReceipts
+        ControlSend, TdxDBGrid1, {Enter}, % DBA.Windows.POReceipts
+        ControlGetText textCheck, TdxInplaceDBTreeListButtonEdit1, % DBA.Windows.POReceipts
+        ControlSend, TdxInplaceDBTreeListButtonEdit1, {Enter}, % DBA.Windows.POReceipts
+        if (textCheck != expected) {
+            return false
+        }
+        return true
     }
 }
