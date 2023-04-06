@@ -22,6 +22,10 @@
 ; Revision 4 (03/05/2023)
 ; * Implement CMD copy/move
 ;
+; Revision 5 (04/06/2023)
+; * Update to run as a queue job
+; * Tested locally, appears to be working
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -29,22 +33,42 @@
 ; Actions.ReceivingLog
 class ReceivingLog extends Actions.Base
 {
-    __New(ByRef receiver)
+    __New(receiver, lotIndex)
+    {
+        this.receiver := receiver
+        this.lotIndex := lotIndex
+    }
+
+    create()
+    {
+        FormatTime, dateStr,, % "MM/dd/yyyy"
+        lot := this.receiver.lots[this.lotIndex]
+
+        this.data["data"] := {}
+        this.data["data"]["date"] := dateStr
+        this.data["data"]["stelrayItemNumber"] := this.receiver.partNumber
+        this.data["data"]["materialDescription"] := this.receiver.partDescription
+        this.data["data"]["materialLotNumber"] := lot.lotNumber
+        this.data["data"]["lotQuantity"] := lot.quantity
+        this.data["data"]["poNumber"] := this.receiver.poNumber
+        this.data["data"]["inspectionNumber"] := lot.inspectionNumber
+        this.data["data"]["cOfCReceived"] := lot.hasCert
+
+        return this.data
+    }
+
+    execute()
     {
         receivingLogConfig := Config.load("receiving.incomingInspectionLog")
         fileDestination := receivingLogConfig.get("file.destination")
         templateFile := receivingLogConfig.get("file.template")
-        copyPath := #.Path.concat(fileDestination, "Incoming Inspection Log.xlsx")
-        filePath := #.Path.concat(fileDestination, ".Incoming Inspection Log.xlsx")
+        filePath := #.Path.concat(fileDestination, "Incoming Inspection Log.xlsx")
         tempPath := new #.Path.Temp("DBA AutoTools")
-        tempFilePath := tempPath.concat(".Incoming Inspection Log.xlsx")
+        tempFilePath := tempPath.concat("Incoming Inspection Log.xlsx")
 
-        this.progressGui := new UI.ProgressBoxObj("Updating Incoming Inspection Log, please wait...", "Updating Incoming Inspection Log")
-        this.progressGui.SetRange(0, receiver.lots.count())
-        this.progressGui.SetStartValue(0)
-        this.progressGui.Show()
+        reportData := this.data["data"]
 
-        #.log("app").info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
+        #.log("queue").info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
 
         if (!FileExist(fileDestination) == "D") {
             throw new @.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
@@ -57,32 +81,20 @@ class ReceivingLog extends Actions.Base
             #.Cmd.copy(templateFile, filePath)
         }
 
-        FileGetAttrib, fileAttributes, % filePath
-        if (!InStr(fileAttributes, "H")) {
-            FileSetAttrib, +H, % filePath
+        if (#.Path.inUse(filePath)) {
+            throw new @.FilesystemException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
-
         #.Path.createLock(filePath)
-        #.log("app").info(A_ThisFunc, "Acquired file lock")
+        #.log("queue").info(A_ThisFunc, "Acquired file lock")
 
-        #.log("app").info(A_ThisFunc, "Copying Incoming Inspection... ", {filepath: filePath, tempFilePath: tempFilePath})
+        #.log("queue").info(A_ThisFunc, "Copying Incoming Inspection... ", {filepath: filePath, tempFilePath: tempFilePath})
         #.Cmd.copy(filePath, tempFilePath)
-        #.log("app").info(A_ThisFunc, "Success")
+        #.log("queue").info(A_ThisFunc, "Success")
 
         if (ErrorLevel) {
             throw new @.FilesystemException(A_ThisFunc, "Could not copy '" filePath "' to '" tempFilePath "'")
         }
 
-        ; Process, Exist, EXCEL.EXE
-        ; while(ErrorLevel)
-        ; {
-        ;     xlApp := ComObjActive("Excel.Application")
-        ;     For Book in XL.Workbooks {
-        ;         Book.Close(1)
-        ;     }
-        ;     xlApp.Quit(), xlApp := ""
-        ;     Process, Exist, EXCEL.EXE
-        ; }
         xlApp := ""
         xlWorkbooks := ""
         xlWorkBook := ""
@@ -93,10 +105,10 @@ class ReceivingLog extends Actions.Base
         emptyRowOffset := ""
         emptyRow := ""
         xlApp := ComObjCreate("Excel.Application")
-        #.log("app").info(A_ThisFunc, "Created excel app")
+        #.log("queue").info(A_ThisFunc, "Created excel app")
         xlWorkbooks := xlApp.Workbooks
         xlWorkbook := xlWorkbooks.Open(tempFilePath) ; Open the master file
-        #.log("app").info(A_ThisFunc, "Opened workbook")
+        #.log("queue").info(A_ThisFunc, "Opened workbook")
         xlSheet := xlWorkbook.Sheets(1)
         ; Get the last cell in column A, then save a reference to the cell next to it (column B)
 
@@ -107,66 +119,26 @@ class ReceivingLog extends Actions.Base
         emptyRow := emptyRowOffset.Rows(1)
         FormatTime, datestr,, % "MM/dd/yyyy"
 
-        for n, lot in receiver.lots
-        {
-            if (lastRow.Row != 2) {
-                lastRow.Copy()
-                emptyRow.PasteSpecial(xlPasteFormats := -4122)
-            }
-
-            excelColumns := receivingLogConfig.get("excelColumnMapping")
-
-            emptyRowRange := emptyRow.Range(excelColumns.get("date") "1")
-            emptyRowRange.Value := datestr
-            emptyRowRange := ""
-
-            emptyRowRange := emptyRow.Range(excelColumns.get("stelrayItemNumber") "1")
-            emptyRowRange.Value := receiver.partNumber
-            emptyRowRange := ""
-
-            emptyRowRange := emptyRow.Range(excelColumns.get("materialDescription") "1")
-            emptyRowRange.Value := receiver.partDescription
-            emptyRowRange := ""
-
-            emptyRowRange := emptyRow.Range(excelColumns.get("materialLotNumber") "1")
-            emptyRowRange.Value := lot.lotNumber
-            emptyRowRange := ""
-
-            emptyRowRange := emptyRow.Range(excelColumns.get("lotQuantity") "1")
-            emptyRowRange.Value := lot.quantity
-            emptyRowRange := ""
-
-            emptyRowRange := emptyRow.Range(excelColumns.get("poNumber") "1")
-            emptyRowRange.Value := receiver.poNumber
-            emptyRowRange := ""
-
-            emptyRowRange := emptyRow.Range(excelColumns.get("inspectionNumber") "1")
-            emptyRowRange.Value := lot.inspectionNumber
-            emptyRowRange := ""
-
-            emptyRowRange := emptyRow.Range(excelColumns.get("cOfCReceived") "1")
-            emptyRowRange.Value := (lot.hasCert == "Yes" ? "Y" : "N")
-            emptyRowRange := ""
-            ;emptyRow.Range(excelColumns.get("receiverId") "1").Value := receiver.identification
-
-            lastRow := ""
-            lastRow := emptyRow
-
-            emptyRow := ""
-            emptyRowOffset := ""
-            emptyRowOffset := lastRow.Offset(1, 0)
-            emptyRow := emptyRowOffset.Rows(1)
-            #.log("app").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
-            this.progressGui.Increment()
+        if (lastRow.Row != 2) {
+            lastRow.Copy()
+            emptyRow.PasteSpecial(xlPasteFormats := -4122)
         }
 
-        #.log("app").info(A_ThisFunc, "Finished Loop")
+        excelColumns := receivingLogConfig.get("excelColumnMapping")
+
+        for key, value in reportData {
+            emptyRowRange := emptyRow.Range(excelColumns.get(key) "1")
+            emptyRowRange.Value := value
+            emptyRowRange := ""
+        }
+
+        #.log("queue").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
 
         xlWorkbook.Save()
-        #.log("app").info(A_ThisFunc, "Saved Workbook")
+        #.log("queue").info(A_ThisFunc, "Saved Workbook")
 
         xlApp.Quit()
-        #.log("app").info(A_ThisFunc, "Quit Excel App")
+        #.log("queue").info(A_ThisFunc, "Quit Excel App")
         emptyRow := ""
         emptyRowOffset := ""
         lastRow := ""
@@ -177,23 +149,17 @@ class ReceivingLog extends Actions.Base
         xlWorkbooks := ""
         xlApp := ""
 
-        #.log("app").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
+        #.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
         #.Cmd.move(tempFilePath, filePath)
-        #.log("app").info(A_ThisFunc, "Success")
+        #.log("queue").info(A_ThisFunc, "Success")
 
         if (ErrorLevel) {
             throw new @.FilesystemException(A_ThisFunc, "Could not copy incoming inspection log from the temp directory to its destination.")
         }
 
-        if (!#.Path.inUse(copyPath)) {
-            #.Cmd.copy(filePath, copyPath)
-            FileSetAttrib, -H, % copyPath
-            FileSetAttrib, +H, % filePath
-        }
-
         #.Path.freeLock(filePath)
-        #.log("app").info(A_ThisFunc, "Released file lock")
+        #.log("queue").info(A_ThisFunc, "Released file lock")
 
-        this.progressGui.Destroy()
+        return true
     }
 }
