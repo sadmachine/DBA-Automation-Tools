@@ -82,7 +82,7 @@ class ReceivingLog extends Actions.Base
         }
 
         if (#.Path.inUse(filePath)) {
-            throw new @.FilesystemException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
+            throw new @.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
         #.Path.createLock(filePath)
         #.log("queue").info(A_ThisFunc, "Acquired file lock")

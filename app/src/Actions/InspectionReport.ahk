@@ -89,7 +89,7 @@ class InspectionReport extends Actions.Base
         #.Cmd.copy(template, tempFilepath)
 
         if (#.Path.inUse(filepath)) {
-            throw new @.FilesystemException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
+            throw new @.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
         #.Path.createLock(filepath)
         #.log("queue").info(A_ThisFunc, "Acquired file lock")
