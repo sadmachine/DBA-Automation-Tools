@@ -19,6 +19,9 @@
 ; Revision 3 (03/31/2023)
 ; * Update to properly call queue methods
 ;
+; Revision 4 (04/06/2023)
+; * Run receiving log and inspection reports as queue jobs
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -83,10 +86,9 @@ class Receiving extends Controllers.Base
             new Actions.ReceivingTransaction(receiver)
             receiver.acquireInspectionNumbers()
             new Actions.PrintLabels(receiver)
-            new Actions.ReceivingLog(receiver)
             for n, lot in receiver.lots {
                 ; Queue.createJob(new Actions.PrintLabels(receiver, n))
-                ; Queue.createJob(new Actions.ReceivingLog(receiver, n))
+                #.Queue.createJob(new Actions.ReceivingLog(receiver, n))
                 #.Queue.createJob(new Actions.InspectionReport(receiver, n))
             }
             this.receiver := receiver
