@@ -27,6 +27,9 @@
 ; * Near finished implementing queue job interface
 ; * Removed legacy poll() method
 ;
+; Revision 6 (04/06/2023)
+; * Tested locally and seems to be working
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -52,17 +55,17 @@ class InspectionReport extends Actions.Base
     {
         FormatTime, dateOfGeneration,, ShortDate
         lot := this.receiver.lots[this.lotIndex]
-        currentData := {}
-        currentData["inspectionFormNumber"] := lot.inspectionNumber
-        currentData["reportDate"] := dateOfGeneration
-        currentData["stelrayMaterialNumber"] := this.receiver.partNumber
-        currentData["materialDescription"] := this.receiver.partDescription
-        currentData["lotNumber"] := lot.lotNumber
-        currentData["poNumber"] := this.receiver.poNumber
-        currentData["vendorName"] := this.receiver.supplier
-        currentData["quantityOnPo"] := this.receiver.lineQuantity
-        currentData["quantityReceived"] := lot.quantity
-        this.data["data"] := currentData
+
+        this.data["data"] := {}
+        this.data["data"]["inspectionFormNumber"] := lot.inspectionNumber
+        this.data["data"]["reportDate"] := dateOfGeneration
+        this.data["data"]["stelrayMaterialNumber"] := this.receiver.partNumber
+        this.data["data"]["materialDescription"] := this.receiver.partDescription
+        this.data["data"]["lotNumber"] := lot.lotNumber
+        this.data["data"]["poNumber"] := this.receiver.poNumber
+        this.data["data"]["vendorName"] := this.receiver.supplier
+        this.data["data"]["quantityOnPo"] := this.receiver.lineQuantity
+        this.data["data"]["quantityReceived"] := lot.quantity
 
         return this.data
     }
@@ -85,6 +88,9 @@ class InspectionReport extends Actions.Base
         #.Cmd.copy(template, filepath)
         #.Cmd.copy(template, tempFilepath)
 
+        if (#.Path.inUse(filepath)) {
+            throw new @.FilesystemException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
+        }
         #.Path.createLock(filepath)
         #.log("queue").info(A_ThisFunc, "Acquired file lock")
 
@@ -117,5 +123,6 @@ class InspectionReport extends Actions.Base
 
         #.Path.freeLock(filepath)
         #.log("queue").info(A_ThisFunc, "Released file lock")
+        return true
     }
 }
