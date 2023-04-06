@@ -19,6 +19,9 @@
 ; Revision 3 (03/31/2023)
 ; * Major fixes and logging added
 ;
+; Revision 4 (04/06/2023)
+; * Only delete queuejob file if executed successfully (returned true)
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -82,8 +85,10 @@ class Queue
                         jobData := this.fileDriver.readFile(jobFile)
                         job := new queueHandler()
                         job.setData(jobData)
-                        job.execute()
-                        this.fileDriver.deleteFile(jobFile)
+                        success := job.execute()
+                        if (success) {
+                            this.fileDriver.deleteFile(jobFile)
+                        }
                     } catch e {
                         #.log("queue").error(e.where, e.what ": " e.message, e.data)
                     }
