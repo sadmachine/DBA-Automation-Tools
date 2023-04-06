@@ -90,7 +90,11 @@ class Queue
                             this.fileDriver.deleteFile(jobFile)
                         }
                     } catch e {
-                        #.log("queue").error(e.where, e.what ": " e.message, e.data)
+                        if (@.inheritsFrom(e, "ExpectedException")) {
+                            #.log("queue").warning(e.where, e.what ": " e.message, e.data)
+                        } else {
+                            #.log("queue").error(e.where, e.what ": " e.message, e.data)
+                        }
                     }
                 }
             }
