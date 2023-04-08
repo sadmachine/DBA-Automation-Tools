@@ -27,6 +27,7 @@ SetWorkingDir, %A_ScriptDir%
 
 #Include src/Autoload.ahk
 
+#Include src/Bootstrap/core.ahk
 #Include src/Bootstrap/constants.ahk
 #Include src/Bootstrap/logger.ahk
 #Include src/Bootstrap/config.ahk
