@@ -17,7 +17,7 @@
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; @.FilesystemException
-class FilesystemException extends @.ExpectedException
+class FileInUseException extends @.ExpectedException
 {
     __New(where, message, data := "")
     {
