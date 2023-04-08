@@ -21,21 +21,13 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-
-$["PROJECT_ROOT"] := ""
-if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe,Installer.exe", A_ScriptName)) {
-    $["PROJECT_ROOT"] := #.Path.normalize(A_ScriptDir)
-} else {
-    $["PROJECT_ROOT"] := #.Path.parentOf(A_ScriptDir)
-}
-
 $["QUEUE_PATH"] := #.Path.concat($["PROJECT_ROOT"], "queue")
 if (!InStr(FileExist($["QUEUE_PATH"]), "D")) {
     FileCreateDir % $["QUEUE_PATH"]
 }
 
 dotEnvPath := #.Path.concat($["PROJECT_ROOT"], ".env")
-if (InStr("AN", FileExist(dotEnvPath))) {
+if ((exists := FileExist(dotEnvPath)) && !InStr(exists, "D")) {
     dotEnvFile := new #.DotEnv(dotEnvPath)
     dotEnvValues := dotEnvFile.toObject()
     for key, value in dotEnvValues {
