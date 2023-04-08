@@ -26,6 +26,9 @@
 ; * Update to run as a queue job
 ; * Tested locally, appears to be working
 ;
+; Revision 6 (04/08/2023)
+; * Add receiver ID to output
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -53,6 +56,7 @@ class ReceivingLog extends Actions.Base
         this.data["data"]["poNumber"] := this.receiver.poNumber
         this.data["data"]["inspectionNumber"] := lot.inspectionNumber
         this.data["data"]["cOfCReceived"] := lot.hasCert
+        this.data["data"]["receiverId"] := this.receiver.identification
 
         return this.data
     }
