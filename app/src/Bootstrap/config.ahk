@@ -16,6 +16,9 @@
 ; Revision 2 (03/27/2023)
 ; * Use new global var syntax
 ;
+; Revision 3 (04/09/2023)
+; * Update messaging for missing config fields
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 if (!FileExist($["SETTINGS_INI_FILE"])) {
@@ -42,7 +45,7 @@ while (!Config.initialized) {
         field := e.field
         previousWidth := UI.MsgBoxObj.width
         UI.MsgBoxObj.width := 400
-        UI.MsgBox("The config field '" field.getFullIdentifier() "' is required, but missing a value. Please supply a value to continue.", "Required Field Missing")
+        UI.MsgBox("The config field:`n`n '" field.getFullIdentifier() "'`n`nis required, but missing a value. Please supply a value to continue.`n", "Required Field Missing")
         UI.MsgBoxObj.width := previousWidth
         dialog := UI.DialogFactory.fromConfigField(field)
         result := dialog.prompt()
