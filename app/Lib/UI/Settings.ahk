@@ -1,5 +1,25 @@
+; === Script Information =======================================================
+; Name .........: Settings
+; Description ..: General Purpose UI for updating/viewing Settings
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/09/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: Settings.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/09/2023)
+; * Added This Banner
+; * Update messaging
+; * Set parent Hwnd for dialogs that need it
+;
+; === TO-DOs ===================================================================
+; TODO: Decouple from fields so much
+; ==============================================================================
+; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; UI.Settings
-; TODO - Decouple from fields so much
 class Settings extends UI.Base
 {
     fields := {}
@@ -82,12 +102,13 @@ class Settings extends UI.Base
         }
         field := this.currentField
         if (field.scope == Config.Scope.GLOBAL) {
-            result := UI.YesNoBox("This field is a global field. Changing it will affect all other users of the program.`nAre you sure you wish to continue?", "Warning")
+            result := UI.YesNoBox("This field is a global field. Changing it will affect all other users of the program.`n`nAre you sure you wish to continue?`n", "Warning")
             if (result.canceled || result.value == "No") {
                 return
             }
         }
         dialog := UI.DialogFactory.fromConfigField(field)
+        dialog.parentHwnd := this.hwnd
         result := dialog.prompt()
         if (result.canceled) {
             return
