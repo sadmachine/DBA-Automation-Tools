@@ -30,7 +30,7 @@ SetWorkingDir, %A_ScriptDir%
 #Include src/Bootstrap/core.ahk
 #Include src/Bootstrap/constants.ahk
 #Include src/Bootstrap/logger.ahk
-#Include src/Bootstrap/config.ahk
 #Include src/Bootstrap/ui.ahk
+#Include src/Bootstrap/config.ahk
 #Include src/Bootstrap/database.ahk
 #Include src/Bootstrap/queue.ahk

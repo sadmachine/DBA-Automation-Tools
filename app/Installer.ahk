@@ -72,9 +72,9 @@ GetInstallationLocation()
         ExitApp
     }
 
-    configFilePath := #.Path.concat(installationPath, "DBA AutoTools\modules\config.ini")
-    if (FileExist(configFilePath)) {
-        IniRead, globalConfigValue, % configFilePath, % "location", % "global", % Config.UNDEFINED
+    settingsFilePath := #.Path.concat(installationPath, "DBA AutoTools\app\settings.ini")
+    if (FileExist(settingsFilePath)) {
+        IniRead, globalConfigValue, % settingsFilePath, % "location", % "global", % Config.UNDEFINED
         if (globalConfigValue == Config.UNDEFINED) {
             FileSelectFolder, globalConfigPath, *%globalConfigPath%, 3, % "Global Config Path"
             if (ErrorLevel) {
@@ -94,49 +94,59 @@ CreateDirectories()
     Global
 
     projectPath := #.Path.concat(installationPath, "DBA AutoTools")
-    modulesPath := #.Path.concat(projectPath, "modules")
-    configPath := #.Path.concat(modulesPath, "config")
-    templatesPath := #.Path.concat(modulesPath, "templates")
+    appPath := #.Path.concat(projectPath, "app")
+    modulesPath := #.Path.concat(appPath, "modules")
+    configPath := #.Path.concat(appPath, "config")
+    templatesPath := #.Path.concat(appPath, "templates")
+    storagePath := #.Path.concat(appPath, "storage")
+    logsPath := #.Path.concat(storagePath, "logs")
+    queuePath := #.Path.concat(appPath, "queue")
 
-    if (FileExist(projectPath) != "D") {
-        FileCreateDir % projectPath
-        MsgBox % "Created " projectPath
-    }
-
-    if (FileExist(modulesPath) != "D") {
-        FileCreateDir % modulesPath
-        MsgBox % "Created " modulesPath
-    }
-
-    if (FileExist(configPath) != "D") {
-        FileCreateDir % configPath
-        MsgBox % "Created " configPath
-    }
-
-    if (FileExist(templatesPath) != "D") {
-        FileCreateDir % templatesPath
-        MsgBox % "Created " templatesPath
-    }
+    _CreateDirIfNotExist(projectPath)
+    _CreateDirIfNotExist(appPath)
+    _CreateDirIfNotExist(modulesPath)
+    _CreateDirIfNotExist(configPath)
+    _CreateDirIfNotExist(templatesPath)
+    _CreateDirIfNotExist(storagePath)
+    _CreateDirIfNotExist(logsPath)
+    _CreateDirIfNotExist(queuePath)
 }
 
 InstallFiles()
 {
     Global
+
+    ; Files in project root folder
     FileInstall, ..\dist\DBA AutoTools.exe, % #.Path.concat(projectPath, "DBA AutoTools.exe"), 1
     FileInstall, ..\dist\QueueManager.exe, % #.Path.concat(projectPath, "QueueManager.exe"), 1
     FileInstall, ..\dist\Settings.exe, % #.Path.concat(projectPath, "Settings.exe"), 1
-    FileInstall, ..\dist\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
-    FileInstall, ..\dist\modules\config.example.ini, % #.Path.concat(modulesPath, "config.example.ini"), 1
-    FileInstall, ..\dist\modules\config.ini, % #.Path.concat(modulesPath, "config.ini"), 1
-    FileInstall, ..\dist\modules\mods.ini, % #.Path.concat(modulesPath, "mods.ini"), 1
-    FileInstall, ..\dist\modules\templates\Incoming Inspection Log Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
-    FileInstall, ..\dist\modules\templates\Incoming Inspection Report Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
+    FileInstall, ..\dist\.env, % #.Path.concat(projectPath, ".env"), 1
+
+    ; Files in app folder
+    FileInstall, ..\dist\app\settings.example.ini, % #.Path.concat(appPath, "settings.example.ini"), 1
+    FileInstall, ..\dist\app\settings.ini, % #.Path.concat(appPath, "settings.ini"), 1
+    FileInstall, ..\dist\app\mods.ini, % #.Path.concat(appPath, "mods.ini"), 1
+
+    ; Files in modules folder
+    FileInstall, ..\dist\app\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
+
+    ; Files in templates folder
+    FileInstall, ..\dist\app\templates\Incoming Inspection Log Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
+    FileInstall, ..\dist\app\templates\Incoming Inspection Report Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
 }
 
 SetupConfigIni()
 {
     Global
     localConfigPath := configPath
-    IniWrite, % localConfigPath, % #.Path.concat(modulesPath, "config.ini"), % "location", % "local"
-    IniWrite, % globalConfigPath, % #.Path.concat(modulesPath, "config.ini"), % "location", % "global"
+    IniWrite, % localConfigPath, % #.Path.concat(appPath, "settings.ini"), % "location", % "local"
+    IniWrite, % globalConfigPath, % #.Path.concat(appPath, "settings.ini"), % "location", % "global"
+}
+
+_CreateDirIfNotExist(path)
+{
+    if (FileExist(path) != "D") {
+        FileCreateDir % path
+        MsgBox % "Created " path
+    }
 }

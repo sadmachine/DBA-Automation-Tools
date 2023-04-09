@@ -18,16 +18,15 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-configIniLocation := #.Path.concat($["PROJECT_ROOT"], "modules\config.ini")
-
-if (!FileExist(configIniLocation)) {
-    throw new @.FilesystemException(A_ThisFunc, "Could not locate the config.ini file.")
+if (!FileExist($["SETTINGS_INI_FILE"])) {
+    throw new @.FilesystemException(A_ThisFunc, "Could not locate the settings.ini file.")
 }
 
 Config.BaseField.defaultRequirementValue := true
 
-IniRead, globalConfigLocation, % configIniLocation, % "location", % "global"
-IniRead, localConfigLocation, % configIniLocation, % "location", % "local"
+IniRead, globalConfigLocation, % $["SETTINGS_INI_FILE"], % "location", % "global"
+IniRead, localConfigLocation, % $["SETTINGS_INI_FILE"], % "location", % "local"
+
 Config.setLocalConfigLocation(localConfigLocation)
 Config.setGlobalConfigLocation(globalConfigLocation)
 Config.register(new DatabaseGroup())

@@ -22,13 +22,15 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 $["QUEUE_PATH"] := #.Path.concat($["PROJECT_ROOT"], "queue")
-if (!InStr(FileExist($["QUEUE_PATH"]), "D")) {
-    FileCreateDir % $["QUEUE_PATH"]
-}
+$["APP_PATH"] := #.Path.concat($["PROJECT_ROOT"], "app")
+$["STORAGE_PATH"] := #.Path.concat($["APP_PATH"], "storage")
+$["LOGS_PATH"] := #.Path.concat($["STORAGE_PATH"], "logs")
+$["SETTINGS_INI_FILE"] := #.Path.concat($["APP_PATH"], "settings.ini")
+$["MODS_INI_FILE"] := #.Path.concat($["APP_PATH"], "mods.ini")
 
-dotEnvPath := #.Path.concat($["PROJECT_ROOT"], ".env")
-if ((exists := FileExist(dotEnvPath)) && !InStr(exists, "D")) {
-    dotEnvFile := new #.DotEnv(dotEnvPath)
+$["DOTENV_PATH"]:= #.Path.concat($["PROJECT_ROOT"], ".env")
+if ((exists := FileExist($["DOTENV_PATH"])) && !InStr(exists, "D")) {
+    dotEnvFile := new #.DotEnv($["DOTENV_PATH"])
     dotEnvValues := dotEnvFile.toObject()
     for key, value in dotEnvValues {
         $[key] := value

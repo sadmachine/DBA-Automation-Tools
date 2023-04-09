@@ -19,8 +19,8 @@
 @.registerExceptionHandler()
 
 $["PROJECT_ROOT"] := ""
-if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe,Installer.exe", A_ScriptName)) {
+if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe", A_ScriptName)) {
     $["PROJECT_ROOT"] := #.Path.normalize(A_ScriptDir)
 } else {
-    $["PROJECT_ROOT"] := #.Path.parentOf(A_ScriptDir)
+    $["PROJECT_ROOT"] := #.Path.parentOf(#.Path.parentOf(A_ScriptDir))
 }
