@@ -64,10 +64,8 @@ class ReceivingGroup extends Config.Group
 
         fileSection := new Config.Section("File")
         fileSection.add(new Config.PathField("Template")
-            .setScope(Config.Scope.LOCAL)
             .setDescription("The excel file that should be used as a template to create new Inspection Reports. The Excel Column Mapping configuration should line up with the columns/rows in this file."))
-        fileSection.add(new Config.PathField("Destination Folder", "folder")
-            .setScope(Config.Scope.LOCAL)
+        fileSection.add(new Config.PathField("Destination Folder", "directory")
             .setDescription("The location on the filesystem that newly generated Inspection Reports should be placed."))
 
         inspectionReportFile.add(excelColumnMappingSection)
@@ -111,10 +109,8 @@ class ReceivingGroup extends Config.Group
 
         fileSection := new Config.Section("File")
         fileSection.add(new Config.PathField("Template")
-            .setScope(Config.Scope.LOCAL)
             .setDescription("The template file to use for the Incoming Inspection Log if the Incoming Inspection Log does not already exist. This should be an .xlsx file."))
-        fileSection.add(new Config.PathField("Destination", "folder")
-            .setScope(Config.Scope.LOCAL)
+        fileSection.add(new Config.PathField("Destination", "directory")
             .setDescription("The directory where the Incoming Inspection Log file is found. If the file does not exist already, it will be created from the template specified by 'Receiving.Incoming Inspection.Log File.Template'."))
 
         logFile.add(excelColumnMappingSection)
