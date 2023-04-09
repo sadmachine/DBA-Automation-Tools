@@ -1,3 +1,21 @@
+; === Script Information =======================================================
+; Name .........: Master UI parent class
+; Description ..: Handles/houses most custom UI functionality
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/09/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: UI.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/09/2023)
+; * Added This Banner
+; * Update to not force certain widths on utility *Box methods
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
 class UI
 {
     ; --- Sub-Classes ----------------------------------------------------------
@@ -21,14 +39,12 @@ class UI
     InputBox(prompt, title := "")
     {
         ib := new UI.InputBoxObj(prompt, title)
-        ib.width := 320
         return ib.prompt(prompt, title)
     }
 
     MsgBox(prompt, title := "")
     {
         mb := new UI.MsgBoxObj(prompt, title)
-        mb.width := 320
         mb.autoSize := true
         return mb.OK()
     }
@@ -36,7 +52,6 @@ class UI
     YesNoBox(prompt, title := "")
     {
         mb := new UI.MsgBoxObj(prompt, title)
-        mb.width := 320
         return mb.YesNo()
     }
 
