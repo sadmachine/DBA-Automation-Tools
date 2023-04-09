@@ -13,6 +13,10 @@
 ; Revision 1 (03/15/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/09/2023)
+; * Update default width to 420
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 UI.Base.defaultFont := {options: "S12", fontName: ""}
+UI.Base.defaultWidth := 420
