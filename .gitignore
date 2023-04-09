@@ -9,9 +9,7 @@ dist/**/*.ini
 dist/modules/data/templates/*Incoming Inspection Log.xlsx
 **/*.log
 
-!dist/**/mods.ini
-!dist/**/*.example.ini
 !**/modules/config/*.default.ini
-!dist/**/*.exe
 !*.example.ini
 !installers/*.exe
+!dist/**/*
