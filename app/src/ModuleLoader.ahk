@@ -19,6 +19,9 @@
 ; Revision 3 (04/09/2023)
 ; * Update to use mods_ini instead of mods location
 ;
+; Revision 4 (04/09/2023)
+; * Added `has` method to check for existing module
+;
 ; === TO-DOs ===================================================================
 ; TODO - Possibly turn this into a controller
 ; TODO - Revisit/refactor/optimize
@@ -78,6 +81,11 @@ class ModuleLoader
     get(module)
     {
         return this.modules[module]
+    }
+
+    has(module)
+    {
+        return this.modules.hasKey(module)
     }
 
     getSectionModules(section_title)
