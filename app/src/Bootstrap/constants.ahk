@@ -19,12 +19,16 @@
 ; Revision 3 (03/31/2023)
 ; * Add .env file support for adding global vars
 ;
+; Revision 4 (04/09/2023)
+; * Added various constants, mostly paths
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 $["QUEUE_PATH"] := #.Path.concat($["PROJECT_ROOT"], "queue")
 $["APP_PATH"] := #.Path.concat($["PROJECT_ROOT"], "app")
 $["STORAGE_PATH"] := #.Path.concat($["APP_PATH"], "storage")
 $["LOGS_PATH"] := #.Path.concat($["STORAGE_PATH"], "logs")
+$["MODS_PATH"] := #.Path.concat($["APP_PATH"], "modules")
 $["SETTINGS_INI_FILE"] := #.Path.concat($["APP_PATH"], "settings.ini")
 $["MODS_INI_FILE"] := #.Path.concat($["APP_PATH"], "mods.ini")
 
