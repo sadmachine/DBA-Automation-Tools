@@ -1,3 +1,21 @@
+; === Script Information =======================================================
+; Name .........: Base Dialog
+; Description ..: Base Dialog for all other dialogs to inherit from
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/09/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: BaseDialog.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/09/2023)
+; * Added This Banner
+; * Update to auto set control text to data.value, if it exists + no text given
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; UI.BaseDialog
 class BaseDialog extends UI.Base
@@ -27,6 +45,12 @@ class BaseDialog extends UI.Base
         } else {
             options .= resultVarOptionString
         }
+
+        ; If text was not passed in, and our data has a "value" key, use that for text
+        if (text == "" && this.data.hasKey("value")) {
+            text := this.data.value
+        }
+
         this.controls.push({controlType: controlType, options: options, text: text})
     }
 
