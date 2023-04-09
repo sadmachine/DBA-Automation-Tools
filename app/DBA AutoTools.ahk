@@ -28,6 +28,9 @@
 ; Revision 5 (03/26/2023)
 ; * Use global var with a different syntax
 ;
+; Revision 6 (04/09/2023)
+; * Update to use MODS_PATH global variable
+;
 ; === TO-DOs ===================================================================
 ; TODO - Use Bootstrap.ahk
 ; ==============================================================================
@@ -48,7 +51,6 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 ; Whether or not debug mode is active
 DEBUG_MODE := false
 ; The folder where modules can be found
-MODS_FOLDER := A_ScriptDir "/modules"
 
 ; --- Setup steps --------------------------------------------------------------
 
@@ -59,17 +61,9 @@ for n, param in A_Args
         DEBUG_MODE := true
     }
 
-    if (InStr(param, "--module-location="))
-    {
-        parts := StrSplit(param, "=")
-        location := Trim(parts[2], OmitChars = "/")
-        MODS_FOLDER := "/" parts[2]
-    }
 }
 
-#.log("app").info(A_LineFile, "", {DEBUG_MODE: DEBUG_MODE, MODS_FOLDER: MODS_FOLDER})
-
-ModuleLoader.boot(MODS_FOLDER)
+ModuleLoader.boot($["MODS_PATH"], $["MODS_INI_FILE"])
 Dashboard.initialize()
 ;initialize_hub_gui()
 
@@ -96,7 +90,7 @@ LaunchModule(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "")
     Global
     GuiControlGet, module_title,, % CtrlHwnd
     mod := ModuleLoader.get(module_title)
-    Run % MODS_FOLDER "/" ModuleLoader.get(module_title).file
+    Run % $["MODS_PATH"] "/" ModuleLoader.get(module_title).file
 }
 
 RunQueueManager()
