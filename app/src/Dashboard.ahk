@@ -111,7 +111,9 @@ class Dashboard
     _buildReceivingSection()
     {
         Gui, dashboard:Add, GroupBox, Section w132 h60, Receiving
-        Gui, dashboard:Add, Button, xs+5 ys+20, PO Verification
+        if (ModuleLoader.has("PO_Verification")) {
+            Gui, dashboard:Add, Button, xs+5 ys+20 gLaunchModule, PO Verification
+        }
     }
 
     _setupApplicationMenu()
