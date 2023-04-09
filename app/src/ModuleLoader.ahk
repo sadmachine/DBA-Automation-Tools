@@ -16,6 +16,9 @@
 ; Revision 2 (03/31/2023)
 ; * Update how global vars are access
 ;
+; Revision 3 (04/09/2023)
+; * Update to use mods_ini instead of mods location
+;
 ; === TO-DOs ===================================================================
 ; TODO - Possibly turn this into a controller
 ; TODO - Revisit/refactor/optimize
@@ -29,24 +32,26 @@ class ModuleLoader
     static module_titles := []
     static section_titles := []
     static module_location := ""
+    static mods_ini := ""
 
-    __New(mods_location)
+    __New(mods_location, mods_ini)
     {
-        this.boot(mods_location)
+        this.boot(mods_location, mods_ini)
     }
 
-    boot(mods_location)
+    boot(mods_location, mods_ini)
     {
         Global
         local value, key, module, ini_parts, mod_sections, mod_keys, cur_section, output
         this.module_location := mods_location
-        IniRead, mod_sections, % this.module_location "/mods.ini"
+        this.mods_ini := mods_ini
+        IniRead, mod_sections, % mods_ini
         Loop, Parse, % mod_sections, "`n"
         {
             cur_section := StrReplace(A_LoopField, "_", " ")
             this.sections[cur_section] := {}
             this.section_titles.push(cur_section)
-            IniRead, mod_keys, % this.module_location "/mods.ini", % cur_section
+            IniRead, mod_keys, % mods_ini, % cur_section
             Loop, Parse, % mod_keys, "`n"
             {
                 ini_parts := StrSplit(A_LoopField, "=")
