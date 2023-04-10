@@ -16,6 +16,9 @@
 ; Revision 2 (04/09/2023)
 ; * Update default width to 420
 ;
+; Revision 3 (04/10/2023)
+; * Update to set default for just MsgBoxObj not all objects
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 UI.Base.defaultFont := {options: "S12", fontName: ""}
