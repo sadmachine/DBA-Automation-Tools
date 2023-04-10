@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Installer.ahk
 ; Description ..: Handles installation/updating of DBA AutoTools
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -37,7 +37,7 @@
 ; TODO - Detect install vs update
 ; ==============================================================================
 
-#Include src/Autoload.ahk
+#Include "src/Autoload.ahk"
 
 @.registerExceptionHandler()
 
@@ -49,9 +49,9 @@ InstallFiles()
 
 SetupConfigIni()
 
-MsgBox % "Finished Installation"
+MsgBox("Finished Installation")
 
-ExitApp
+ExitApp()
 
 return
 
@@ -59,7 +59,7 @@ GetInstallationLocation()
 {
     Global
     if (!FileExist("C:\DBA Help")) {
-        FileCreateDir, % "C:\DBA Help"
+        DirCreate("C:\DBA Help")
     }
     installationPath := "C:\DBA Help"
     globalConfigPath := "C:\"
@@ -69,20 +69,20 @@ GetInstallationLocation()
     ; installationGui.Add("Edit", "w400", installationPath)
     ; installationGui.Add("Button", "w400", installationPath)
 
-    FileSelectFolder, installationPath, *%installationPath%, 3, % "Installation Location"
+    installationPath := DirSelect("*" installationPath, 3, "Installation Location")
     if (ErrorLevel) {
-        MsgBox % "You must supply an installation location to continue. Exiting..."
-        ExitApp
+        MsgBox("You must supply an installation location to continue. Exiting...")
+        ExitApp()
     }
 
     settingsFilePath := #.Path.concat(installationPath, "DBA AutoTools\app\settings.ini")
     if (FileExist(settingsFilePath)) {
-        IniRead, globalConfigValue, % settingsFilePath, % "location", % "global", % Config.UNDEFINED
+        globalConfigValue := IniRead(settingsFilePath, "location", "global", Config.UNDEFINED)
         if (globalConfigValue == Config.UNDEFINED) {
-            FileSelectFolder, globalConfigPath, *%globalConfigPath%, 3, % "Global Config Path"
+            globalConfigPath := DirSelect("*" globalConfigPath, 3, "Global Config Path")
             if (ErrorLevel) {
-                MsgBox % "You must supply a global config path to continue. Exiting..."
-                ExitApp
+                MsgBox("You must supply a global config path to continue. Exiting...")
+                ExitApp()
             }
         } else {
             globalConfigPath := globalConfigValue
@@ -120,36 +120,36 @@ InstallFiles()
     Global
 
     ; Files in project root folder
-    FileInstall, ..\dist\DBA AutoTools.exe, % #.Path.concat(projectPath, "DBA AutoTools.exe"), 1
-    FileInstall, ..\dist\QueueManager.exe, % #.Path.concat(projectPath, "QueueManager.exe"), 1
-    FileInstall, ..\dist\Settings.exe, % #.Path.concat(projectPath, "Settings.exe"), 1
-    FileInstall, ..\dist\.env, % #.Path.concat(projectPath, ".env"), 0
+    FileInstall("..\dist\DBA AutoTools.exe", #.Path.concat(projectPath, "DBA AutoTools.exe"), 1)
+    FileInstall("..\dist\QueueManager.exe", #.Path.concat(projectPath, "QueueManager.exe"), 1)
+    FileInstall("..\dist\Settings.exe", #.Path.concat(projectPath, "Settings.exe"), 1)
+    FileInstall("..\dist\.env", #.Path.concat(projectPath, ".env"), 0)
 
     ; Files in app folder
-    FileInstall, ..\dist\app\settings.example.ini, % #.Path.concat(appPath, "settings.example.ini"), 1
-    FileInstall, ..\dist\app\settings.ini, % #.Path.concat(appPath, "settings.ini"), 0
-    FileInstall, ..\dist\app\mods.ini, % #.Path.concat(appPath, "mods.ini"), 0
+    FileInstall("..\dist\app\settings.example.ini", #.Path.concat(appPath, "settings.example.ini"), 1)
+    FileInstall("..\dist\app\settings.ini", #.Path.concat(appPath, "settings.ini"), 0)
+    FileInstall("..\dist\app\mods.ini", #.Path.concat(appPath, "mods.ini"), 0)
 
     ; Files in modules folder
-    FileInstall, ..\dist\app\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
+    FileInstall("..\dist\app\modules\PO_Verification.exe", #.Path.concat(modulesPath, "PO_Verification.exe"), 1)
 
     ; Files in templates folder
-    FileInstall, ..\dist\app\templates\Incoming Inspection Log Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
-    FileInstall, ..\dist\app\templates\Incoming Inspection Report Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
+    FileInstall("..\dist\app\templates\Incoming Inspection Log Template.xlsx", #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1)
+    FileInstall("..\dist\app\templates\Incoming Inspection Report Template.xlsx", #.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1)
 }
 
 SetupConfigIni()
 {
     Global
     localConfigPath := configPath
-    IniWrite, % localConfigPath, % #.Path.concat(appPath, "settings.ini"), % "location", % "local"
-    IniWrite, % globalConfigPath, % #.Path.concat(appPath, "settings.ini"), % "location", % "global"
+    IniWrite(localConfigPath, #.Path.concat(appPath, "settings.ini"), "location", "local")
+    IniWrite(globalConfigPath, #.Path.concat(appPath, "settings.ini"), "location", "global")
 }
 
 _CreateDirIfNotExist(path)
 {
     if (FileExist(path) != "D") {
-        FileCreateDir % path
-        MsgBox % "Created " path
+        DirCreate(path)
+        MsgBox("Created " path)
     }
 }

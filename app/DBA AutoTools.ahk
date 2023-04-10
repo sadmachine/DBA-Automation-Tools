@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: DBA Automation Tools
 ; Description ..: Set of general automation tools for DBA Manufacturing
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -35,16 +35,16 @@
 ; TODO - Use Bootstrap.ahk
 ; ==============================================================================
 
-#NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
-SendMode Input ; Recommended for new scripts due to its superior speed and reliability.
-SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
-#Persistent
+; REMOVED: #NoEnv ; Recommended for performance and compatibility with future AutoHotkey releases.
+SendMode("Input") ; Recommended for new scripts due to its superior speed and reliability.
+SetWorkingDir(A_ScriptDir) ; Ensures a consistent starting directory.
+Persistent
 #SingleInstance force
 
 ; --- Includes -----------------------------------------------------------------
-#Include src\Bootstrap.ahk
-#Include src\ModuleLoader.ahk
-#Include src\Dashboard.ahk
+#Include "src\Bootstrap.ahk"
+#Include "src\ModuleLoader.ahk"
+#Include "src\Dashboard.ahk"
 
 ; --- Global var setup ---------------------------------------------------------
 
@@ -67,7 +67,7 @@ ModuleLoader.boot($["MODS_PATH"], $["MODS_INI_FILE"])
 Dashboard.initialize()
 ;initialize_hub_gui()
 
-SetTimer, RunQueueManager, 1000
+SetTimer(RunQueueManager,1000)
 
 Return
 
@@ -88,17 +88,18 @@ return
 LaunchModule(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "")
 {
     Global
-    GuiControlGet, module_title,, % CtrlHwnd
+    module_title := ogc% CtrlHwnd.Text
     mod := ModuleLoader.get(module_title)
-    Run % $["MODS_PATH"] "/" ModuleLoader.get(module_title).file
+    Run($["MODS_PATH"] "/" ModuleLoader.get(module_title).file)
 }
 
 RunQueueManager()
 {
     Global
-    Process, Exist, QueueManager.exe
+    ErrorLevel := ProcessExist("QueueManager.exe")
     ; If QueueManager.exe isn't running, run it
     if (!ErrorLevel) {
-        Run, % #.path.concat($["PROJECT_ROOT"], "QueueManager.exe")
+        Run(#.path.concat($["PROJECT_ROOT"], "QueueManager.exe"))
     }
 }
+

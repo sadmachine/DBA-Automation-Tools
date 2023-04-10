@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: PO Verification
 ; Description ..: Handles the full PO Verification Process
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -16,7 +16,7 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
-#Include src/Bootstrap.ahk
+#Include "src/Bootstrap.ahk"
 
 try {
     receivingController := new Controllers.Receiving()
@@ -31,7 +31,7 @@ try {
 
 #.log("app").info(A_LineFile, "Before ExitApp")
 
-ExitApp
+ExitApp()
 
 ; --- Functions ----------------------------------------------------------------
 
