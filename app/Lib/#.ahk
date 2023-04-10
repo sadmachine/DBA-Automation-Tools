@@ -29,6 +29,7 @@ class #
     #Include <#Logger\Logger>
     #Include <#Path\Path>
     #Include <#Queue\Queue>
+    #Include <#DriveMap\DriveMap>
 
     log(channelSlug)
     {
