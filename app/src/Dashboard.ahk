@@ -23,6 +23,9 @@
 ; * Removed "auto" placement of modules/sections
 ; * Manually placed receiving section/module
 ;
+; Revision 5 (04/10/2023)
+; * Properly disable receiving modules if not present
+;
 ; === TO-DOs ===================================================================
 ; TODO - Abstract out to a controller and a view
 ; TODO - Update to actually handle modules (old way is broken, only works for single module)
@@ -111,9 +114,11 @@ class Dashboard
     _buildReceivingSection()
     {
         Gui, dashboard:Add, GroupBox, Section w132 h60, Receiving
-        if (ModuleLoader.has("PO_Verification")) {
-            Gui, dashboard:Add, Button, xs+5 ys+20 gLaunchModule, PO Verification
+        options := "+Disabled"
+        if (ModuleLoader.has("PO Verification")) {
+            options := "gLaunchModule"
         }
+        Gui, dashboard:Add, Button, xs+5 ys+20 %options%, PO Verification
     }
 
     _setupApplicationMenu()
