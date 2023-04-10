@@ -88,6 +88,9 @@ class ReceivingLog extends Actions.Base
         if (#.Path.inUse(filePath)) {
             throw new @.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
+
+        #.Cmd.attrib("-h", filePath)
+
         #.Path.createLock(filePath)
         #.log("queue").info(A_ThisFunc, "Acquired file lock")
 
@@ -160,6 +163,8 @@ class ReceivingLog extends Actions.Base
         if (ErrorLevel) {
             throw new @.FilesystemException(A_ThisFunc, "Could not copy incoming inspection log from the temp directory to its destination.")
         }
+
+        #.Cmd.attrib("-h", filePath)
 
         #.Path.freeLock(filePath)
         #.log("queue").info(A_ThisFunc, "Released file lock")
