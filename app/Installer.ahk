@@ -26,6 +26,9 @@
 ; Revision 4 (03/16/2023)
 ; * Install QueueManager.exe
 ;
+; Revision 5 (04/10/2023)
+; * Don't overwrite certain files on install
+;
 ; === TO-DOs ===================================================================
 ; TODO - Initialize config files on installation
 ; TODO - Utilize settings ui to set required values, isntead of dialogs
@@ -120,12 +123,12 @@ InstallFiles()
     FileInstall, ..\dist\DBA AutoTools.exe, % #.Path.concat(projectPath, "DBA AutoTools.exe"), 1
     FileInstall, ..\dist\QueueManager.exe, % #.Path.concat(projectPath, "QueueManager.exe"), 1
     FileInstall, ..\dist\Settings.exe, % #.Path.concat(projectPath, "Settings.exe"), 1
-    FileInstall, ..\dist\.env, % #.Path.concat(projectPath, ".env"), 1
+    FileInstall, ..\dist\.env, % #.Path.concat(projectPath, ".env"), 0
 
     ; Files in app folder
     FileInstall, ..\dist\app\settings.example.ini, % #.Path.concat(appPath, "settings.example.ini"), 1
-    FileInstall, ..\dist\app\settings.ini, % #.Path.concat(appPath, "settings.ini"), 1
-    FileInstall, ..\dist\app\mods.ini, % #.Path.concat(appPath, "mods.ini"), 1
+    FileInstall, ..\dist\app\settings.ini, % #.Path.concat(appPath, "settings.ini"), 0
+    FileInstall, ..\dist\app\mods.ini, % #.Path.concat(appPath, "mods.ini"), 0
 
     ; Files in modules folder
     FileInstall, ..\dist\app\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
