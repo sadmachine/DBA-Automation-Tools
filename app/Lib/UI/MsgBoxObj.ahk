@@ -49,7 +49,7 @@ class MsgBoxObj extends UI.Base
         Global
 
         this.ApplyFont()
-        this.Add("Text", "w" (this.width - (this.margin*4)), this.promptMsg)
+        this.Add("Text", "w" this.width, this.promptMsg)
     }
 
     _Show()
@@ -61,19 +61,29 @@ class MsgBoxObj extends UI.Base
             this.Show()
         }
 
+        if (this.type == "OK") {
+            this._CenterOkButton()
+        }
+
         WinWaitClose, % this.title
         return % this.output
+    }
+
+    _CenterOkButton()
+    {
+        WinGetPos, , , guiWidth,, % "ahk_id " this.hwnd
+        okButtonHwnd := this.actions["OkButton"]
+        GuiControl, MoveDraw, % %okButtonHwnd%, % "x" (guiWidth-60)//2
     }
 
     OK()
     {
         this._Setup()
 
-        posCenter := (this.width/2) - 15 - (this.margin*2)
+        this.type := "OK"
+        this.actions["OkButton"] := this.Add("Button", "w60 Default", "OK")
 
-        OkButton := this.Add("Button", "w60 x" posCenter " Default", "OK")
-
-        this.bind(OkButton, "OkEvent")
+        this.bind(this.actions["OkButton"], "OkEvent")
 
         return this._Show()
     }
