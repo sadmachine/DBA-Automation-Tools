@@ -11,8 +11,8 @@ class ConfigTests
     {
         Begin()
         {
-            globalConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
-            localConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
+            globalConfigLocation := IniRead(Lib.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
+            localConfigLocation := IniRead(Lib.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
             Config.register(ContactGroup())
@@ -46,11 +46,11 @@ class ConfigTests
             MsgBox("Check")
             fileObj := Config.groups["contact"].files["list"]
             if (FileExist(fileObj.path["global"])) {
-                globalIsLocked := #.Path.isLocked(fileObj.path["global"])
+                globalIsLocked := Lib.Path.isLocked(fileObj.path["global"])
                 YUnit.assert(globalIsLocked, "Global path for contact.list should be locked, but isnt.'")
             }
             if (FileExist(fileObj.path["local"])) {
-                localIsLocked := #.Path.isLocked(fileObj.path["local"])
+                localIsLocked := Lib.Path.isLocked(fileObj.path["local"])
                 YUnit.assert(localIsLocked, "Local path for contact.list should be locked, but isnt.'")
             }
             Config.unlock("contact.list")
@@ -66,8 +66,8 @@ class ConfigTests
     {
         Begin()
         {
-            globalConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
-            localConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
+            globalConfigLocation := IniRead(Lib.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
+            localConfigLocation := IniRead(Lib.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
         }
@@ -123,8 +123,8 @@ class ConfigTests
     {
         Begin()
         {
-            globalConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
-            localConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
+            globalConfigLocation := IniRead(Lib.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
+            localConfigLocation := IniRead(Lib.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
             this.globalConfigLocation := globalConfigLocation
             this.localConfigLocation := localConfigLocation
         }
@@ -146,8 +146,8 @@ class ConfigTests
     {
         Begin()
         {
-            globalConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
-            localConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
+            globalConfigLocation := IniRead(Lib.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
+            localConfigLocation := IniRead(Lib.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
             Config.register(ContactGroup())

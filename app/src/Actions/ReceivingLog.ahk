@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Receiving Log Action
 ; Description ..: Appends a new line to the receiving log
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -17,7 +17,7 @@
 ; * Write to temporary excel file on local maachine, then copy to real location
 ;
 ; Revision 3 (02/28/2023)
-; * Use #.Path.Temp for temporary files
+; * Use Lib.Path.Temp for temporary files
 ;
 ; Revision 4 (03/05/2023)
 ; * Implement CMD copy/move
@@ -44,7 +44,7 @@ class ReceivingLog extends Actions.Base
 
     create()
     {
-        FormatTime, dateStr,, % "MM/dd/yyyy"
+        dateStr := FormatTime(, "MM/dd/yyyy")
         lot := this.receiver.lots[this.lotIndex]
 
         this.data["data"] := {}
@@ -66,40 +66,40 @@ class ReceivingLog extends Actions.Base
         receivingLogConfig := Config.load("receiving.incomingInspectionLog")
         fileDestination := receivingLogConfig.get("file.destination")
         templateFile := receivingLogConfig.get("file.template")
-        filePath := #.Path.concat(fileDestination, "Incoming Inspection Log.xlsx")
-        tempPath := new #.Path.Temp("DBA AutoTools")
+        filePath := Lib.Path.concat(fileDestination, "Incoming Inspection Log.xlsx")
+        tempPath := new Lib.Path.Temp("DBA AutoTools")
         tempFilePath := tempPath.concat("Incoming Inspection Log.xlsx")
 
         reportData := this.data["data"]
 
-        #.log("queue").info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
+        Lib.log("queue").info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
 
         if (!FileExist(fileDestination) == "D") {
-            throw new @.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
+            throw new Core.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
         }
 
         if (!FileExist(filePath)) {
             if (!FileExist(templateFile)) {
-                throw new @.FilesystemException(A_ThisFunc, "The template file for the Receiving Log either could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Template' to be a valid .xlsx file.")
+                throw new Core.FilesystemException(A_ThisFunc, "The template file for the Receiving Log either could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Template' to be a valid .xlsx file.")
             }
-            #.Cmd.copy(templateFile, filePath)
+            Lib.Cmd.copy(templateFile, filePath)
         }
 
-        if (#.Path.inUse(filePath)) {
-            throw new @.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
+        if (Lib.Path.inUse(filePath)) {
+            throw new Core.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
 
-        #.Cmd.attrib("-h", filePath)
+        Lib.Cmd.attrib("-h", filePath)
 
-        #.Path.createLock(filePath)
-        #.log("queue").info(A_ThisFunc, "Acquired file lock")
+        Lib.Path.createLock(filePath)
+        Lib.log("queue").info(A_ThisFunc, "Acquired file lock")
 
-        #.log("queue").info(A_ThisFunc, "Copying Incoming Inspection... ", {filepath: filePath, tempFilePath: tempFilePath})
-        #.Cmd.copy(filePath, tempFilePath)
-        #.log("queue").info(A_ThisFunc, "Success")
+        Lib.log("queue").info(A_ThisFunc, "Copying Incoming Inspection... ", {filepath: filePath, tempFilePath: tempFilePath})
+        Lib.Cmd.copy(filePath, tempFilePath)
+        Lib.log("queue").info(A_ThisFunc, "Success")
 
         if (ErrorLevel) {
-            throw new @.FilesystemException(A_ThisFunc, "Could not copy '" filePath "' to '" tempFilePath "'")
+            throw new Core.FilesystemException(A_ThisFunc, "Could not copy '" filePath "' to '" tempFilePath "'")
         }
 
         xlApp := ""
@@ -111,11 +111,11 @@ class ReceivingLog extends Actions.Base
         lastRow := ""
         emptyRowOffset := ""
         emptyRow := ""
-        xlApp := ComObjCreate("Excel.Application")
-        #.log("queue").info(A_ThisFunc, "Created excel app")
+        xlApp := ComObject("Excel.Application")
+        Lib.log("queue").info(A_ThisFunc, "Created excel app")
         xlWorkbooks := xlApp.Workbooks
         xlWorkbook := xlWorkbooks.Open(tempFilePath) ; Open the master file
-        #.log("queue").info(A_ThisFunc, "Opened workbook")
+        Lib.log("queue").info(A_ThisFunc, "Opened workbook")
         xlSheet := xlWorkbook.Sheets(1)
         ; Get the last cell in column A, then save a reference to the cell next to it (column B)
 
@@ -124,7 +124,7 @@ class ReceivingLog extends Actions.Base
         lastRow := lastRowEnd.Rows(1)
         emptyRowOffset := lastRow.Offset(1, 0)
         emptyRow := emptyRowOffset.Rows(1)
-        FormatTime, datestr,, % "MM/dd/yyyy"
+        datestr := FormatTime(, "MM/dd/yyyy")
 
         if (lastRow.Row != 2) {
             lastRow.Copy()
@@ -139,13 +139,13 @@ class ReceivingLog extends Actions.Base
             emptyRowRange := ""
         }
 
-        #.log("queue").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
+        Lib.log("queue").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
 
         xlWorkbook.Save()
-        #.log("queue").info(A_ThisFunc, "Saved Workbook")
+        Lib.log("queue").info(A_ThisFunc, "Saved Workbook")
 
         xlApp.Quit()
-        #.log("queue").info(A_ThisFunc, "Quit Excel App")
+        Lib.log("queue").info(A_ThisFunc, "Quit Excel App")
         emptyRow := ""
         emptyRowOffset := ""
         lastRow := ""
@@ -156,18 +156,18 @@ class ReceivingLog extends Actions.Base
         xlWorkbooks := ""
         xlApp := ""
 
-        #.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-        #.Cmd.move(tempFilePath, filePath)
-        #.log("queue").info(A_ThisFunc, "Success")
+        Lib.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
+        Lib.Cmd.move(tempFilePath, filePath)
+        Lib.log("queue").info(A_ThisFunc, "Success")
 
         if (ErrorLevel) {
-            throw new @.FilesystemException(A_ThisFunc, "Could not copy incoming inspection log from the temp directory to its destination.")
+            throw new Core.FilesystemException(A_ThisFunc, "Could not copy incoming inspection log from the temp directory to its destination.")
         }
 
-        #.Cmd.attrib("-h", filePath)
+        Lib.Cmd.attrib("-h", filePath)
 
-        #.Path.freeLock(filePath)
-        #.log("queue").info(A_ThisFunc, "Released file lock")
+        Lib.Path.freeLock(filePath)
+        Lib.log("queue").info(A_ThisFunc, "Released file lock")
 
         return true
     }

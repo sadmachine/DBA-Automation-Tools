@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Inspection Report Action
 ; Description ..: Generates Inspection Reports from a given receiver model
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -53,7 +53,7 @@ class InspectionReport extends Actions.Base
 
     create()
     {
-        FormatTime, dateOfGeneration,, ShortDate
+        dateOfGeneration := FormatTime(, "ShortDate")
         lot := this.receiver.lots[this.lotIndex]
 
         this.data["data"] := {}
@@ -75,29 +75,29 @@ class InspectionReport extends Actions.Base
         inspectionReportConfig := Config.load("receiving.inspectionReport")
         template := inspectionReportConfig.get("file.template")
         destination := inspectionReportConfig.get("file.destinationFolder")
-        tempDir := new #.Path.Temp("DBA AutoTools")
+        tempDir := new Lib.Path.Temp("DBA AutoTools")
 
         reportData := this.data["data"]
 
         inspectionNumber := reportData["inspectionFormNumber"]
-        inspectionFolder := #.Path.concat(destination, inspectionNumber)
-        FileCreateDir, % inspectionFolder
+        inspectionFolder := Lib.Path.concat(destination, inspectionNumber)
+        DirCreate(inspectionFolder)
         filename := inspectionNumber " - Inspection Report.xlsx"
-        filepath := #.Path.concat(inspectionFolder, filename)
+        filepath := Lib.Path.concat(inspectionFolder, filename)
         tempFilepath := tempDir.concat(filename)
-        #.Cmd.copy(template, filepath)
-        #.Cmd.copy(template, tempFilepath)
+        Lib.Cmd.copy(template, filepath)
+        Lib.Cmd.copy(template, tempFilepath)
 
-        if (#.Path.inUse(filepath)) {
-            throw new @.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
+        if (Lib.Path.inUse(filepath)) {
+            throw new Core.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
-        #.Path.createLock(filepath)
-        #.log("queue").info(A_ThisFunc, "Acquired file lock")
+        Lib.Path.createLock(filepath)
+        Lib.log("queue").info(A_ThisFunc, "Acquired file lock")
 
-        xlApp := ComObjCreate("Excel.Application")
-        #.log("queue").info(A_ThisFunc, "Created excel app")
+        xlApp := ComObject("Excel.Application")
+        Lib.log("queue").info(A_ThisFunc, "Created excel app")
         CurrWbk := xlApp.Workbooks.Open(tempFilepath) ; Open the master file
-        #.log("queue").info(A_ThisFunc, "Opened workbook")
+        Lib.log("queue").info(A_ThisFunc, "Opened workbook")
         CurrSht := CurrWbk.Sheets(1)
 
         excelColumns := inspectionReportConfig.get("excelColumnMapping")
@@ -107,22 +107,22 @@ class InspectionReport extends Actions.Base
         }
 
         CurrWbk.Save()
-        #.log("queue").info(A_ThisFunc, "Saved Workbook")
+        Lib.log("queue").info(A_ThisFunc, "Saved Workbook")
 
         xlApp.Quit()
-        #.log("queue").info(A_ThisFunc, "Quit Excel App")
+        Lib.log("queue").info(A_ThisFunc, "Quit Excel App")
         xlApp := "", CurrWbk := "", CurrSht := ""
 
-        #.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-        #.Cmd.move(tempFilePath, filePath)
-        #.log("queue").info(A_ThisFunc, "Success")
+        Lib.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
+        Lib.Cmd.move(tempFilePath, filePath)
+        Lib.log("queue").info(A_ThisFunc, "Success")
 
         if (ErrorLevel) {
-            throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.", {tempFilePath: tempFilePath, filePath: filePath})
+            throw new Core.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.", {tempFilePath: tempFilePath, filePath: filePath})
         }
 
-        #.Path.freeLock(filepath)
-        #.log("queue").info(A_ThisFunc, "Released file lock")
+        Lib.Path.freeLock(filepath)
+        Lib.log("queue").info(A_ThisFunc, "Released file lock")
         return true
     }
 }

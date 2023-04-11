@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: DBA Model parent class
 ; Description ..: The parent for all other DBA database models
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -18,8 +18,8 @@
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Models.DBA
 class DBA {
-    #Include src/Models/DBA/podetl.ahk
-    #Include src/Models/DBA/porder.ahk
-    #Include src/Models/DBA/item.ahk
-    #Include src/Models/DBA/locations.ahk
+    #Include "DBA/podetl.ahk"
+    #Include "DBA/porder.ahk"
+    #Include "DBA/item.ahk"
+    #Include "DBA/locations.ahk"
 }

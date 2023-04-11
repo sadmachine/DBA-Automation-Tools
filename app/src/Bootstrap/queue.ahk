@@ -27,9 +27,9 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
-#.Queue.setFileDriver(new #.Queue.FileDrivers.Ini($["QUEUE_PATH"]))
-#.log("queue").info(A_ScriptName, "Set File Driver", {queuePath: $["QUEUE_PATH"]})
+Lib.Queue.setFileDriver(new Lib.Queue.FileDrivers.Ini(Env["QUEUE_PATH"]))
+Lib.log("queue").info(A_ScriptName, "Set File Driver", {queuePath: Env["QUEUE_PATH"]})
 
-#.Queue.registerHandler("1", Actions.ReceivingLog)
-#.Queue.registerHandler("2", Actions.InspectionReport)
-#.log("queue").info(A_ScriptName, "Finished registering Queue Handlers")
+Lib.Queue.registerHandler("1", Actions.ReceivingLog)
+Lib.Queue.registerHandler("2", Actions.InspectionReport)
+Lib.log("queue").info(A_ScriptName, "Finished registering Queue Handlers")

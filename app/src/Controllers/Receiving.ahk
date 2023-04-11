@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Receiving Controller
 ; Description ..: The puppet master of the receiving process
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -40,7 +40,7 @@ class Receiving extends Controllers.Base
         UI.Base.defaultFont := {options: "s12", fontName: ""}
         UI.Base.defaultMargin := 5
         UI.MsgBoxObj.defaultWidth := 320
-        #.log("app").info(A_ThisFunc, "Complete")
+        Lib.log("app").info(A_ThisFunc, "Complete")
     }
 
     bootstrapReceiver(receiver)
@@ -61,12 +61,12 @@ class Receiving extends Controllers.Base
             this.receiver.assertPoHasCorrectStatus()
             this.receiver.assertPoHasPartNumber()
             this.receiver.assertPoHasCorrectQty()
-        } catch e {
+        } catch Any as e {
             if (e.what != "ValidationException") {
                 throw e
             }
-            @.friendlyException(e, "PO Criteria is Invalid")
-            ExitApp
+            Core.friendlyException(e, "PO Criteria is Invalid")
+            ExitApp()
         }
     }
 
@@ -83,33 +83,33 @@ class Receiving extends Controllers.Base
             this.receiver.lineReceived := this.receivingResults.getSelectedLine()
             receiver := this.receiver
 
-            new Actions.ReceivingTransaction(receiver)
+            new Actions.ReceivingTransaction(&receiver)
             receiver.acquireInspectionNumbers()
             new Actions.PrintLabels(receiver)
             for n, lot in receiver.lots {
                 ; Queue.createJob(new Actions.PrintLabels(receiver, n))
-                #.Queue.createJob(new Actions.ReceivingLog(receiver, n))
-                #.Queue.createJob(new Actions.InspectionReport(receiver, n))
+                Lib.Queue.createJob(new Actions.ReceivingLog(receiver, n))
+                Lib.Queue.createJob(new Actions.InspectionReport(receiver, n))
             }
             this.receiver := receiver
-        } catch e {
-            @.friendlyException(e)
+        } catch Any as e {
+            Core.friendlyException(e)
             this.cleanup()
-            ExitApp
+            ExitApp()
         }
     }
 
     cleanup()
     {
         if (WinExist(DBA.Windows.POReceipts)) {
-            WinClose, % DBA.Windows.POReceipts
-            WinWaitActive, % "Warning", % "&Lose Changes", 1
+            WinClose(DBA.Windows.POReceipts)
+            ErrorLevel := WinWaitActive("Warning", "&Lose Changes", 1) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
             if (!ErrorLevel) {
-                Send % "!L"
-                WinWaitClose, % "Warning",,1
+                Send("!L")
+                ErrorLevel := WinWaitClose("Warning", , 1) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
                 if (ErrorLevel) {
-                    WinKill, % "Warning"
-                    WinKill, % DBA.Windows.POReceipts
+                    WinKill("Warning")
+                    WinKill(DBA.Windows.POReceipts)
                 }
             }
         }

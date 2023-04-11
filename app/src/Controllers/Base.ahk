@@ -19,10 +19,4 @@
 ; Controllers.Base
 class Base
 {
-    bind(ctrlHwnd, method)
-    {
-        global
-        bindObj := ObjBindMethod(this, method)
-        GuiControl, +g, % %ctrlHwnd%, % bindObj
-    }
 }

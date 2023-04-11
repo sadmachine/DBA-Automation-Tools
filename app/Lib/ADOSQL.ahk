@@ -30,16 +30,16 @@ ADOSQL( Connection_String, Query_Statement ) {
 	coer := "", txtout := 0, rd := "`n", cd := "CSV", str := Connection_String ; 'str' is shorter.
 
 ; Examine the connection string for output formatting options.
-	If ( 9 < oTbl := 9 + InStr( ";" str, ";RowDelim=" ) )
+	If ( 9 < oTbl := 9 + InStr(";" str, ";RowDelim=") )
 	{
-		rd := SubStr( str, oTbl, 0 - oTbl + oRow := InStr( str ";", ";", 0, oTbl ) )
-		str := SubStr( str, 1, oTbl - 11 ) SubStr( str, oRow )
+		rd := SubStr(str, (oTbl)<1 ? (oTbl)-1 : (oTbl), 0 - oTbl + oRow := InStr(str ";", ";", 0, (oTbl)<1 ? (oTbl)-1 : (oTbl)))
+		str := SubStr(str, 1, oTbl - 11) SubStr(str, (oRow)<1 ? (oRow)-1 : (oRow))
 		txtout := 1
 	}
-	If ( 9 < oTbl := 9 + InStr( ";" str, ";ColDelim=" ) )
+	If ( 9 < oTbl := 9 + InStr(";" str, ";ColDelim=") )
 	{
-		cd := SubStr( str, oTbl, 0 - oTbl + oRow := InStr( str ";", ";", 0, oTbl ) )
-		str := SubStr( str, 1, oTbl - 11 ) SubStr( str, oRow )
+		cd := SubStr(str, (oTbl)<1 ? (oTbl)-1 : (oTbl), 0 - oTbl + oRow := InStr(str ";", ";", 0, (oTbl)<1 ? (oTbl)-1 : (oTbl)))
+		str := SubStr(str, 1, oTbl - 11) SubStr(str, (oRow)<1 ? (oRow)-1 : (oRow))
 		txtout := 1
 	}
 
@@ -47,9 +47,8 @@ ADOSQL( Connection_String, Query_Statement ) {
 
 ; Create a connection object. > http://www.w3schools.com/ado/ado_ref_connection.asp
 ; If something goes wrong here, return blank and set the error message.
-	If !( oCon := ComObjCreate( "ADODB.Connection" ) ) {
-		Return "", ComObjError( 1 ), ErrorLevel := "Error"
-		, ADOSQL_LastError := "Fatal Error: ADODB is not available."
+	If !( oCon := ComObject("ADODB.Connection") ) {
+		Return "", ComObjError( 1 ), ErrorLevel := "Error"		, ADOSQL_LastError := "Fatal Error: ADODB is not available."
 	}
 
 
@@ -74,14 +73,14 @@ ADOSQL( Connection_String, Query_Statement ) {
 				o3DA.Insert( oTbl := [] )
 				oTbl.Insert( oRow := [] )
 
-				Loop % cols := oFld.Count ; Put the column names in the first row.
+				Loop cols := oFld.Count ; Put the column names in the first row.
 					oRow[ A_Index ] := oFld.Item( A_Index - 1 ).Name
 
 				While !oRec.EOF ; While the record pointer is not at the end of the recordset...
 				{
 					oTbl.Insert( oRow := [] )
 					oRow.SetCapacity( cols ) ; Might improve performance on huge tables??
-					Loop % cols
+					Loop cols
 						oRow[ A_Index ] := oFld.Item( A_Index - 1 ).Value	
 					oRec.MoveNext() ; move the record pointer to the next row of values
 				}
@@ -92,19 +91,22 @@ ADOSQL( Connection_String, Query_Statement ) {
 		If (txtout) ; If the user wants plaintext output, copy the results into a string
 		{
 			Query_Statement := "x"
-			Loop % o3DA.MaxIndex()
+			Loop o3DA.MaxIndex()
 			{
 				Query_Statement .= rd rd
 				oTbl := o3DA[ A_Index ]
-				Loop % oTbl.MaxIndex()
+				Loop oTbl.MaxIndex()
 				{
 					oRow := oTbl[ A_Index ]
-					Loop % oRow.MaxIndex()
+					Loop oRow.MaxIndex()
 						If ( cd = "CSV" )
 						{
 							str := oRow[ A_Index ]
-							StringReplace, str, str, ", "", A
-							If !ErrorLevel || InStr( str, "," ) || InStr( str, rd )
+							; StrReplace() is not case sensitive
+							; check for StringCaseSense in v1 source script
+							; and change the CaseSense param in StrReplace() if necessary
+							str := StrReplace(str, "`"", "`"`"")
+							If !ErrorLevel || InStr(str, ",") || InStr(str, rd)
 								str := """" str """"
 							Query_Statement .= ( A_Index = 1 ? rd : "," ) str
 						}
@@ -112,24 +114,20 @@ ADOSQL( Connection_String, Query_Statement ) {
 							Query_Statement .= ( A_Index = 1 ? rd : cd ) oRow[ A_Index ]
 				}
 			}
-			Query_Statement := SubStr( Query_Statement, 2 + 3 * StrLen( rd ) )
+			Query_Statement := SubStr(Query_Statement, (2 + 3 * StrLen( rd ))<1 ? (2 + 3 * StrLen( rd ))-1 : (2 + 3 * StrLen( rd )))
 		}
 	}
 	Else ; Oh NOES!! Put a description of each error in 'ADOSQL_LastError'.
 	{
 		oErr := oCon.Errors ; > http://www.w3schools.com/ado/ado_ref_error.asp
 		Query_Statement := "x"
-		Loop % oErr.Count
+		Loop oErr.Count
 		{
 			oFld := oErr.Item( A_Index - 1 )
 			str := oFld.Description
-			Query_Statement .= "`n`n" SubStr( str, 1 + InStr( str, "]", 0, 2 + InStr( str, "][", 0, 0 ) ) )
-				. "`n   Number: " oFld.Number
-				. ", NativeError: " oFld.NativeError
-				. ", Source: " oFld.Source
-				. ", SQLState: " oFld.SQLState
+			Query_Statement .= "`n`n" SubStr(str, (1 + InStr(str, "]", 0, (2 + InStr(str, "][", 0, -1))<1 ? (2 + InStr(str, "][", 0, -1))-1 : (2 + InStr(str, "][", 0, -1))))<1 ? (1 + InStr(str, "]", 0, (2 + InStr(str, "][", 0, -1))<1 ? (2 + InStr(str, "][", 0, -1))-1 : (2 + InStr(str, "][", 0, -1))))-1 : (1 + InStr(str, "]", 0, (2 + InStr(str, "][", 0, -1))<1 ? (2 + InStr(str, "][", 0, -1))-1 : (2 + InStr(str, "][", 0, -1)))))				. "`n   Number: " oFld.Number				. ", NativeError: " oFld.NativeError				. ", Source: " oFld.Source				. ", SQLState: " oFld.SQLState
 		}
-		ADOSQL_LastError := SubStr( Query_Statement, 4 )
+		ADOSQL_LastError := SubStr(Query_Statement, 4)
 		Query_Statement := ""
 		txtout := 1
 	}

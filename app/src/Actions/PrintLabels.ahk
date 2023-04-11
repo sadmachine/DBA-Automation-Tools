@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Print Labels Action
 ; Description ..: Handles the printing of labels given a receiver model
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -23,26 +23,26 @@
 ; Actions.PrintLabels
 class PrintLabels extends Actions.Base
 {
-    __New(ByRef receiver)
+    __New(receiver)
     {
         receivingLabelsConfig := Config.load("receiving.labels")
         printJobLocation := receivingLabelsConfig.get("printJobs.location")
 
         ; Name/Check for file existence
         if (!InStr(FileExist(printJobLocation), "D")) {
-            throw new @.FilesystemException(A_ThisFunc, "The Print Job location '" printJobLocation " does not exist or is not a valid directory.")
+            throw new Core.FilesystemException(A_ThisFunc, "The Print Job location '" printJobLocation " does not exist or is not a valid directory.")
         }
 
-        FormatTime, fileDateTime, , % "yyyy-MM-dd+HH-mm-ss"
-        Random, fileRandomNumber, 0, 10000
+        fileDateTime := FormatTime(, "yyyy-MM-dd+HH-mm-ss")
+        fileRandomNumber := Random(0, 10000)
         filename := Format("{1:s}_{2:i}_{3:s}.csv", fileDateTime, fileRandomNumber, receiver.identification)
-        tempDir := new #.Path.Temp("DBA AutoTools")
-        finalFilepath := #.Path.concat(printJobLocation, filename)
+        tempDir := new Lib.Path.Temp("DBA AutoTools")
+        finalFilepath := Lib.Path.concat(printJobLocation, filename)
         filepath := tempDir.concat(filename)
         printJobFile := FileOpen(filepath, "w")
 
         if (!printJobFile) {
-            throw new @.FilesystemException(A_ThisFunc, "The Print Job file '" printJobFile "' could not be created.")
+            throw new Core.FilesystemException(A_ThisFunc, "The Print Job file '" printJobFile "' could not be created.")
         }
 
         ; Pull together data to add to csv
@@ -56,12 +56,12 @@ class PrintLabels extends Actions.Base
             labelName := (lot.hasCert == "Yes" ? "Main" : "QA HOLD")
             outputLine := Format("""{:s}"",""{:s}"",""{:s}"",{:i},""{:s}""", receiver.partNumber, receiver.partDescription, lot.lotNumber, printQty, labelName)
             printJobFile.writeLine(outputLine)
-            #.log("app").info(A_ThisFunc, "Wrote line: " outputLine)
+            Lib.log("app").info(A_ThisFunc, "Wrote line: " outputLine)
         }
 
         printJobFile.Close()
         printJobFile := ""
 
-        #.Cmd.move(filePath, finalFilepath)
+        Lib.Cmd.move(filePath, finalFilepath)
     }
 }

@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Module Loader
 ; Description ..: Handles loading and general module operations
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -26,7 +26,7 @@
 ; TODO - Possibly turn this into a controller
 ; TODO - Revisit/refactor/optimize
 ; ==============================================================================
-#Include src\ModuleObj.ahk
+#Include "src\ModuleObj.ahk"
 
 class ModuleLoader
 {
@@ -48,17 +48,17 @@ class ModuleLoader
         local value, key, module, ini_parts, mod_sections, mod_keys, cur_section, output
         this.module_location := mods_location
         this.mods_ini := mods_ini
-        IniRead, mod_sections, % mods_ini
-        Loop, Parse, % mod_sections, "`n"
+        mod_sections := IniRead(mods_ini)
+        Loop Parse, mod_sections, "`n"
         {
             cur_section := StrReplace(A_LoopField, "_", " ")
             this.sections[cur_section] := {}
             this.section_titles.push(cur_section)
-            IniRead, mod_keys, % mods_ini, % cur_section
-            Loop, Parse, % mod_keys, "`n"
+            mod_keys := IniRead(mods_ini, cur_section)
+            Loop Parse, mod_keys, "`n"
             {
                 ini_parts := StrSplit(A_LoopField, "=")
-                key := StrReplace(ini_parts[1], "_" , " ")
+                key := StrReplace(ini_parts[1], "_", " ")
                 value := ini_parts[2]
                 module := new ModuleObj(key, cur_section, value)
                 this.modules[key] := module
@@ -67,14 +67,14 @@ class ModuleLoader
             }
         }
 
-        if ($["DEBUG_MODE"])
+        if (Env["DEBUG_MODE"])
         {
             output := "Loaded modules: `n"
             for _n, _mod in this.modules
             {
                 output := output "[" _mod.section_title "] " _mod.title " => " _mod.file "`n"
             }
-            MsgBox % output
+            MsgBox(output)
         }
     }
 
@@ -85,7 +85,7 @@ class ModuleLoader
 
     has(module)
     {
-        return this.modules.hasKey(module)
+        return this.modules.Has(module)
     }
 
     getSectionModules(section_title)

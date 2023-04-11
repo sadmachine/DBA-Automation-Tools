@@ -63,7 +63,7 @@ for n, param in A_Args
 
 }
 
-ModuleLoader.boot($["MODS_PATH"], $["MODS_INI_FILE"])
+ModuleLoader.boot(Env["MODS_PATH"], Env["MODS_INI_FILE"])
 Dashboard.initialize()
 ;initialize_hub_gui()
 
@@ -85,7 +85,7 @@ RunQueueManager()
     ErrorLevel := ProcessExist("QueueManager.exe")
     ; If QueueManager.exe isn't running, run it
     if (!ErrorLevel) {
-        Run(#.path.concat($["PROJECT_ROOT"], "QueueManager.exe"))
+        Run(Lib.path.concat(Env["PROJECT_ROOT"], "QueueManager.exe"))
     }
 }
 

@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Master UI parent class
 ; Description ..: Handles/houses most custom UI functionality
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -19,20 +19,20 @@
 class UI
 {
     ; --- Sub-Classes ----------------------------------------------------------
-    #Include <UI/Base>
-    #Include <UI/BaseDialog>
-    #Include <UI/DateDialog>
-    #Include <UI/DialogFactory>
-    #Include <UI/DropdownDialog>
-    #Include <UI/InputBoxObj>
-    #Include <UI/MsgBoxObj>
-    #Include <UI/NumberDialog>
-    #Include <UI/PathDialog>
-    #Include <UI/ProgressBoxObj>
-    #Include <UI/Required>
-    #Include <UI/Settings>
-    #Include <UI/StringDialog>
-    #Include <UI/TreeViewBuilder>
+    #Include "UI/Base.ahk"
+    #Include "UI/BaseDialog.ahk"
+    #Include "UI/DateDialog.ahk"
+    #Include "UI/DialogFactory.ahk"
+    #Include "UI/DropdownDialog.ahk"
+    #Include "UI/InputBoxObj.ahk"
+    #Include "UI/MsgBoxObj.ahk"
+    #Include "UI/NumberDialog.ahk"
+    #Include "UI/PathDialog.ahk"
+    #Include "UI/ProgressBoxObj.ahk"
+    #Include "UI/Required.ahk"
+    #Include "UI/Settings.ahk"
+    #Include "UI/StringDialog.ahk"
+    #Include "UI/TreeViewBuilder.ahk"
 
     ; --- Class Functions ------------------------------------------------------
 
@@ -57,22 +57,22 @@ class UI
 
     ; --- Utility methods ------------------------------------------------------
 
-    disableCloseButton(hwnd="")
+    disableCloseButton(hwnd:="")
     {
         if (hWnd="")
         {
             hWnd:=WinExist("A")
         }
-        hSysMenu:=DllCall("GetSystemMenu","Int",hWnd,"Int",FALSE)
-        nCnt:=DllCall("GetMenuItemCount","Int",hSysMenu)
-        DllCall("RemoveMenu","Int",hSysMenu,"UInt",nCnt-1,"Uint","0x400")
-        DllCall("RemoveMenu","Int",hSysMenu,"UInt",nCnt-2,"Uint","0x400")
-        DllCall("DrawMenuBar","Int",hWnd)
+        hSysMenu:=DllCall("GetSystemMenu", "Int", hWnd, "Int", FALSE)
+        nCnt:=DllCall("GetMenuItemCount", "Int", hSysMenu)
+        DllCall("RemoveMenu", "Int", hSysMenu, "Uint", nCnt-1, "Uint", "0x400")
+        DllCall("RemoveMenu", "Int", hSysMenu, "Uint", nCnt-2, "Uint", "0x400")
+        DllCall("DrawMenuBar", "Int", hWnd)
     }
 
     setParent(child_hwnd, parent_hwnd)
     {
-        DllCall("SetParent", Ptr, child_hwnd, Ptr, parent_hwnd)
+        DllCall("SetParent", "Ptr", child_hwnd, "Ptr", parent_hwnd)
     }
 
     opts(object)

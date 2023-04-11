@@ -1,4 +1,4 @@
-; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+﻿; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Config.File
 class File
 {
@@ -17,7 +17,7 @@ class File
             } else if (key == "local") {
                 return Config.localpath(this.group.slug "\" this.slug ".ini")
             }
-            throw new @.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
+            throw new Core.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
         }
         set {
             return value
@@ -58,10 +58,10 @@ class File
     {
         t := this._parseIdentifier(identifier)
         if (t["section"] == "") {
-            throw new @.ProgrammerException(A_ThisFunc, "You must supply a section handle.")
+            throw new Core.ProgrammerException(A_ThisFunc, "You must supply a section handle.")
         }
-        if (!this.sections.hasKey(t["section"])) {
-            throw new @.ProgrammerException(A_ThisFunc, "The section handle supplied '" t["section"] "' is invalid.")
+        if (!this.sections.Has(t["section"])) {
+            throw new Core.ProgrammerException(A_ThisFunc, "The section handle supplied '" t["section"] "' is invalid.")
         }
         if (t["field"] == "") {
             return this.sections[t["section"]]
@@ -120,16 +120,16 @@ class File
     lock(scope := "")
     {
         if (this.hasLock) {
-            throw new @.FilesystemException(A_ThisFunc, "Cannot relock a file thats already locked.")
+            throw new Core.FilesystemException(A_ThisFunc, "Cannot relock a file thats already locked.")
         }
         if (scope == "" || scope == Config.Scope.GLOBAL) {
             if (FileExist(this.path["global"])) {
-                #.Path.createLock(this.path["global"])
+                Lib.Path.createLock(this.path["global"])
             }
         }
         if (scope == "" || scope == Config.Scope.LOCAL) {
             if (FileExist(this.path["local"])) {
-                #.Path.createLock(this.path["local"])
+                Lib.Path.createLock(this.path["local"])
             }
         }
         this.hasLock := true
@@ -138,17 +138,17 @@ class File
     unlock(scope := "")
     {
         if (!this.hasLock) {
-            throw new @.FilesystemException(A_ThisFunc, "Cannot unlock a file if you do not own the lock.")
+            throw new Core.FilesystemException(A_ThisFunc, "Cannot unlock a file if you do not own the lock.")
         }
 
         if (scope == "" || scope == Config.Scope.GLOBAL) {
             if (FileExist(this.path["global"])) {
-                #.Path.freeLock(this.path["global"])
+                Lib.Path.freeLock(this.path["global"])
             }
         }
         if (scope == "" || scope == Config.Scope.LOCAL) {
             if (FileExist(this.path["local"])) {
-                #.Path.freeLock(this.path["local"])
+                Lib.Path.freeLock(this.path["local"])
             }
         }
         this.hasLock := false
@@ -156,8 +156,8 @@ class File
 
     awaitLock(fieldPath)
     {
-        while (#.Path.isLocked(fieldPath) && !this.hasLock) {
-            Sleep 200
+        while (Lib.Path.isLocked(fieldPath) && !this.hasLock) {
+            Sleep(200)
         }
     }
 
@@ -168,7 +168,7 @@ class File
         for sectionSlug, section in this.sections {
             for fieldSlug, field in section {
                 if (field.exists()) {
-                    FileDelete, % field.path
+                    FileDelete(field.path)
                 }
             }
         }

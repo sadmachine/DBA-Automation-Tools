@@ -120,7 +120,7 @@ class Settings extends UI.Base
 
     restoreAllDefaults()
     {
-        throw new @.ProgrammerException(A_ThisFunc, "Not yet implemented.")
+        throw new Core.ProgrammerException(A_ThisFunc, "Not yet implemented.")
     }
 
     save()

@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: PO Lookup Results
 ; Description ..: The GUI used to display results from a PO Lookup
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -51,17 +51,17 @@ class PoLookupResults extends UI.Base
 
         for index,record in receiver.related["podetl"]
         {
-            LV_Add("", Floor(record.line), Floor(record.reference), Floor(record.qty), Floor(record.qtyr))
+            ResultsListView.Add("", Floor(record.line), Floor(record.reference), Floor(record.qty), Floor(record.qtyr))
         }
 
-        Loop % columnCount
+        Loop columnCount
         {
-            LV_ModifyCol(A_Index, "AutoHdr")
+            ResultsListView.ModifyCol(A_Index, "AutoHdr")
         }
 
         ; Make sure first row is selected
-        LV_Modify(1, "Focuse")
-        LV_Modify(1, "Select")
+        ResultsListView.Modify(1, "Focuse")
+        ResultsListView.Modify(1, "Select")
 
         this.Show()
         ; this.FocusControl(ResultsListView)
@@ -72,8 +72,8 @@ class PoLookupResults extends UI.Base
         global
         this.Default()
 
-        selected_row := LV_GetNext()
-        LV_GetText(lineNumber, selected_row)
+        selected_row := ResultsListView.GetNext()
+        lineNumber := ResultsListView.GetText(selected_row)
         this.Destroy()
         return lineNumber
     }

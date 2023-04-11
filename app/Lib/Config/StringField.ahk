@@ -6,10 +6,10 @@ class StringField extends Config.BaseField
 
     __New(label, scope := "", options := "")
     {
-        if (options.HasKey("min")) {
+        if (options.Has("min")) {
             this.min := options["min"]
         }
-        if (options.HasKey("max")) {
+        if (options.Has("max")) {
             this.max := options["max"]
         }
 

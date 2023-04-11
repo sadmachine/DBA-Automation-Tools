@@ -18,6 +18,6 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#.Logger.addChannel("app", $["LOGS_PATH"], "application.log")
-#.Logger.addChannel("queue", $["LOGS_PATH"], "queue.log")
-#.log("app").info(A_LineFile, "Finished Bootstrapping '" A_ScriptName "'", "")
+Lib.Logger.addChannel("app", Env["LOGS_PATH"], "application.log")
+Lib.Logger.addChannel("queue", Env["LOGS_PATH"], "queue.log")
+Lib.log("app").info(A_LineFile, "Finished Bootstrapping '" A_ScriptName "'", "")

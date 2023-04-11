@@ -12,7 +12,7 @@ class Section
     path[key] {
         get {
             if (!InStr("global local", key)) {
-                throw new @.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
+                throw new Core.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
             }
             return this.file.path[key]
         }

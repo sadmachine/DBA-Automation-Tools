@@ -1,4 +1,4 @@
-; DBA.ActiveRecord
+﻿; DBA.ActiveRecord
 class ActiveRecord
 {
 
@@ -6,7 +6,7 @@ class ActiveRecord
     _tableName := ""
     _exists := false
 
-    pk[]
+    pk
     {
         get
         {
@@ -19,7 +19,7 @@ class ActiveRecord
         }
     }
 
-    tableName[]
+    tableName 
     {
         get
         {
@@ -37,7 +37,8 @@ class ActiveRecord
         }
     }
 
-    exists[] {
+    exists
+    {
         get
         {
             return this._exists

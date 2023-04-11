@@ -113,7 +113,7 @@ class QueryBuilder
     Run()
     {
         query := this._buildQuery()
-        if ($["SHOW_QUERIES"]) {
+        if (Env["SHOW_QUERIES"]) {
             UI.MsgBox(query)
         }
         return this.connection.query(query)

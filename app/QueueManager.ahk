@@ -25,7 +25,7 @@
 ; * Delegate most of the queue logic to the actual Queue class
 ;
 ; Revision 5 (03/31/2023)
-; * Properly call queue class (#.Queue instead of Queue)
+; * Properly call queue class (Lib.Queue instead of Queue)
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
@@ -33,14 +33,14 @@
 #Include "src/Bootstrap.ahk"
 
 while (true) {
-    #.Queue.executeJobs()
+    Lib.Queue.executeJobs()
 
     ErrorLevel := ProcessExist("DBA AutoTools.exe")
     ; If DBA AutoTools.exe isn't running, Break out of loop
     if (!ErrorLevel) {
         Break
     }
-    Sleep(#.Queue.interval)
+    Sleep(Lib.Queue.interval)
 }
 
 ExitApp()

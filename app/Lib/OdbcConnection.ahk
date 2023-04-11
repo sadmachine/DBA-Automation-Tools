@@ -1,4 +1,4 @@
-#Include <ADOSQL>
+﻿#Include "ADOSQL.ahk"
 
 class OdbcConnection
 {
@@ -11,7 +11,7 @@ class OdbcConnection
     query(qStr)
     {
         qStr := RTrim(qStr)
-        if (SubStr(qStr, 0) != ";")
+        if (SubStr(qStr, -1) != ";")
             qStr .= ";"
         return ADOSQL(this.connectionStr, qStr)
     }

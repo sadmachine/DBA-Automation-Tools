@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Database Config Group
 ; Description ..: Configuration group for database settings
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -15,7 +15,6 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#Include <Config>
 
 class DatabaseGroup extends Config.Group
 {
@@ -27,7 +26,7 @@ class DatabaseGroup extends Config.Group
 
         mainSection := new Config.Section("Main")
         mainSection.add(new Config.StringField("DSN")
-            .setScope(Config.Scope.LOCAL)
+            .setScope(Config.Scope.LOCAL)            
             .setDescription("The ODBC identifier for the database connection."))
 
         connectionFile.add(mainSection)

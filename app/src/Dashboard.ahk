@@ -162,7 +162,7 @@ class Dashboard
     class Events {
         openSettings()
         {
-            Run(#.Path.concat($["PROJECT_ROOT"], "Settings.exe"))
+            Run(Lib.Path.concat(Env["PROJECT_ROOT"], "Settings.exe"))
         }
 
         exitProgram()
@@ -173,10 +173,10 @@ class Dashboard
 
         applicationLog()
         {
-            tempDir := new #.Path.Temp("DBA AutoTools")
+            tempDir := new Lib.Path.Temp("DBA AutoTools")
             tempApplicationLogPath := tempDir.concat("application.log")
-            applicationLogPath := #.Path.concat($["PROJECT_ROOT"], "modules\application.log")
-            #.Cmd.copy(applicationLogPath, tempApplicationLogPath)
+            applicationLogPath := Lib.Path.concat(Env["PROJECT_ROOT"], "modules\application.log")
+            Lib.Cmd.copy(applicationLogPath, tempApplicationLogPath)
             Run("notepad.exe """ tempApplicationLogPath """")
         }
     }

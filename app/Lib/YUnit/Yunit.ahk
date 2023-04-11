@@ -57,7 +57,7 @@ class Yunit
                     if ObjHasKey(environment, "ExpectedException")
                         throw Exception("ExpectedException")
                 }
-                catch error
+                catch Any as error
                 {
                     if !ObjHasKey(environment, "ExpectedException")
                         || !this.CompareValues(environment.ExpectedException, error)

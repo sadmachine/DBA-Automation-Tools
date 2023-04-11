@@ -1,4 +1,4 @@
-; DBA.DbResult
+﻿; DBA.DbResult
 class DbResults
 {
     answer := ""
@@ -10,7 +10,7 @@ class DbResults
         local header, index, row
         if (ADOSQL_LastError)
         {
-            throw new @.SQLException(A_ThisFunc, "Query error:`n" ADOSQL_LastError)
+            throw new Core.SQLException(A_ThisFunc, "Query error:`n" ADOSQL_LastError)
         }
 
         this.delim := colDelim
@@ -28,13 +28,13 @@ class DbResults
             this.headerIndex[header] := index
         }
 
-        this.colCount := columnheaders.Length()
+        this.colCount := columnheaders.Length
         this.rows := []
         ; Start at row 2 (skip the headers)
         currentRow := 2
 
-        maxRow := this.answer.Length()
-        Loop % maxRow - 1
+        maxRow := this.answer.Length
+        Loop maxRow - 1
         {
             this.answer[currentRow] := this._decodeNewLines(this.answer[currentRow])
             rowData := StrSplit(this.answer[currentRow], this.delim)
@@ -62,7 +62,7 @@ class DbResults
 
     count()
     {
-        return this.rows.length()
+        return this.rows.Length
     }
 
     row(row_num)
@@ -77,7 +77,7 @@ class DbResults
 
     empty()
     {
-        return this.rows.length() == 0
+        return this.rows.Length == 0
     }
 
     data()
@@ -88,9 +88,10 @@ class DbResults
     display()
     {
         Global
-        Gui, New, hwndDisplaySQL +AlwaysOnTop,
-        Gui, %DisplaySQL%:Add, ListView, x8 y8 w500 r20 +LV0x4000i, % this.lvHeaders
-        Gui, %DisplaySQL%:Default
+        DisplaySQL := Gui()
+        DisplaySQL.New("hwndDisplaySQL +AlwaysOnTop")
+        ogcListViewthislvHeaders := DisplaySQL.Add("ListView", "x8 y8 w500 r20 +LV0x4000i", [this.lvHeaders])
+        DisplaySQL.Default()
 
         for index,row in this.rows
         {
@@ -99,15 +100,15 @@ class DbResults
             {
                 data[this.headerIndex[header]] := record
             }
-            LV_Add("", data*)
+            ogcListViewthislvHeaders.Add("", data*)
         }
 
-        Loop % this.colCount
+        Loop this.colCount
         {
-            LV_ModifyCol(A_Index, "AutoHdr")
+            ogcListViewthislvHeaders.ModifyCol(A_Index, "AutoHdr")
         }
 
-        Gui, %DisplaySQL%:Show
+        DisplaySQL.Show()
         return DisplaySQL
     }
 }

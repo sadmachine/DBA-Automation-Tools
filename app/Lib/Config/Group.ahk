@@ -1,4 +1,4 @@
-; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+﻿; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Config.Group
 class Group
 {
@@ -15,7 +15,7 @@ class Group
             } else if (key == "local") {
                 return Config.localpath(this.slug)
             }
-            throw new @.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
+            throw new Core.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
         }
         set {
             return value
@@ -45,8 +45,8 @@ class Group
         }
         for fileSlug, file in this.files {
             if (!this._pathsExist()) {
-                FileCreateDir, % this.path["global"]
-                FileCreateDir, % this.path["local"]
+                DirCreate(this.path["global"])
+                DirCreate(this.path["local"])
             }
             file.group := this
             file.initialize(force)
@@ -80,7 +80,7 @@ class Group
 
     setDefaults()
     {
-        throw new @.ProgrammerException(A_ThisFunc, "Not yet implemented")
+        throw new Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
     }
 
     exists()
@@ -122,10 +122,10 @@ class Group
         globalPathExists := InStr(FileExist(this.path["global"]), "D")
         localPathExists := InStr(FileExist(this.path["local"]), "D")
         if (globalPathExists) {
-            FileRemoveDir, % this.path["global"], 1
+            DirDelete(this.path["global"], 1)
         }
         if (localPathExists) {
-            FileRemoveDir, % this.path["local"], 1
+            DirDelete(this.path["local"], 1)
         }
     }
 

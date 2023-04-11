@@ -24,12 +24,12 @@ try {
     receivingController.bootstrapReceiver(new Models.Receiver())
 
     receivingController.displayReceivingResults()
-} catch e {
-    @.friendlyException(e)
+} catch Any as e {
+    Core.friendlyException(e)
     receivingController.cleanup()
 }
 
-#.log("app").info(A_LineFile, "Before ExitApp")
+Lib.log("app").info(A_LineFile, "Before ExitApp")
 
 ExitApp()
 

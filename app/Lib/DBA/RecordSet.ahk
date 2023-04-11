@@ -1,4 +1,4 @@
-; DBA.RecordSet
+﻿; DBA.RecordSet
 class RecordSet
 {
     records := []

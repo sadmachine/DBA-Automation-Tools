@@ -5,7 +5,7 @@ class DropdownDialog extends UI.BaseDialog
     define()
     {
         if (!this.data.HasKey("choices")) {
-            throw new @.ProgrammerException(A_ThisFunc, "this.data is missing required key 'choices'")
+            throw new Core.ProgrammerException(A_ThisFunc, "this.data is missing required key 'choices'")
         }
         selected := ""
         if (this.data.HasKey("selected") && this.data["selected"] != "") {

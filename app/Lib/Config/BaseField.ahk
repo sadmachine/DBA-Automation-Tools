@@ -1,4 +1,4 @@
-; Config.Field
+﻿; Config.Field
 class BaseField
 {
     type := ""
@@ -21,7 +21,7 @@ class BaseField
             } else if (this.scope == Config.Scope.LOCAL) {
                 return this.section.path["local"]
             }
-            throw new @.ProgrammerException(A_ThisFunc, "Invalid scope, this.scope = " this.scope)
+            throw new Core.ProgrammerException(A_ThisFunc, "Invalid scope, this.scope = " this.scope)
         }
     }
 
@@ -41,20 +41,20 @@ class BaseField
         this.type := type
         this.label := label
         this.slug := String.toCamelCase(this.label)
-        if (options.HasKey("slug")) {
+        if (options.Has("slug")) {
             this.slug := options["slug"]
         }
-        if (options.HasKey("default")) {
+        if (options.Has("default")) {
             this.default := options["default"]
         }
-        if (options.HasKey("required")) {
+        if (options.Has("required")) {
             this.required := options["required"]
         }
     }
 
     __Call(methodName, args*)
     {
-        if (SubStr(methodName, 1, 3) == "set" && !this.hasKey(methodName) && args.length() == 1) {
+        if (SubStr(methodName, 1, 3) == "set" && !this.Has(methodName) && args.Length == 1) {
             option := String.toLower(SubStr(methodName, 4))
             value := args[1]
             return this.setOption(option, value)
@@ -63,16 +63,16 @@ class BaseField
 
     __Get(key)
     {
-        if (this.hasKey(key)) {
+        if (this.Has(key)) {
             return this[key]
-        } else if (this.options.hasKey(key)) {
+        } else if (this.options.Has(key)) {
             return this.options[key]
         }
     }
 
     load()
     {
-        IniRead, iniValue, % this.path, % this.section.slug, % this.slug
+        iniValue := IniRead(this.path, this.section.slug, this.slug)
         this.value := iniValue
         this.oldValue := iniValue
     }
@@ -81,7 +81,7 @@ class BaseField
     {
         if (this.hasChanged() || force)
         {
-            IniWrite, % this.value, % this.path, % this.section.slug, % this.slug
+            IniWrite(this.value, this.path, this.section.slug, this.slug)
         }
     }
 
@@ -99,16 +99,16 @@ class BaseField
         if (!FileExist(this.path)) {
             fileObj := FileOpen(this.path, "w")
             if (!IsObject(fileObj)) {
-                throw new @.FilesystemException(A_ThisFunc, "Could not create file, path = " this.path)
+                throw new Core.FilesystemException(A_ThisFunc, "Could not create file, path = " this.path)
             }
             fileObj.Close()
         }
 
         if (this._valueIsUndefined()) {
             if (this.required && this.default == "") {
-                throw new @.RequiredFieldException(A_ThisFunc, this, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
+                throw new Core.RequiredFieldException(A_ThisFunc, this, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
             }
-            IniWrite, % this.default, % this.path, % this.section.slug, % this.slug
+            IniWrite(this.default, this.path, this.section.slug, this.slug)
         }
         this.initialized := true
     }
@@ -153,7 +153,7 @@ class BaseField
 
     _valueIsUndefined()
     {
-        IniRead, iniValue, % this.path, % this.section.slug, % this.slug, % Config.UNDEFINED
+        iniValue := IniRead(this.path, this.section.slug, this.slug, Config.UNDEFINED)
         return (iniValue == Config.UNDEFINED)
     }
 }

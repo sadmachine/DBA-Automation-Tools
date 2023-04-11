@@ -1,6 +1,6 @@
-﻿#Include <@>
-#Include <#>
-#Include <$>
+﻿#Include <Core>
+#Include <Lib>
+#Include <Env>
 #Include <ADOSQL>
 #Include <Config>
 #Include <DBA>
@@ -13,4 +13,3 @@
 #Include "src/Views.ahk"
 #Include "src/Actions.ahk"
 #Include "src/Config/All.ahk"
-#Include "src/Queue.ahk"

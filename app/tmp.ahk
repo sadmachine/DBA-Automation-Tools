@@ -17,4 +17,4 @@
 ; ==============================================================================
 #Include "src/Autoload.ahk"
 
-MsgBox(#.log("app")._prepareData(data))
+MsgBox(Lib.log("app")._prepareData(data))

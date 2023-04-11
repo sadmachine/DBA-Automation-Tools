@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Views (top-level class)
 ; Description ..: A parent class for view classes
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -16,8 +16,7 @@
 ; === TO-DOs ===================================================================
 ; TODO - Add more views
 ; ==============================================================================
-#Include <UI>
 class Views
 {
-    #Include src/Views/PoLookupResults.ahk
+    #Include "Views/PoLookupResults.ahk"
 }

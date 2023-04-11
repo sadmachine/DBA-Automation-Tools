@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Receiving Transaction Action
 ; Description ..: Performs a Receiving Transaction in DBA
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -22,7 +22,7 @@
 ; Actions.ReceivingTransaction
 class ReceivingTransaction extends Actions.Base
 {
-    __New(ByRef receiver)
+    __New(&receiver)
     {
         Global
         local location
@@ -82,115 +82,115 @@ class ReceivingTransaction extends Actions.Base
     _preparePoWindow(indexNumber)
     {
         global
-        WinActivate, % DBA.Windows.Main
-        WinWaitActive, % DBA.Windows.Main,, 5
+        WinActivate(DBA.Windows.Main)
+        ErrorLevel := WinWaitActive(DBA.Windows.Main, , 5) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
         if ErrorLevel
         {
-            throw new @.WindowException(A_ThisFunc, "Main DBA window never bexame active (waited 5 seconds).")
-            ExitApp
+            throw new Core.WindowException(A_ThisFunc, "Main DBA window never bexame active (waited 5 seconds).")
+            ExitApp()
         }
 
-        WinMenuSelectItem, % DBA.Windows.Main,, % "Purch", % "PO Receipts"
-        WinWaitActive, % DBA.Windows.POReceiptLookup,, 5
+        MenuSelect(DBA.Windows.Main, , "Purch", "PO Receipts")
+        ErrorLevel := WinWaitActive(DBA.Windows.POReceiptLookup, , 5) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
         if ErrorLevel
         {
-            throw new @.WindowException(A_ThisFunc, "PO Receipt Lookup window never bexame active (waited 5 seconds).")
-            ExitApp
+            throw new Core.WindowException(A_ThisFunc, "PO Receipt Lookup window never bexame active (waited 5 seconds).")
+            ExitApp()
         }
 
-        Send % this.receiver.poNumber
-        Sleep 500
-        Send {Enter}
+        Send(this.receiver.poNumber)
+        Sleep(500)
+        Send("{Enter}")
 
-        WinWaitActive, % DBA.Windows.POReceipts,, 5
+        ErrorLevel := WinWaitActive(DBA.Windows.POReceipts, , 5) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
         if ErrorLevel
         {
-            throw new @.WindowException(A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
-            ExitApp
+            throw new Core.WindowException(A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
+            ExitApp()
         }
 
         position := indexNumber - 1
-        Loop % position
+        Loop position
         {
-            Send {Down}
+            Send("{Down}")
         }
 
-        Send {Tab}
-        Sleep 100
-        Send {Tab}
+        Send("{Tab}")
+        Sleep(100)
+        Send("{Tab}")
     }
 
     _saveAndExitPoWindow()
     {
         global
-        WinActivate, % DBA.Windows.POReceipts
-        WinWaitActive, % DBA.Windows.POReceipts,, 5
+        WinActivate(DBA.Windows.POReceipts)
+        ErrorLevel := WinWaitActive(DBA.Windows.POReceipts, , 5) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
         if ErrorLevel
         {
-            throw new @.WindowException(A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
-            ExitApp
+            throw new Core.WindowException(A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
+            ExitApp()
         }
-        Sleep 100
-        Send {Alt Down}u{Alt Up}
-        Sleep 100
+        Sleep(100)
+        Send("{Alt Down}u{Alt Up}")
+        Sleep(100)
 
-        WinClose, % DBA.Windows.POReceipts
-        WinWaitClose, % DBA.Windows.POReceipts,, 5
+        WinClose(DBA.Windows.POReceipts)
+        ErrorLevel := WinWaitClose(DBA.Windows.POReceipts, , 5) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
         if ErrorLevel
         {
-            throw new @.WindowException(A_ThisFunc, "PO Receipts window never closed (waited 5 seconds).")
-            MsgBox % "PO Receipts never closed, exiting"
-            ExitApp
+            throw new Core.WindowException(A_ThisFunc, "PO Receipts window never closed (waited 5 seconds).")
+            MsgBox("PO Receipts never closed, exiting")
+            ExitApp()
         }
     }
 
     _receiveLotInfo()
     {
         global
-        WinActivate, % DBA.Windows.POReceipts
-        WinWaitActive, % DBA.Windows.POReceipts,, 5
+        WinActivate(DBA.Windows.POReceipts)
+        ErrorLevel := WinWaitActive(DBA.Windows.POReceipts, , 5) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
         if ErrorLevel
         {
-            throw new @.WindowException(A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
+            throw new Core.WindowException(A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
         }
-        ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
-        Send {Home}
-        Send % this.receiver.lots["current"].quantity
-        Send {Enter}
-        Send {End}
-        Send % this.receiver.lots["current"].lotNumber
-        Send {Shift Down}{Tab}{Shift Up}
-        Send {Shift Down}{Tab}{Shift Up}
+        ControlFocus("TdxDBGrid1", DBA.Windows.POReceipts)
+        Send("{Home}")
+        Send(this.receiver.lots["current"].quantity)
+        Send("{Enter}")
+        Send("{End}")
+        Send(this.receiver.lots["current"].lotNumber)
+        Send("{Shift Down}{Tab}{Shift Up}")
+        Send("{Shift Down}{Tab}{Shift Up}")
         this._enterLocation(this.receiver.lots["current"].location)
     }
 
     _enterLocation(location)
     {
-        Loop {
-            Send {Enter}
-            Sleep 100
-            Send % "\"
-            WinWaitActive, % "FrmPopDrpLocationLook_sub",, 5
+        Loop{
+            Send("{Enter}")
+            Sleep(100)
+            Send("\")
+            ErrorLevel := WinWaitActive("FrmPopDrpLocationLook_sub", , 5) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
             if ErrorLevel
             {
-                throw new @.WindowException(A_ThisFunc, "Location submenu never became active (waited 5 seconds).")
+                throw new Core.WindowException(A_ThisFunc, "Location submenu never became active (waited 5 seconds).")
             }
-            Sleep 200
-            ControlClick, TCheckBox1, % "FrmPopDrpLocationLook_sub",,,,NA
-            Sleep 200
-            ControlSend, TdxButtonEdit1, % location, % "FrmPopDrpLocationLook_sub"
-            Sleep 100
-            ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
-            Sleep 100
-            ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
-            Sleep 100
-            Send {Enter}
-            ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
-            ControlSend, TdxDBGrid1, {Enter}, % DBA.Windows.POReceipts
-            ControlGetText textCheck, TdxInplaceDBTreeListButtonEdit1, % DBA.Windows.POReceipts
+            Sleep(200)
+            ControlClick("TCheckBox1", "FrmPopDrpLocationLook_sub", , , , "NA")
+            Sleep(200)
+            ControlSend(location, "TdxButtonEdit1", "FrmPopDrpLocationLook_sub")
+            Sleep(100)
+            ControlSend("{Enter}", "TdxButtonEdit1", "FrmPopDrpLocationLook_sub")
+            Sleep(100)
+            ControlSend("{Enter}", "TdxButtonEdit1", "FrmPopDrpLocationLook_sub")
+            Sleep(100)
+            Send("{Enter}")
+            ControlFocus("TdxDBGrid1", DBA.Windows.POReceipts)
+            ControlSend("{Enter}", "TdxDBGrid1", DBA.Windows.POReceipts)
+            textCheck := ControlGetText("TdxInplaceDBTreeListButtonEdit1", DBA.Windows.POReceipts)
             if (textCheck != location) {
-                ControlSetText, TdxInplaceDBTreeListButtonEdit1, % locaiton, % DBA.Windows.POReceipts
-                ControlGetText textCheck, TdxInplaceDBTreeListButtonEdit1, % DBA.Windows.POReceipts
+                ControlSetText(locaiton, "TdxInplaceDBTreeListButtonEdit1", DBA.Windows.POReceipts)
+                textCheck := ControlGetText("TdxInplaceDBTreeListButtonEdit1", DBA.Windows.POReceipts)
                 if (textCheck == location) {
                     break
                 }
@@ -202,24 +202,24 @@ class ReceivingTransaction extends Actions.Base
 
     _nextReceiptLine()
     {
-        WinActivate, % DBA.Windows.POReceipts
-        WinWaitActive, % DBA.Windows.POReceipts,, 5
+        WinActivate(DBA.Windows.POReceipts)
+        ErrorLevel := WinWaitActive(DBA.Windows.POReceipts, , 5) , ErrorLevel := ErrorLevel = 0 ? 1 : 0
         if ErrorLevel
         {
-            throw new @.WindowException(A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
+            throw new Core.WindowException(A_ThisFunc, "PO Receipts window never became active (waited 5 seconds).")
         }
-        ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
-        Send {Down}
+        ControlFocus("TdxDBGrid1", DBA.Windows.POReceipts)
+        Send("{Down}")
     }
 
     _checkLocation(expected)
     {
-        ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
-        ControlSend, TdxDBGrid1, {Home}, % DBA.Windows.POReceipts
-        ControlSend, TdxDBGrid1, {Right}, % DBA.Windows.POReceipts
-        ControlSend, TdxDBGrid1, {Enter}, % DBA.Windows.POReceipts
-        ControlGetText textCheck, TdxInplaceDBTreeListButtonEdit1, % DBA.Windows.POReceipts
-        ControlSend, TdxInplaceDBTreeListButtonEdit1, {Enter}, % DBA.Windows.POReceipts
+        ControlFocus("TdxDBGrid1", DBA.Windows.POReceipts)
+        ControlSend("{Home}", "TdxDBGrid1", DBA.Windows.POReceipts)
+        ControlSend("{Right}", "TdxDBGrid1", DBA.Windows.POReceipts)
+        ControlSend("{Enter}", "TdxDBGrid1", DBA.Windows.POReceipts)
+        textCheck := ControlGetText("TdxInplaceDBTreeListButtonEdit1", DBA.Windows.POReceipts)
+        ControlSend("{Enter}", "TdxInplaceDBTreeListButtonEdit1", DBA.Windows.POReceipts)
         if (textCheck != expected) {
             return false
         }

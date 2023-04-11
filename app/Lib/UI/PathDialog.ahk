@@ -24,10 +24,10 @@ class PathDialog extends UI.BaseDialog
     define()
     {
         if (!this.data.HasKey("pathType")) {
-            throw new @.ProgrammerException(A_ThisFunc, "data.pathType is missing, must be one of ['file', 'folder', 'directory']")
+            throw new Core.ProgrammerException(A_ThisFunc, "data.pathType is missing, must be one of ['file', 'folder', 'directory']")
         }
         if (!InStr("file, folder, directory", this.data["pathType"])) {
-            throw new @.ProgrammerException(A_ThisFunc, "data.pathType must be one of ['file', 'folder', 'directory']")
+            throw new Core.ProgrammerException(A_ThisFunc, "data.pathType must be one of ['file', 'folder', 'directory']")
         }
 
         EnvGet, userHome, % "USERPROFILE"

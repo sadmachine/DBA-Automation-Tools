@@ -39,7 +39,7 @@
 
 #Include "src/Autoload.ahk"
 
-@.registerExceptionHandler()
+Core.registerExceptionHandler()
 
 GetInstallationLocation()
 
@@ -75,7 +75,7 @@ GetInstallationLocation()
         ExitApp()
     }
 
-    settingsFilePath := #.Path.concat(installationPath, "DBA AutoTools\app\settings.ini")
+    settingsFilePath := Lib.Path.concat(installationPath, "DBA AutoTools\app\settings.ini")
     if (FileExist(settingsFilePath)) {
         globalConfigValue := IniRead(settingsFilePath, "location", "global", Config.UNDEFINED)
         if (globalConfigValue == Config.UNDEFINED) {
@@ -96,14 +96,14 @@ CreateDirectories()
 {
     Global
 
-    projectPath := #.Path.concat(installationPath, "DBA AutoTools")
-    appPath := #.Path.concat(projectPath, "app")
-    modulesPath := #.Path.concat(appPath, "modules")
-    configPath := #.Path.concat(appPath, "config")
-    templatesPath := #.Path.concat(appPath, "templates")
-    storagePath := #.Path.concat(appPath, "storage")
-    logsPath := #.Path.concat(storagePath, "logs")
-    queuePath := #.Path.concat(appPath, "queue")
+    projectPath := Lib.Path.concat(installationPath, "DBA AutoTools")
+    appPath := Lib.Path.concat(projectPath, "app")
+    modulesPath := Lib.Path.concat(appPath, "modules")
+    configPath := Lib.Path.concat(appPath, "config")
+    templatesPath := Lib.Path.concat(appPath, "templates")
+    storagePath := Lib.Path.concat(appPath, "storage")
+    logsPath := Lib.Path.concat(storagePath, "logs")
+    queuePath := Lib.Path.concat(appPath, "queue")
 
     _CreateDirIfNotExist(projectPath)
     _CreateDirIfNotExist(appPath)
@@ -120,30 +120,30 @@ InstallFiles()
     Global
 
     ; Files in project root folder
-    FileInstall("..\dist\DBA AutoTools.exe", #.Path.concat(projectPath, "DBA AutoTools.exe"), 1)
-    FileInstall("..\dist\QueueManager.exe", #.Path.concat(projectPath, "QueueManager.exe"), 1)
-    FileInstall("..\dist\Settings.exe", #.Path.concat(projectPath, "Settings.exe"), 1)
-    FileInstall("..\dist\.env", #.Path.concat(projectPath, ".env"), 0)
+    FileInstall("..\dist\DBA AutoTools.exe", Lib.Path.concat(projectPath, "DBA AutoTools.exe"), 1)
+    FileInstall("..\dist\QueueManager.exe", Lib.Path.concat(projectPath, "QueueManager.exe"), 1)
+    FileInstall("..\dist\Settings.exe", Lib.Path.concat(projectPath, "Settings.exe"), 1)
+    FileInstall("..\dist\.env", Lib.Path.concat(projectPath, ".env"), 0)
 
     ; Files in app folder
-    FileInstall("..\dist\app\settings.example.ini", #.Path.concat(appPath, "settings.example.ini"), 1)
-    FileInstall("..\dist\app\settings.ini", #.Path.concat(appPath, "settings.ini"), 0)
-    FileInstall("..\dist\app\mods.ini", #.Path.concat(appPath, "mods.ini"), 0)
+    FileInstall("..\dist\app\settings.example.ini", Lib.Path.concat(appPath, "settings.example.ini"), 1)
+    FileInstall("..\dist\app\settings.ini", Lib.Path.concat(appPath, "settings.ini"), 0)
+    FileInstall("..\dist\app\mods.ini", Lib.Path.concat(appPath, "mods.ini"), 0)
 
     ; Files in modules folder
-    FileInstall("..\dist\app\modules\PO_Verification.exe", #.Path.concat(modulesPath, "PO_Verification.exe"), 1)
+    FileInstall("..\dist\app\modules\PO_Verification.exe", Lib.Path.concat(modulesPath, "PO_Verification.exe"), 1)
 
     ; Files in templates folder
-    FileInstall("..\dist\app\templates\Incoming Inspection Log Template.xlsx", #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1)
-    FileInstall("..\dist\app\templates\Incoming Inspection Report Template.xlsx", #.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1)
+    FileInstall("..\dist\app\templates\Incoming Inspection Log Template.xlsx", Lib.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1)
+    FileInstall("..\dist\app\templates\Incoming Inspection Report Template.xlsx", Lib.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1)
 }
 
 SetupConfigIni()
 {
     Global
     localConfigPath := configPath
-    IniWrite(localConfigPath, #.Path.concat(appPath, "settings.ini"), "location", "local")
-    IniWrite(globalConfigPath, #.Path.concat(appPath, "settings.ini"), "location", "global")
+    IniWrite(localConfigPath, Lib.Path.concat(appPath, "settings.ini"), "location", "local")
+    IniWrite(globalConfigPath, Lib.Path.concat(appPath, "settings.ini"), "location", "global")
 }
 
 _CreateDirIfNotExist(path)

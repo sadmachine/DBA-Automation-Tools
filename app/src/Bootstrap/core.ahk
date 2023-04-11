@@ -16,11 +16,11 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
-@.registerExceptionHandler()
+Core.registerExceptionHandler()
 
-$["PROJECT_ROOT"] := ""
+Env["PROJECT_ROOT"] := ""
 if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe", A_ScriptName)) {
-    $["PROJECT_ROOT"] := #.Path.normalize(A_ScriptDir)
+    Env["PROJECT_ROOT"] := Lib.Path.normalize(A_ScriptDir)
 } else {
-    $["PROJECT_ROOT"] := #.Path.parentOf(#.Path.parentOf(A_ScriptDir))
+    Env["PROJECT_ROOT"] := Lib.Path.parentOf(Lib.Path.parentOf(A_ScriptDir))
 }

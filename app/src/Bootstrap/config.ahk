@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Config Bootstrapping File
 ; Description ..: Responsible for bootstrapping the Config class
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -21,14 +21,14 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-if (!FileExist($["SETTINGS_INI_FILE"])) {
-    throw new @.FilesystemException(A_ThisFunc, "Could not locate the settings.ini file.")
+if (!FileExist(Env["SETTINGS_INI_FILE"])) {
+    throw new Core.FilesystemException(A_ThisFunc, "Could not locate the settings.ini file.")
 }
 
 Config.BaseField.defaultRequirementValue := true
 
-IniRead, globalConfigLocation, % $["SETTINGS_INI_FILE"], % "location", % "global"
-IniRead, localConfigLocation, % $["SETTINGS_INI_FILE"], % "location", % "local"
+globalConfigLocation := IniRead(Env["SETTINGS_INI_FILE"], "location", "global")
+localConfigLocation := IniRead(Env["SETTINGS_INI_FILE"], "location", "local")
 
 Config.setLocalConfigLocation(localConfigLocation)
 Config.setGlobalConfigLocation(globalConfigLocation)
@@ -38,8 +38,8 @@ Config.register(new ReceivingGroup())
 while (!Config.initialized) {
     try {
         Config.initialize()
-    } catch e {
-        if (@.typeOf(e) != "@.RequiredFieldException") {
+    } catch Any as e {
+        if (Core.typeOf(e) != "Core.RequiredFieldException") {
             throw e
         }
         field := e.field

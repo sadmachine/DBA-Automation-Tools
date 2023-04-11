@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Receiving Configuration Group
 ; Description ..: Configuration settings for receiving processes
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -15,8 +15,6 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#Include <Config>
-
 class ReceivingGroup extends Config.Group
 {
     define()

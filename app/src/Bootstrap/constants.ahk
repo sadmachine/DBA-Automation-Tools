@@ -24,19 +24,19 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-$["QUEUE_PATH"] := #.Path.concat($["PROJECT_ROOT"], "queue")
-$["APP_PATH"] := #.Path.concat($["PROJECT_ROOT"], "app")
-$["STORAGE_PATH"] := #.Path.concat($["APP_PATH"], "storage")
-$["LOGS_PATH"] := #.Path.concat($["STORAGE_PATH"], "logs")
-$["MODS_PATH"] := #.Path.concat($["APP_PATH"], "modules")
-$["SETTINGS_INI_FILE"] := #.Path.concat($["APP_PATH"], "settings.ini")
-$["MODS_INI_FILE"] := #.Path.concat($["APP_PATH"], "mods.ini")
+Env["QUEUE_PATH"] := Lib.Path.concat(Env["PROJECT_ROOT"], "queue")
+Env["APP_PATH"] := Lib.Path.concat(Env["PROJECT_ROOT"], "app")
+Env["STORAGE_PATH"] := Lib.Path.concat(Env["APP_PATH"], "storage")
+Env["LOGS_PATH"] := Lib.Path.concat(Env["STORAGE_PATH"], "logs")
+Env["MODS_PATH"] := Lib.Path.concat(Env["APP_PATH"], "modules")
+Env["SETTINGS_INI_FILE"] := Lib.Path.concat(Env["APP_PATH"], "settings.ini")
+Env["MODS_INI_FILE"] := Lib.Path.concat(Env["APP_PATH"], "mods.ini")
 
-$["DOTENV_PATH"]:= #.Path.concat($["PROJECT_ROOT"], ".env")
-if ((exists := FileExist($["DOTENV_PATH"])) && !InStr(exists, "D")) {
-    dotEnvFile := new #.DotEnv($["DOTENV_PATH"])
+Env["DOTENV_PATH"]:= Lib.Path.concat(Env["PROJECT_ROOT"], ".env")
+if ((exists := FileExist(Env["DOTENV_PATH"])) && !InStr(exists, "D")) {
+    dotEnvFile := new Lib.DotEnv(Env["DOTENV_PATH"])
     dotEnvValues := dotEnvFile.toObject()
     for key, value in dotEnvValues {
-        $[key] := value
+        Env[key] := value
     }
 }

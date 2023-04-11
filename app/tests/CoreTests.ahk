@@ -1,4 +1,4 @@
-﻿#Include <@>
+﻿#Include <Core>
 
 class CoreTests
 {
@@ -7,131 +7,131 @@ class CoreTests
 
         EmptyExplicitArrayIsEmpty()
         {
-            typeOf := @.typeOf(Array())
+            typeOf := Core.typeOf(Array())
             YUnit.assert(typeOf == "Empty", "Found: " typeOf)
         }
 
         EmptyExplicitObjectIsEmpty()
         {
-            typeOf := @.typeOf(Object())
+            typeOf := Core.typeOf(Object())
             YUnit.assert(typeOf == "Empty", "Found: " typeOf)
         }
 
         EmptyImplicitArrayIsEmpty()
         {
-            typeOf := @.typeOf([])
+            typeOf := Core.typeOf([])
             YUnit.assert(typeOf == "Empty", "Found: " typeOf)
         }
 
         EmptyImplicitObjectIsEmpty()
         {
-            typeOf := @.typeOf({})
+            typeOf := Core.typeOf({})
             YUnit.assert(typeOf == "Empty", "Found: " typeOf)
         }
 
         ImplicitArrayIsArray()
         {
-            typeOf := @.typeOf(["A", "B", "C"])
+            typeOf := Core.typeOf(["A", "B", "C"])
             YUnit.assert(typeOf == "Array", "Found: " typeOf)
 
         }
 
         ObjectWithNumericKeysIsArray()
         {
-            typeOf := @.typeOf({1: "A", 2: "B", 3: "C"})
+            typeOf := Core.typeOf({1: "A", 2: "B", 3: "C"})
             YUnit.assert(typeOf == "Array", "Found: " typeOf)
         }
 
         ObjectWithStringNumericKeysIsArray()
         {
-            typeOf := @.typeOf({1: "A", 2: "B", 3: "C"})
+            typeOf := Core.typeOf({1: "A", 2: "B", 3: "C"})
             YUnit.assert(typeOf == "Array", "Found: " typeOf)
         }
 
         ObjectWithStringKeysIsObject()
         {
-            typeOf := @.typeOf({a: "A", b: "B", c: "C"})
+            typeOf := Core.typeOf({a: "A", b: "B", c: "C"})
             YUnit.assert(typeOf == "Object", "Found: " typeOf)
         }
 
         ObjectWithMixedTypeKeysIsObject()
         {
-            typeOf := @.typeOf({a: "A", 1: "B", 3: "C"})
+            typeOf := Core.typeOf({a: "A", 1: "B", 3: "C"})
             YUnit.assert(typeOf == "Object", "Found: " typeOf)
         }
 
         ObjectWith__ClassKeyIsClassName()
         {
-            typeOf := @.typeOf({__Class: "ClassName", a: "A", 1: "B", 3: "C"})
+            typeOf := Core.typeOf({__Class: "ClassName", a: "A", 1: "B", 3: "C"})
             YUnit.assert(typeOf == "ClassName", "Found: " typeOf)
         }
 
         ClassIsFullyQualifiedClassName()
         {
-            typeOf := @.typeOf(new @.RequiredFieldException())
-            YUnit.assert(typeOf == "@.RequiredFieldException", "Found: " typeOf)
+            typeOf := Core.typeOf(new Core.RequiredFieldException())
+            YUnit.assert(typeOf == "Core.RequiredFieldException", "Found: " typeOf)
         }
 
         SingleDigitIsDigit()
         {
-            typeOf := @.typeOf(1)
+            typeOf := Core.typeOf(1)
             YUnit.assert(typeOf == "Digit", "Found: " typeOf)
 
-            typeOf := @.typeOf(0)
+            typeOf := Core.typeOf(0)
             YUnit.assert(typeOf == "Digit", "Found: " typeOf)
         }
 
         MultipleDigitIsDigit()
         {
-            typeOf := @.typeOf(123)
+            typeOf := Core.typeOf(123)
             YUnit.assert(typeOf == "Digit", "Found: " typeOf)
         }
 
         FloatIsFloat()
         {
-            typeOf := @.typeOf(1.23)
+            typeOf := Core.typeOf(1.23)
             YUnit.assert(typeOf == "Float", "Found: " typeOf)
         }
 
         NegativeFloatIsFloat()
         {
-            typeOf := @.typeOf(-1.23)
+            typeOf := Core.typeOf(-1.23)
             YUnit.assert(typeOf == "Float", "Found: " typeOf)
         }
 
         HexadecimalIsHexadecimal()
         {
-            typeOf := @.typeOf(0x0AEF)
+            typeOf := Core.typeOf(0x0AEF)
             YUnit.assert(typeOf == "Hexadecimal", "Found: " typeOf)
         }
 
         NegativeSingleDigitIsInteger()
         {
-            typeOf := @.typeOf(-1)
+            typeOf := Core.typeOf(-1)
             YUnit.assert(typeOf == "Integer", "Found: " typeOf)
         }
 
         NegativeMultiDigitIsInteger()
         {
-            typeOf := @.typeOf(-1234)
+            typeOf := Core.typeOf(-1234)
             YUnit.assert(typeOf == "Integer", "Found: " typeOf)
         }
 
         StringWithSpaceCharactersIsEmpty()
         {
-            typeOf := @.typeOf(" `n`t")
+            typeOf := Core.typeOf(" `n`t")
             YUnit.assert(typeOf == "Empty", "Found: " typeOf)
         }
 
         EmptyStringIsEmpty()
         {
-            typeOf := @.typeOf(" `n`t")
+            typeOf := Core.typeOf(" `n`t")
             YUnit.assert(typeOf == "Empty", "Found: " typeOf)
         }
 
         StringIsString()
         {
-            typeOf := @.typeOf("String 123 yup 1.234")
+            typeOf := Core.typeOf("String 123 yup 1.234")
             YUnit.assert(typeOf == "String", "Found: " typeOf)
         }
     }
@@ -140,25 +140,25 @@ class CoreTests
     {
         FooIsSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := @.subclassOf(new Foo.Bar.Baz(), "Foo")
+            subclassOf := Core.subclassOf(new Foo.Bar.Baz(), "Foo")
             YUnit.assert(subclassOf == true, "Found: " subclassOf)
         }
 
         BarIsSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := @.subclassOf(new Foo.Bar.Baz(), "Bar")
+            subclassOf := Core.subclassOf(new Foo.Bar.Baz(), "Bar")
             YUnit.assert(subclassOf == true, "Found: " subclassOf)
         }
 
         BazIsNotSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := @.subclassOf(new Foo.Bar.Baz(), "Baz")
+            subclassOf := Core.subclassOf(new Foo.Bar.Baz(), "Baz")
             YUnit.assert(subclassOf != true, "Found: " subclassOf)
         }
 
         PrimitiveReturnsFalse()
         {
-            subclassOf := @.subclassOf(1, "Baz")
+            subclassOf := Core.subclassOf(1, "Baz")
             YUnit.assert(subclassOf != true, "Found: " subclassOf)
         }
     }
@@ -167,31 +167,31 @@ class CoreTests
     {
         GrandChildInheritsFromChild()
         {
-            inheritsFrom := @.inheritsFrom(new GrandChild(), "Child")
+            inheritsFrom := Core.inheritsFrom(new GrandChild(), "Child")
             YUnit.assert(inheritsFrom == true, "Found: " inheritsFrom)
         }
 
         GrandChildInheritsFromParent()
         {
-            inheritsFrom := @.inheritsFrom(new GrandChild(), "Parent")
+            inheritsFrom := Core.inheritsFrom(new GrandChild(), "Parent")
             YUnit.assert(inheritsFrom == true, "Found: " inheritsFrom)
         }
 
         ChildInheritsFromParent()
         {
-            inheritsFrom := @.inheritsFrom(new Child(), "Parent")
+            inheritsFrom := Core.inheritsFrom(new Child(), "Parent")
             YUnit.assert(inheritsFrom == true, "Found: " inheritsFrom)
         }
 
         ParentDoesNotInheritFromItself()
         {
-            inheritsFrom := @.inheritsFrom(new Parent(), "Parent")
+            inheritsFrom := Core.inheritsFrom(new Parent(), "Parent")
             YUnit.assert(inheritsFrom != true, "Found: " inheritsFrom)
         }
 
         PrimitiveReturnsFalse()
         {
-            inheritsFrom := @.inheritsFrom(1, "Parent")
+            inheritsFrom := Core.inheritsFrom(1, "Parent")
             YUnit.assert(inheritsFrom != true, "Found: " inheritsFrom)
         }
     }

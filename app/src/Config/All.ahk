@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: All config groups
 ; Description ..: Conveniences file for including all config groups
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -15,5 +15,5 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#Include src/Config/DatabaseGroup.ahk
-#Include src/Config/ReceivingGroup.ahk
+#Include "DatabaseGroup.ahk"
+#Include "ReceivingGroup.ahk"

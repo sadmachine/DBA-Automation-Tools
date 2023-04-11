@@ -1,17 +1,17 @@
-#Include <String>
-#Include <UI>
+﻿#Include "String.ahk"
+#Include "UI.ahk"
 class Config
 {
-    #Include <Config/Scope>
-    #include <Config/Group>
-    #Include <Config/File>
-    #Include <Config/Section>
-    #include <Config/BaseField>
-    #include <Config/DateField>
-    #include <Config/DropdownField>
-    #include <Config/NumberField>
-    #include <Config/StringField>
-    #include <Config/PathField>
+    #Include "Config/Scope.ahk"
+    #Include "Config/Group.ahk"
+    #Include "Config/File.ahk"
+    #Include "Config/Section.ahk"
+    #Include "Config/BaseField.ahk"
+    #Include "Config/DateField.ahk"
+    #Include "Config/DropdownField.ahk"
+    #Include "Config/NumberField.ahk"
+    #Include "Config/StringField.ahk"
+    #Include "Config/PathField.ahk"
 
     static groups := {}
     static groupsByLabel := {}
@@ -92,7 +92,7 @@ class Config
 
     resetDefault(identifier)
     {
-        throw new @.ProgrammerException(A_ThisFunc, "Not yet implemented")
+        throw new Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
         ; token := this._parseIdentifier(identifier)
         ; default := this.groups[token["group"]].fields[token["field"]].default
         ; return this.groups[token["group"]].fields[token["field"]].value := default
@@ -100,7 +100,7 @@ class Config
 
     resetAllDefaults()
     {
-        throw new @.ProgrammerException(A_ThisFunc, "Not yet implemented")
+        throw new Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
         ; this.initialize(true)
     }
 
@@ -129,7 +129,7 @@ class Config
     getFieldByLabelIdentifier(labelIdentifier)
     {
         parts := StrSplit(labelIdentifier, ".")
-        if (parts.Length() != 4) {
+        if (parts.Length != 4) {
             return ""
         }
         groupLabel := parts[1]
@@ -144,10 +144,10 @@ class Config
     _assertConfigDirectoriesExist()
     {
         if (FileExist(this.globalConfigLocation) != "D") {
-            throw new @.FilesystemException(A_ThisFunc, "The directory " this.globalConfigLocation " does not exist.")
+            throw new Core.FilesystemException(A_ThisFunc, "The directory " this.globalConfigLocation " does not exist.")
         }
         if (FileExist(this.localConfigLocation) != "D") {
-            throw new @.FilesystemException(A_ThisFunc, "The directory " this.localConfigLocation " does not exist.")
+            throw new Core.FilesystemException(A_ThisFunc, "The directory " this.localConfigLocation " does not exist.")
         }
     }
 
