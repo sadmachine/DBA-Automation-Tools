@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Settings Editor
 ; Description ..: Opens a GUI for editing config files
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -15,11 +15,11 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#Include src\Bootstrap.ahk
+#Include "src\Bootstrap.ahk"
 
 settingsGui := new UI.Settings("DBA AutoTools Settings")
 settingsGui.show()
 settingsGui.WaitClose()
 
-ExitApp
+ExitApp()
 

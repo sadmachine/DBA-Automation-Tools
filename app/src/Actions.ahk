@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Actions (top-level class)
 ; Description ..: A parent class for all defined actions
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -17,9 +17,9 @@
 ; ==============================================================================
 class Actions
 {
-    #Include src/Actions/Base.ahk
-    #Include src/Actions/ReceivingTransaction.ahk
-    #Include src/Actions/InspectionReport.ahk
-    #Include src/Actions/ReceivingLog.ahk
-    #Include src/Actions/PrintLabels.ahk
+    #Include "Actions/Base.ahk"
+    #Include "Actions/ReceivingTransaction.ahk"
+    #Include "Actions/InspectionReport.ahk"
+    #Include "Actions/ReceivingLog.ahk"
+    #Include "Actions/PrintLabels.ahk"
 }

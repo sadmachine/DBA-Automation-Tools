@@ -1,4 +1,4 @@
-#Include <@>
+﻿#Include <@>
 
 class CoreTests
 {
@@ -44,25 +44,25 @@ class CoreTests
 
         ObjectWithStringNumericKeysIsArray()
         {
-            typeOf := @.typeOf({"1": "A", "2": "B", "3": "C"})
+            typeOf := @.typeOf({1: "A", 2: "B", 3: "C"})
             YUnit.assert(typeOf == "Array", "Found: " typeOf)
         }
 
         ObjectWithStringKeysIsObject()
         {
-            typeOf := @.typeOf({"a": "A", "b": "B", "c": "C"})
+            typeOf := @.typeOf({a: "A", b: "B", c: "C"})
             YUnit.assert(typeOf == "Object", "Found: " typeOf)
         }
 
         ObjectWithMixedTypeKeysIsObject()
         {
-            typeOf := @.typeOf({"a": "A", "1": "B", 3: "C"})
+            typeOf := @.typeOf({a: "A", 1: "B", 3: "C"})
             YUnit.assert(typeOf == "Object", "Found: " typeOf)
         }
 
         ObjectWith__ClassKeyIsClassName()
         {
-            typeOf := @.typeOf({"__Class": "ClassName", "a": "A", "1": "B", 3: "C"})
+            typeOf := @.typeOf({__Class: "ClassName", a: "A", 1: "B", 3: "C"})
             YUnit.assert(typeOf == "ClassName", "Found: " typeOf)
         }
 

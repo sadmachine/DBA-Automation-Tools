@@ -1,4 +1,4 @@
-#Include <Config>
+﻿#Include <Config>
 #Include <#>
 
 MOCK_COMPILED := true
@@ -11,12 +11,12 @@ class ConfigTests
     {
         Begin()
         {
-            IniRead, globalConfigLocation, % #.Path.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-            IniRead, localConfigLocation, % #.Path.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            globalConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
+            localConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
-            Config.register(new ContactGroup())
-            Config.register(new CustomerGroup())
+            Config.register(ContactGroup())
+            Config.register(CustomerGroup())
             Config.initialize()
         }
 
@@ -43,7 +43,7 @@ class ConfigTests
         {
             Config.lock("contact.list", Config.Scope.GLOBAL)
 
-            MsgBox % "Check"
+            MsgBox("Check")
             fileObj := Config.groups["contact"].files["list"]
             if (FileExist(fileObj.path["global"])) {
                 globalIsLocked := #.Path.isLocked(fileObj.path["global"])
@@ -66,20 +66,20 @@ class ConfigTests
     {
         Begin()
         {
-            IniRead, globalConfigLocation, % #.Path.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-            IniRead, localConfigLocation, % #.Path.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            globalConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
+            localConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
         }
 
         CreatesIniFiles()
         {
-            Config.register(new ContactGroup())
-            Config.register(new CustomerGroup())
+            Config.register(ContactGroup())
+            Config.register(CustomerGroup())
             Config._deletePaths()
             ; Reinitialize files
             Config.initialize()
-            MsgBox % "Check files"
+            MsgBox("Check files")
 
             ; Make sure the .ini files DO exist
             for groupSlug, group in Config.groups {
@@ -95,8 +95,8 @@ class ConfigTests
 
         RequiredFieldsPromptForValue()
         {
-            Config.register(new RequiredContactGroup())
-            Config.register(new RequiredCustomerGroup())
+            Config.register(RequiredContactGroup())
+            Config.register(RequiredCustomerGroup())
             Config._deletePaths()
             ; Reinitialize files
             Config.initialize()
@@ -123,8 +123,8 @@ class ConfigTests
     {
         Begin()
         {
-            IniRead, globalConfigLocation, % #.Path.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-            IniRead, localConfigLocation, % #.Path.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            globalConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
+            localConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
             this.globalConfigLocation := globalConfigLocation
             this.localConfigLocation := localConfigLocation
         }
@@ -146,12 +146,12 @@ class ConfigTests
     {
         Begin()
         {
-            IniRead, globalConfigLocation, % #.Path.parseDirectory(A_LineFile) "/config.ini", % "location", % "global"
-            IniRead, localConfigLocation, % #.Path.parseDirectory(A_LineFile) "/config.ini", % "location", % "local"
+            globalConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "global")
+            localConfigLocation := IniRead(#.Path.parseDirectory(A_LineFile) "/config.ini", "location", "local")
             Config.setLocalConfigLocation(localConfigLocation)
             Config.setGlobalConfigLocation(globalConfigLocation)
-            Config.register(new ContactGroup())
-            Config.register(new CustomerGroup())
+            Config.register(ContactGroup())
+            Config.register(CustomerGroup())
             Config.initialize()
         }
 
@@ -176,18 +176,17 @@ class ContactGroup extends Config.Group
     {
         this.label := "Contact"
 
-        listFile := new Config.File("List")
+        listFile := Config.File("List")
 
-        entriesSection := new Config.Section("Entries")
-        entriesSection.add(new Config.StringField("Name").setDefault("Austin"))
-        entriesSection.add(new Config.NumberField("Age").setDefault("26"))
+        entriesSection := Config.Section("Entries")
+        entriesSection.add(Config.StringField("Name").setDefault("Austin"))
+        entriesSection.add(Config.NumberField("Age").setDefault("26"))
 
-        historySection := new Config.Section("History")
-        historySection.add(new Config.DateField("Last Contact").setOption("default", "20220101123456"))
-        historySection.add(new Config.PathField("Location", "folder").setOption("default", "C:\Config"))
+        historySection := Config.Section("History")
+        historySection.add(Config.DateField("Last Contact").setOption("default", "20220101123456"))
+        historySection.add(Config.PathField("Location", "folder").setOption("default", "C:\Config"))
 
-        listFile.add(entriesSection)
-            .add(historySection)
+        listFile.add(entriesSection)            .add(historySection)
 
         this.add(listFile)
     }
@@ -199,11 +198,15 @@ class CustomerGroup extends Config.Group
     {
         this.label := "Customers"
 
-        listFile := new Config.File("List")
+        listFile := Config.File("List")
 
-        mainSection := new Config.Section("Main")
-            .add(new Config.DropdownField("Type", ["Good", "Bad", "Ugly"]).setOption("default", "Ugly"))
-            .add(new Config.NumberField("Rating").setOption("min", 1).setOption("max", 5).setOption("default", "3"))
+        mainSection := Config.Section("Main")            
+            .add(Config.DropdownField("Type", ["Good", "Bad", "Ugly"])
+                .setOption("default", "Ugly"))            
+            .add(Config.NumberField("Rating")
+                .setOption("min", 1)
+                .setOption("max", 5)
+                .setOption("default", "3"))
 
         listFile.add(mainSection)
 
@@ -217,18 +220,25 @@ class RequiredContactGroup extends Config.File
     {
         this.label := "Contact"
 
-        listFile := new Config.File("List")
+        listFile := Config.File("List")
 
-        entriesSection := new Config.Section("Entries")
-            .add(new Config.StringField("Name").setOption("default", "Austin").setOption("required", true))
-            .add(new Config.NumberField("Age").setOption("default", "26").setOption("required", true))
+        entriesSection := Config.Section("Entries")
+            .add(Config.StringField("Name")
+                .setOption("default", "Austin")
+                .setOption("required", true))            
+            .add(Config.NumberField("Age")
+                .setOption("default", "26")
+                .setOption("required", true))
 
-        historySection := new Config.Section("History")
-            .add(new Config.DateField("Last Contact").setOption("default", "20220101123456").setOption("required", true))
-            .add(new Config.PathField("Location", "folder").setOption("default", "C:\Config").setOption("required", true))
+        historySection := Config.Section("History")
+            .add(Config.DateField("Last Contact")
+                .setOption("default", "20220101123456")
+                .setOption("required", true))
+            .add(Config.PathField("Location", "folder")
+                .setOption("default", "C:\Config")
+                .setOption("required", true))
 
-        listFile.add(entriesSection)
-            .add(historySection)
+        listFile.add(entriesSection)            .add(historySection)
 
         this.add(listFile)
     }
@@ -240,11 +250,15 @@ class RequiredCustomerGroup extends Config.File
     {
         this.label := "Customers"
 
-        listFile := new Config.File("List")
+        listFile := Config.File("List")
 
-        mainSection := new Config.Section("Main")
-            .add(new Config.DropdownField("Type", ["Good", "Bad", "Ugly"]).setOption("default", "Ugly").setOption("required", true))
-            .add(new Config.NumberField("Rating", 1, 5).setOption("default", "3").setOption("required", true))
+        mainSection := Config.Section("Main")
+            .add(Config.DropdownField("Type", ["Good", "Bad", "Ugly"])
+                .setOption("default", "Ugly")
+                .setOption("required", true))
+            .add(Config.NumberField("Rating", 1, 5)
+                .setOption("default", "3")
+                .setOption("required", true))
 
         listFile.add(mainSection)
 
@@ -264,21 +278,21 @@ class ReceivingGroup extends Config.Group
 
     _defineInspectionReportFile()
     {
-        inspectionReportFile := new Config.File("Inspection Report")
+        inspectionReportFile := Config.File("Inspection Report")
 
-        excelColumnMappingSection := new Config.Section("Excel Column Mapping")
-            .add(new Config.StringField("Inspection Form Number"))
-            .add(new Config.StringField("Stelray Material Number"))
-            .add(new Config.StringField("Material Description"))
-            .add(new Config.StringField("Lot Number"))
-            .add(new Config.StringField("PO Number"))
-            .add(new Config.StringField("Vendor Name"))
-            .add(new Config.StringField("Quantity on PO"))
-            .add(new Config.StringField("Quantity Received"))
+        excelColumnMappingSection := Config.Section("Excel Column Mapping")
+            .add(Config.StringField("Inspection Form Number"))
+            .add(Config.StringField("Stelray Material Number"))
+            .add(Config.StringField("Material Description"))
+            .add(Config.StringField("Lot Number"))
+            .add(Config.StringField("PO Number"))
+            .add(Config.StringField("Vendor Name"))
+            .add(Config.StringField("Quantity on PO"))
+            .add(Config.StringField("Quantity Received"))
 
-        fileSection := new Config.Section("File")
-            .add(new Config.PathField("Template", Config.Scope.LOCAL))
-            .add(new Config.PathField("Destination Folder", Config.Scope.LOCAL))
+        fileSection := Config.Section("File")
+            .add(Config.PathField("Template", Config.Scope.LOCAL))
+            .add(Config.PathField("Destination Folder", Config.Scope.LOCAL))
 
         inspectionReportFile.add(excelColumnMappingSection)
         inspectionReportFile.add(fileSection)
@@ -288,10 +302,10 @@ class ReceivingGroup extends Config.Group
 
     _defineInspectionNumberFile()
     {
-        inspectionNumberfile := new Config.File("Inspection Number")
+        inspectionNumberfile := Config.File("Inspection Number")
 
-        lastSection := new Config.Section("Last")
-            .add(new Config.NumberField("Number"))
+        lastSection := Config.Section("Last")
+        .add(Config.NumberField("Number"))
 
         inspectionNumberFile.add(lastSection)
 

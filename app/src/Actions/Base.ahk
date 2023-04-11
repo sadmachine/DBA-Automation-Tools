@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Base Action
 ; Description ..: A base Action class for all other actions to extend
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)

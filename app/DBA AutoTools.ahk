@@ -79,20 +79,6 @@ return
 
 ; --- Functions ----------------------------------------------------------------
 
-/**
- *  Creates an overlay GUI when the "Closed Job Cost Summary" window is found.
- *  The overlay GUI is styled to look like its part of the DBA window, adding a
- *  button and some text. The GUI's parent is set to the DBA Window as well.
-*/
-
-LaunchModule(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "")
-{
-    Global
-    module_title := ogc% CtrlHwnd.Text
-    mod := ModuleLoader.get(module_title)
-    Run($["MODS_PATH"] "/" ModuleLoader.get(module_title).file)
-}
-
 RunQueueManager()
 {
     Global

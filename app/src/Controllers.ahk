@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Controllers (top-level class)
 ; Description ..: A parent class for all controller classes
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -17,6 +17,6 @@
 ; ==============================================================================
 class Controllers
 {
-    #Include src/Controllers/Base.ahk
-    #Include src/Controllers/Receiving.ahk
+    #Include "Controllers/Base.ahk"
+    #Include "Controllers/Receiving.ahk"
 }

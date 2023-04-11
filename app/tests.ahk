@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Test Suite Entrypoint
 ; Description ..: Allows for running of various test suites
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -25,9 +25,9 @@
 ; Include Test Suite files here
 ; e.g.
 ;#Include %A_ScriptDir%/tests/TestSuite.ahk
-#Include %A_ScriptDir%/tests/DbaTests.ahk
-#Include %A_ScriptDir%/tests/ConfigTests.ahk
-#Include %A_ScriptDir%/tests/CoreTests.ahk
+#Include "tests/DbaTests.ahk"
+#Include "tests/ConfigTests.ahk"
+#Include "tests/CoreTests.ahk"
 
 ; Run tests suites here
 ; e.g.

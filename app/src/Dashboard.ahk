@@ -46,13 +46,14 @@ class Dashboard
     static section_padding_bottom := 5
     static section_padding_x := 5
     static button_interior_padding := 5
+    static guiObj := {}
 
     initialize()
     {
         Global
         this._setupTrayMenu()
         daemon := ObjBindMethod(Dashboard, "_daemon")
-        SetTimer, % daemon, 250
+        SetTimer(daemon,250)
     }
 
     _daemon() {
@@ -69,15 +70,16 @@ class Dashboard
         this.display_y := 74
 
         ; Wait for the Main DBA window to be active
-        WinWait, % DBA.Windows.Main
-        WinActivate, % DBA.Windows.Main
-        WinWaitActive, % DBA.Windows.Main
+        WinWait(DBA.Windows.Main)
+        WinActivate(DBA.Windows.Main)
+        WinWaitActive(DBA.Windows.Main)
 
         ; Build the dashboard
-        Gui, dashboard:Margin, 0, 0
-        Gui, dashboard:Font, s12
+        this.guiObj := Gui(,, this.Events)
+        this.guiObj.MarginX := "0", this.guiObj.MarginY := "0"
+        this.guiObj.SetFont("s12")
         this._buildReceivingSection()
-        Gui, dashboard: +OwnDialogs +AlwaysOnTop HWNDhChild
+        this.guiObj.Opt("+OwnDialogs +AlwaysOnTop HWNDhChild")
 
         ; Build/Add menus
         this._setupApplicationMenu()
@@ -96,7 +98,8 @@ class Dashboard
     show()
     {
         Global
-        Gui, dashboard:Show, % UI.opts({"h": this.height, "w": this.width, "x": this.display_x, "y": this.display_y}), Automation Tools
+        this.guiObj.Title := "Automation Tools"
+        this.guiObj.Show(UI.opts({"h": this.height, "w": this.width, "x": this.display_x, "y": this.display_y}))
         ; Need to set the parent of the gui to the "DBA NG Sub-Assy Jobs" program
         ; This makes it so our dashboard moves with the parent window, and acts like its part of the program
         UI.setParent(this.hwnd["child"], this.hwnd["parent"])
@@ -106,19 +109,23 @@ class Dashboard
 
     destroyOnClose()
     {
-        WinWaitClose, % DBA.Windows.Main
-        Gui, dashboard:Destroy
+        WinWaitClose(DBA.Windows.Main)
+        this.guiObj.Destroy()
         this.built := false
     }
 
     _buildReceivingSection()
     {
-        Gui, dashboard:Add, GroupBox, Section w132 h60, Receiving
+        this.guiObj.Add("GroupBox", "Section w132 h60", "Receiving")
         options := "+Disabled"
-        if (ModuleLoader.has("PO Verification")) {
-            options := "gLaunchModule"
+        this._addModuleEvent(this.guiObj.Add("Button", "xs+5 ys+20 " . options, "PO Verification"))
+    }
+
+    _addModuleEvent(moduleButton)
+    {
+        if (ModuleLoader.has(moduleButton.Text)) {
+            moduleButton.OnEvent("Click", "launchModule")
         }
-        Gui, dashboard:Add, Button, xs+5 ys+20 %options%, PO Verification
     }
 
     _setupApplicationMenu()
@@ -126,46 +133,52 @@ class Dashboard
         global
 
         ; Get a reference to our events
-        openSettingsEvent := ObjBindMethod(this, "@openSettings")
+        openSettingsEvent := ObjBindMethod(this.Events, "openSettings")
 
         ; Gui Menu setup
-        Menu, DashboardMenuBar, Add, &Settings, % openSettingsEvent
-        Gui, dashboard:Menu, DashboardMenuBar
+        DashboardMenuBar := Menu()
+        DashboardMenuBar.Add("&Settings", openSettingsEvent)
+        this.guiObj.MenuBar := DashboardMenuBar
 
     }
 
     _setupTrayMenu()
     {
         ; Get a reference to our events
-        openSettingsEvent := ObjBindMethod(this, "@openSettings")
-        applicationLogEvent := ObjBindMethod(this, "@applicationLog")
-        exitProgramEvent := ObjBindMethod(this, "@exitProgram")
+        openSettingsEvent := ObjBindMethod(this.Events, "openSettings")
+        applicationLogEvent := ObjBindMethod(this.Events, "applicationLog")
+        exitProgramEvent := ObjBindMethod(this.Events, "exitProgram")
 
         ; Tray Menu Setup
-        Menu, Tray, NoStandard
-        Menu, Tray, Add, Settings, % openSettingsEvent
-        Menu, AdvancedSubMenu, Add, Application Log, % applicationLogEvent
-        Menu, Tray, Add, Advanced, :AdvancedSubMenu
-        Menu, Tray, Add, Exit, % exitProgramEvent
+        Tray:= A_TrayMenu
+        Tray.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
+        Tray.Add("Settings", openSettingsEvent)
+        AdvancedSubMenu := Menu()
+        AdvancedSubMenu.Add("Application Log", applicationLogEvent)
+        Tray.Add("Advanced", AdvancedSubMenu)
+        Tray.Add("Exit", exitProgramEvent)
     }
 
-    @openSettings()
-    {
-        Run, % #.Path.concat($["PROJECT_ROOT"], "Settings.exe")
+    class Events {
+        openSettings()
+        {
+            Run(#.Path.concat($["PROJECT_ROOT"], "Settings.exe"))
+        }
+
+        exitProgram()
+        {
+            global
+            ExitApp()
+        }
+
+        applicationLog()
+        {
+            tempDir := new #.Path.Temp("DBA AutoTools")
+            tempApplicationLogPath := tempDir.concat("application.log")
+            applicationLogPath := #.Path.concat($["PROJECT_ROOT"], "modules\application.log")
+            #.Cmd.copy(applicationLogPath, tempApplicationLogPath)
+            Run("notepad.exe """ tempApplicationLogPath """")
+        }
     }
 
-    @exitProgram()
-    {
-        global
-        ExitApp
-    }
-
-    @applicationLog()
-    {
-        tempDir := new #.Path.Temp("DBA AutoTools")
-        tempApplicationLogPath := tempDir.concat("application.log")
-        applicationLogPath := #.Path.concat($["PROJECT_ROOT"], "modules\application.log")
-        #.Cmd.copy(applicationLogPath, tempApplicationLogPath)
-        Run, % "notepad.exe """ tempApplicationLogPath """"
-    }
 }

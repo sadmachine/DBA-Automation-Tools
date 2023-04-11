@@ -1,5 +1,5 @@
-#Include <DBA>
-#Include src/Models.ahk
+﻿#Include <DBA>
+#Include ../src/Models.ahk
 
 class DbaTests
 {
@@ -30,13 +30,13 @@ class DbaTests
             NoCriteria_ReturnsArrayWithRecords()
             {
                 local records := Models.DBA.porder.build()
-                YUnit.assert(records.Count() != 0, "records.Count() is " records.Count())
+                YUnit.assert(records.Count != 0, "records.Count() is " records.Count())
             }
 
             SimpleWhereCriteria_ReturnsArrayWithRecords()
             {
                 local records := Models.DBA.porder.build("ponum = 'PO114' AND status = 'Closed'")
-                YUnit.assert(records.Count() == 1, "records.Count() should be 1, but is " records.Count())
+                YUnit.assert(records.Count == 1, "records.Count() should be 1, but is " records.Count())
             }
 
             ObjectArrayCriteria_ReturnsArrayWithRecords()
@@ -45,7 +45,7 @@ class DbaTests
                 poNum := "PO114"
                 status := "Closed"
                 records := Models.DBA.porder.build({"ponum =": poNum, "status =": status})
-                YUnit.assert(records.Count() == 1, "records.Count() should be 1, but is " records.Count())
+                YUnit.assert(records.Count == 1, "records.Count() should be 1, but is " records.Count())
             }
 
             OrderByCriteria_ReturnsArrayWithRecordsInOrder()
@@ -61,7 +61,7 @@ class DbaTests
                 for index, record in records {
                     outputStr .= record.ponum "`n"
                 }
-                YUnit.assert(records.Count() == 10, "records.Count() should be 10, but instead is '" records.Count() "': " outputStr)
+                YUnit.assert(records.Count == 10, "records.Count() should be 10, but instead is '" records.Count() "': " outputStr)
             }
 
             LimitCriteriaAndPageCriteria_ReturnsOnlyXRecords()
@@ -71,7 +71,7 @@ class DbaTests
                 for index, record in records {
                     outputStr .= record.ponum "`n"
                 }
-                YUnit.assert(records.Count() == 10, "records.Count() should be 10, but instead is '" records.Count() "': " outputStr)
+                YUnit.assert(records.Count == 10, "records.Count() should be 10, but instead is '" records.Count() "': " outputStr)
             }
 
             LimitCriteriaAndPageCriteria_ReturnsOnlyCorrectRecords()
@@ -91,13 +91,13 @@ class DbaTests
             NoCriteria_ReturnsArrayWithRecords()
             {
                 local records := DBA.RecordSet.build("porder")
-                YUnit.assert(records.Count() != 0, "records.Count() is " records.Count())
+                YUnit.assert(records.Count != 0, "records.Count() is " records.Count())
             }
 
             SimpleWhereCriteria_ReturnsArrayWithRecords()
             {
                 local records := DBA.RecordSet.build("porder", "ponum = 'PO114' AND status = 'Closed'")
-                YUnit.assert(records.Count() != 0, "records.Count() is " records.Count())
+                YUnit.assert(records.Count != 0, "records.Count() is " records.Count())
             }
 
             OrderByCriteria_ReturnsArrayWithRecordsInOrder()
@@ -113,7 +113,7 @@ class DbaTests
                 for index, record in records {
                     outputStr .= record.ponum "`n"
                 }
-                YUnit.assert(records.Count() == 10, "records.Count() should be 10, but instead is '" records.Count() "': " outputStr)
+                YUnit.assert(records.Count == 10, "records.Count() should be 10, but instead is '" records.Count() "': " outputStr)
             }
 
             LimitCriteriaAndPageCriteria_ReturnsOnlyXRecords()
@@ -123,7 +123,7 @@ class DbaTests
                 for index, record in records {
                     outputStr .= record.ponum "`n"
                 }
-                YUnit.assert(records.Count() == 10, "records.Count() should be 10, but instead is '" records.Count() "': " outputStr)
+                YUnit.assert(records.Count == 10, "records.Count() should be 10, but instead is '" records.Count() "': " outputStr)
             }
 
             LimitCriteriaAndPageCriteria_ReturnsOnlyCorrectRecords()

@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: QueueManager
 ; Description ..: Daemon for running queue jobs
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -30,17 +30,17 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 #NoTrayIcon
-#Include src/Bootstrap.ahk
+#Include "src/Bootstrap.ahk"
 
 while (true) {
     #.Queue.executeJobs()
 
-    Process, Exist, DBA AutoTools.exe
+    ErrorLevel := ProcessExist("DBA AutoTools.exe")
     ; If DBA AutoTools.exe isn't running, Break out of loop
     if (!ErrorLevel) {
         Break
     }
-    Sleep % #.Queue.interval
+    Sleep(#.Queue.interval)
 }
 
-ExitApp
+ExitApp()

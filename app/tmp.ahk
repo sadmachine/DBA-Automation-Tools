@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Temporary scripts
 ; Description ..: A file used for trying things out and testing
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -15,6 +15,6 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#Include src/Autoload.ahk
+#Include "src/Autoload.ahk"
 
-MsgBox % #.log("app")._prepareData(data)
+MsgBox(#.log("app")._prepareData(data))

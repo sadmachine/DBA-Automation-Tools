@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Bootstrap Script
 ; Description ..: Includes common libraries/files and configures them
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -19,18 +19,16 @@
 ; === TO-DOs ===================================================================
 ; TODO - Clean/Organize better
 ; ==============================================================================
-#NoEnv
-#SingleInstance, Force
-SendMode, Input
-SetBatchLines, -1
-SetWorkingDir, %A_ScriptDir%
+#SingleInstance Force
+SendMode("Input")
+SetWorkingDir(A_ScriptDir)
 
-#Include src/Autoload.ahk
+#Include "../Autoload.ahk"
 
-#Include src/Bootstrap/core.ahk
-#Include src/Bootstrap/constants.ahk
-#Include src/Bootstrap/logger.ahk
-#Include src/Bootstrap/ui.ahk
-#Include src/Bootstrap/config.ahk
-#Include src/Bootstrap/database.ahk
-#Include src/Bootstrap/queue.ahk
+#Include "Bootstrap/core.ahk"
+#Include "Bootstrap/constants.ahk"
+#Include "Bootstrap/logger.ahk"
+#Include "Bootstrap/ui.ahk"
+#Include "Bootstrap/config.ahk"
+#Include "Bootstrap/database.ahk"
+#Include "Bootstrap/queue.ahk"
