@@ -22,10 +22,13 @@
 ; Revision 4 (04/09/2023)
 ; * Added various constants, mostly paths
 ;
+; Revision 5 (04/11/2023)
+; * Fix QUEUE_PATH location
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-$["QUEUE_PATH"] := #.Path.concat($["PROJECT_ROOT"], "queue")
 $["APP_PATH"] := #.Path.concat($["PROJECT_ROOT"], "app")
+$["QUEUE_PATH"] := #.Path.concat($["APP_PATH"], "queue")
 $["STORAGE_PATH"] := #.Path.concat($["APP_PATH"], "storage")
 $["LOGS_PATH"] := #.Path.concat($["STORAGE_PATH"], "logs")
 $["MODS_PATH"] := #.Path.concat($["APP_PATH"], "modules")
