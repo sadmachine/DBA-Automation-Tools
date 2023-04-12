@@ -4,6 +4,6 @@ class FilesystemException extends Core.UnexpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("FilesystemException", where, message, data)
+        super.__New("FilesystemException", where, message, data)
     }
 }

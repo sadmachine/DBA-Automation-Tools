@@ -4,6 +4,6 @@ class SQLException extends Core.UnexpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("SQLException", where, message, data)
+        super.__New("SQLException", where, message, data)
     }
 }

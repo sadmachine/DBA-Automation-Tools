@@ -4,6 +4,6 @@ class ProgrammerException extends Core.UnexpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("ProgrammerException", where, message, data)
+        super.__New("ProgrammerException", where, message, data)
     }
 }

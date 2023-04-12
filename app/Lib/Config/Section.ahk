@@ -24,7 +24,7 @@ class Section
         this.label := label
 
         if (this.slug == -1) {
-            this.slug := String.toCamelCase(this.label)
+            this.slug := Str.toCamelCase(this.label)
         }
     }
 

@@ -30,7 +30,7 @@ class Settings extends UI.Base
     __New(title)
     {
         options := "+OwnDialogs +AlwaysOnTop"
-        base.__New(title, options)
+        super.__New(title, options)
         this.build()
         this.bindActions()
         UI.Base.defaultFont := {options: "s12", fontName: ""}
@@ -173,12 +173,12 @@ class Settings extends UI.Base
     _updateFieldInfo()
     {
         field := this.currentField
-        this.UpdateText(this.fields["fieldName"], field.label)
-        this.UpdateText(this.fields["configPath"], field.path)
-        this.UpdateText(this.fields["scope"], Config.Scope.toString(field.scope))
-        this.UpdateText(this.fields["required"], (field.required ? "true" : "false"))
-        this.UpdateText(this.fields["description"], field.description)
-        this.UpdateText(this.fields["currentValue"], field.get())
-        this.UpdateText(this.fields["defaultValue"], (field.default != "" ? field.default : "n/a"))
+        this.fields["fieldName"].Text := field.label
+        this.fields["configPath"].Text := field.path
+        this.fields["scope"].Text := Config.Scope.toString(field.scope)
+        this.fields["required"].Text :=  (field.required ? "true" : "false")
+        this.fields["description"].Text := field.description
+        this.fields["currentValue"].Text := field.get()
+        this.fields["defaultValue"].Text := (field.default != "" ? field.default : "n/a")
     }
 }

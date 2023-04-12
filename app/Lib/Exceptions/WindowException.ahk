@@ -4,6 +4,6 @@ class WindowException extends Core.UnexpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("WindowException", where, message, data)
+        super.__New("WindowException", where, message, data)
     }
 }

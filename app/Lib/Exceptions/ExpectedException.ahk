@@ -4,6 +4,6 @@ class ExpectedException extends Core.BaseException
 {
     __New(what, where, message, data := "")
     {
-        base.__New("Expected", what, where, message, data)
+        super.__New("Expected", what, where, message, data)
     }
 }

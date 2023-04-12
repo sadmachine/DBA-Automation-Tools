@@ -54,7 +54,7 @@ class PrintLabels extends Actions.Base
             result := printQtyDialog.prompt("How many labels should be printed for lot # " lot.lotNumber "?")
             printQty := result.value
             labelName := (lot.hasCert == "Yes" ? "Main" : "QA HOLD")
-            outputLine := Format("""{:s}"",""{:s}"",""{:s}"",{:i},""{:s}""", receiver.partNumber, receiver.partDescription, lot.lotNumber, printQty, labelName)
+            outputLine := Format('"{:s}","{:s}","{:s}",{:i},"{:s}"', receiver.partNumber, receiver.partDescription, lot.lotNumber, printQty, labelName)
             printJobFile.writeLine(outputLine)
             Lib.log("app").info(A_ThisFunc, "Wrote line: " outputLine)
         }

@@ -98,7 +98,7 @@ class Cmd
             }
         }
 
-        return this.exec("echo F|xcopy /H /Y /I """ path1 """ """ path2 """")
+        return this.exec('echo F|xcopy /H /Y /I "' path1 '" "' path2 '"')
     }
 
     move(path1, path2, overwrite := true)
@@ -121,7 +121,7 @@ class Cmd
             }
         }
 
-        return this.exec("echo F|xcopy /H /Y /I """ path1 """ """ path2 """ && del /AH """ path1 """")
+        return this.exec('echo F|xcopy /H /Y /I "' path1 '" "' path2 '" && del /AH "' path1 '"')
     }
 
     attrib(attribs, path)
@@ -131,6 +131,6 @@ class Cmd
             throw new Core.FilesystemException(A_ThisFunc, "The Path '" path "' did not exist, and so it could not be edited.")
         }
 
-        return this.exec("attrib " attribs " """ path """")
+        return this.exec('attrib ' attribs ' "' path '"')
     }
 }

@@ -4,9 +4,8 @@
 #Include <ADOSQL>
 #Include <Config>
 #Include <DBA>
-#Include <Excel>
 #Include <Query>
-#Include <String>
+#Include <Str>
 #Include <UI>
 #Include "src/Models.ahk"
 #Include "src/Controllers.ahk"

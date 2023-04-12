@@ -21,7 +21,7 @@ class PoLookupResults extends UI.Base
 {
     __New(controller)
     {
-        base.__New("PO Verification Results", "+AlwaysOnTop")
+        super.__New("PO Verification Results", "+AlwaysOnTop")
         this.controller := controller
     }
 

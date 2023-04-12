@@ -6,7 +6,7 @@
 ; OS Version ...: Windows 10
 ; Language .....: English - United States (en-US)
 ; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
-; Filename .....: String.ahk
+; Filename .....: Str.ahk
 ; ==============================================================================
 
 ; === Revision History =========================================================
@@ -16,7 +16,7 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-class String
+class Str
 {
     ;-----------------------------------------------------------------------------------------------------------------------
     ; Function: getRenderDimensions
@@ -96,7 +96,7 @@ class String
     _ExtractInteger(&pSource, pOffset := 0, pIsSigned := false, pSize := 4)
     {
         Loop pSize
-            result += *(&pSource + pOffset + A_Index-1) << 8*(A_Index-1)
+            result += NumGet(&pSource, pOffset, A_Index-1) << 8*(A_Index-1)
         if (!pIsSigned OR pSize > 4 OR result < 0x80000000)
             return result
         return -(0xFFFFFFFF - result + 1)
@@ -122,7 +122,7 @@ class String
 
     toSlug(str)
     {
-        str := String.toLower(str)
+        str := Str.toLower(str)
         str := RegExReplace(str, "[^a-z0-9 -]+", "")
         str := StrReplace(str, " ", "-")
         return Trim(str, "-")
@@ -130,14 +130,14 @@ class String
 
     toCamelCase(str)
     {
-        str := String.toSlug(str)
+        str := Str.toSlug(str)
         parts := StrSplit(str, "-")
         str := parts[1]
         for index, part in parts {
             if (A_Index == 1) {
                 Continue
             }
-            str .= String.toTitleCase(part)
+            str .= Str.toTitleCase(part)
         }
         return str
     }

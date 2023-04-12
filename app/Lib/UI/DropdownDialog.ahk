@@ -1,14 +1,14 @@
-; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+﻿; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; UI.DropdownDialog
 class DropdownDialog extends UI.BaseDialog
 {
     define()
     {
-        if (!this.data.HasKey("choices")) {
+        if (!this.data.Has("choices")) {
             throw new Core.ProgrammerException(A_ThisFunc, "this.data is missing required key 'choices'")
         }
         selected := ""
-        if (this.data.HasKey("selected") && this.data["selected"] != "") {
+        if (this.data.Has("selected") && this.data["selected"] != "") {
             selected := this.data["selected"]
         }
         choices := this.data["choices"]

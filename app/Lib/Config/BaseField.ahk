@@ -40,7 +40,7 @@ class BaseField
 
         this.type := type
         this.label := label
-        this.slug := String.toCamelCase(this.label)
+        this.slug := Str.toCamelCase(this.label)
         if (options.Has("slug")) {
             this.slug := options["slug"]
         }
@@ -55,7 +55,7 @@ class BaseField
     __Call(methodName, args*)
     {
         if (SubStr(methodName, 1, 3) == "set" && !this.Has(methodName) && args.Length == 1) {
-            option := String.toLower(SubStr(methodName, 4))
+            option := Str.toLower(SubStr(methodName, 4))
             value := args[1]
             return this.setOption(option, value)
         }

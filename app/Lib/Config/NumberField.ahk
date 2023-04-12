@@ -6,7 +6,7 @@ class NumberField extends Config.BaseField
 
     __New(label, scope := "", options := "")
     {
-        base.__New("number", label, scope, options)
+        super.__New("number", label, scope, options)
         if (options.Has("min")) {
             this.min := options["min"]
         } else {

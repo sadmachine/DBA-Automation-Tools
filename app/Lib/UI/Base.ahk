@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: UI.Base
 ; Description ..: The Base UI object for all others to extend
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -16,108 +16,26 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-class Base
+class Base extends Gui
 {
     ; --- Variables ------------------------------------------------------------
 
-    _title := ""
-    _options := ""
-    _font := ""
     _width := ""
     _margin := ""
     _color := ""
-    _hwnd := ""
     _autoSize := false
     _built := false
-    _label := ""
     actions := {}
     fields := {}
 
-    static _defaultOptions := ""
-    static _defaultFont := {"options": "", "fontName": ""}
     static _defaultWidth := 240
     static _defaultMargin := 10
     static _defaultColor := {"windowColor": "", "controlColor": ""}
 
     ; --- Properties -----------------------------------------------------------
 
-    title[] {
-        get {
-            return this._title
-        }
-        set {
-            this._title := value
-            return this._title
-        }
-    }
-
-    label[] {
-        get {
-            if (this._label == "") {
-                topLevelClass := StrSplit(this.__Class, ".")[2]
-                Random, randomNum
-                this._label := topLevelClass "" A_TickCount "" randomNum
-            }
-            return this._label
-        }
-        set {
-            return this._label
-        }
-    }
-
-    options[init := false] {
-        get {
-            if (this._options == "") {
-                return this._defaultOptions
-            }
-            return this._options
-        }
-        set {
-            this._options := value " hwnd" this.label
-            options := this._options
-            if (!init) {
-                Gui, %thisLabel%:%options%
-            }
-            return this._options
-        }
-    }
-
-    font[key := ""] {
-        get {
-            font := this._font
-            if (this._font == "") {
-                font := this._defaultFont
-            }
-            if (key == "") {
-                return font
-            }
-            if (font.HasKey(key)) {
-                return font[key]
-            }
-            throw new Core.ProgrammerException(A_ThisFunc, "Invalid key for font options: " key)
-        }
-        set {
-            local thisLabel := this.label
-            if (key == "") {
-                if (!IsObject(value)) {
-                    throw new Core.ProgrammerException(A_ThisFunc, "You must supply an object (keys: options, fontName) if you're setting font without a key.")
-                }
-                this._font := value
-                Gui, %thisLabel%:Font, % this.font["options"], % this.font["fontName"]
-                return this._font
-            }
-            if (!InStr("options fontName", key)) {
-                throw new Core.ProgrammerException(A_ThisFunc, "Key supplied for Font should be either ""options"" or ""fontName""")
-            }
-
-            this._font[key] := value
-
-            Gui, %thisLabel%:Font, % this.font["options"], % this.font["fontName"]
-            return this._font
-        }
-    }
-
-    width[] {
+    width
+    {
         get {
             if (this._width == "") {
                 return this._defaultWidth
@@ -130,7 +48,8 @@ class Base
         }
     }
 
-    margin[] {
+    margin
+    {
         get {
             if (this._margin == "") {
                 return this._defaultMargin
@@ -140,7 +59,7 @@ class Base
         set {
             local thisLabel := this.label
             this._margin := value
-            Gui, %thisLabel%:Margin, % this.margin, % this.margin
+            this.MarginX := this.margin, this.MarginY := this.margin
             return this._margin
         }
     }
@@ -154,7 +73,7 @@ class Base
             if (key == "") {
                 return color
             }
-            if (color.HasKey(key)) {
+            if (color.Has(key)) {
                 return color[key]
             }
             throw new Core.ProgrammerException(A_ThisFunc, "Invalid key for color: " key)
@@ -173,23 +92,13 @@ class Base
 
             this._color[key] := value
 
-            Gui, %thisLabel%:Color, % this.color["windowColor"], % this.color["controlColor"]
+            this.BackColor := this.color["windowColor"]
             return this._color
         }
     }
 
-    hwnd[] {
-        get {
-            thisLabel := this.label
-            thisHwnd := %thisLabel%
-            return thisHwnd
-        }
-        set {
-            return this.hwnd
-        }
-    }
-
-    defaultOptions[] {
+    defaultOptions
+    {
         get {
             return this._defaultOptions
         }
@@ -200,19 +109,21 @@ class Base
         }
     }
 
-    defaultFont[] {
+    defaultFont
+    {
         get {
             return this._defaultFont
         }
 
         set {
             this._defaultFont := value
-            Gui Font, % this._defaultFont["options"], % this._defaultFont["fontName"]
+            %thisLabel%.SetFont(this._defaultFont["options"], this._defaultFont["fontName"])
             return this._defaultFont
         }
     }
 
-    defaultWidth[] {
+    defaultWidth
+    {
         get {
             return this._defaultWidth
         }
@@ -223,19 +134,21 @@ class Base
         }
     }
 
-    defaultMargin[] {
+    defaultMargin
+    {
         get {
             return this._defaultMargin
         }
 
         set {
             this._defaultMargin := value
-            Gui Margin, % this._defaultMargin, % this._defaultMargin
+            %thisLabel%.MarginX := this._defaultMargin, %thisLabel%.MarginY := this._defaultMargin
             return this._defaultMargin
         }
     }
 
-    autoSize[] {
+    autoSize
+    {
         get {
             return this._autoSize
         }
@@ -245,126 +158,18 @@ class Base
         }
     }
 
-    ; --- Meta Methods ---------------------------------------------------------
-
-    __New(title := "", options := "")
-    {
-        Global
-        local thisLabel := this.label
-        this.options[true] := options
-        this.title := title
-        thisLabel := this.label
-        Gui, %thisLabel%:New, % this.options, % this.title
-        return this
-    }
-
-    __Delete()
-    {
-        this.Destroy()
-    }
-
-    ; --- Methods --------------------------------------------------------------
-
-    Add(ControlType, cOptions := "", text := "")
-    {
-        global
-        local thisLabel := this.label
-
-        Random, rand
-        cHwnd := ControlType "" A_TickCount "" rand
-        cOptions .= " hwnd" cHwnd
-
-        Gui %thisLabel%:Add, % ControlType, % cOptions, % text
-        return % %cHwnd%
-    }
-
-    Show(options := "", title := -1)
-    {
-        global
-        thisLabel := this.label
-        if (title != -1) {
-            this.title := title
-        }
-        Gui %thisLabel%:Show, % options, % this.title
-    }
-
-    Submit(NoHide := false)
-    {
-        global
-        local thisLabel := this.label
-        if (NoHide) {
-            Gui %thisLabel%:Submit, NoHide
-        }
-        Gui %thisLabel%:Submit
-    }
-
-    Cancel()
-    {
-        global
-        local thisLabel := this.label
-        Gui %thisLabel%:Cancel
-    }
-
-    Hide()
-    {
-        global
-        local thisLabel := this.label
-        Gui %thisLabel%:Hide
-    }
-
-    Destroy()
-    {
-        global
-        local thisLabel := this.label
-        Gui %thisLabel%:Destroy
-        this._built := false
-    }
-
-    Default()
-    {
-        global
-        local thisLabel := this.label
-        Gui %thisLabel%:Default
-    }
-
-    ApplyFont()
-    {
-        global
-        local thisLabel := this.label
-        Gui %thisLabel%:Font, % this.font["options"], % this.font["fontName"]
-    }
-
-    FocusControl(CtrlHwnd)
-    {
-        Global
-        GuiControl, Focus, % CtrlHwnd
-    }
-
     WaitClose()
     {
-        WinWaitClose, % "ahk_id " this.hwnd
+        WinWaitClose("ahk_id " this.hwnd)
     }
 
     OwnDialogs()
     {
-        local thisLabel := this.label
-        Gui %thisLabel%: +OwnDialogs
-    }
-
-    updateText(ctrlHwnd, newText)
-    {
-        GuiControl, Text, % %ctrlHwnd%, % newText
+        this.Opt("+OwnDialogs")
     }
 
     build()
     {
         this._built := true
-    }
-
-    bind(ctrlHwnd, method)
-    {
-        global
-        bindObj := ObjBindMethod(this, method)
-        GuiControl, +g, % %ctrlHwnd%, % bindObj
     }
 }

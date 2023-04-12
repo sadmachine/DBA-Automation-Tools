@@ -5,6 +5,6 @@ class RequiredFieldException extends Core.ExpectedException
     __New(where, field, message, data := "")
     {
         this.field := field
-        base.__New("RequiredFieldException", where, message, data)
+        super.__New("RequiredFieldException", where, message, data)
     }
 }

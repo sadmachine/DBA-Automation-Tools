@@ -4,6 +4,6 @@ class NotFoundException extends Core.ExpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("NotFoundException", where, message, data)
+        super.__New("NotFoundException", where, message, data)
     }
 }

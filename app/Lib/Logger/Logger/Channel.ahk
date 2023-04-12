@@ -67,7 +67,7 @@ class Channel
     {
         if (!IsObject(data)) {
             if (Core.typeof(data) == "String") {
-                return """" data """,`n"
+                return '"' data '",`n'
             }
             return data ",`n"
         }

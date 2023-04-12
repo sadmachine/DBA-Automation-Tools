@@ -28,7 +28,7 @@ class Ini extends Lib.Queue.FileDrivers.Base
 {
     __New(path)
     {
-        base.__New(path, ".ini")
+        super.__New(path, ".ini")
     }
 
     createFile(namespace, data)

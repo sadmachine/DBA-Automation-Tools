@@ -21,6 +21,6 @@ class FileInUseException extends Core.ExpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("FileInUseException", where, message, data)
+        super.__New("FileInUseException", where, message, data)
     }
 }

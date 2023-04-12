@@ -10,7 +10,7 @@ class DropdownField extends Config.BaseField
         if (options.Has("selected")) {
             this.selected := options["selected"]
         }
-        base.__New("dropdown", label, scope, options)
+        super.__New("dropdown", label, scope, options)
     }
 
     _getChoicesList()

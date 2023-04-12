@@ -9,7 +9,7 @@ class QueryBuilder
     _limit := ""
     _page := ""
 
-    connection[]
+    connection
     {
         get
         {

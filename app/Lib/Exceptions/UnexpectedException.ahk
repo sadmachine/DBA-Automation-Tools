@@ -4,6 +4,6 @@ class UnexpectedException extends Core.BaseException
 {
     __New(what, where, message, data := "")
     {
-        base.__New("Unexpected", what, where, message, data)
+        super.__New("Unexpected", what, where, message, data)
     }
 }

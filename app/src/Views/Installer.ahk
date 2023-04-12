@@ -22,7 +22,7 @@ class Installer extends UI.Base
 {
     __New()
     {
-        base.__New("DBA AutoTools Installer")
+        super.__New("DBA AutoTools Installer")
         this.build()
     }
 

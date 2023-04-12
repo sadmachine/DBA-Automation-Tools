@@ -51,9 +51,9 @@ class DotEnv
     {
         firstChar := SubStr(value, 1, 1)
         lastChar := SubStr(value, -1, 1)
-        if (firstChar == """" && lastChar == """") {
-            value := Trim(value, """")
-            value := StrReplace(value, """", """""")
+        if (firstChar == '"' && lastChar == '"') {
+            value := Trim(value, '"')
+            value := StrReplace(value, '"', '```"')
         }
         if (InStr("true false", value, false)) {
             value := StrLower(value)

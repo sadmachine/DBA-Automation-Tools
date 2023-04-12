@@ -15,6 +15,11 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#Include "src/Autoload.ahk"
+;#Include "Autoload.ahk"
+Persistent
 
-MsgBox(Lib.log("app")._prepareData(data))
+guiObj := TestGui()
+guiObj.Show("w640 h480")
+
+class TestGui extends Gui {
+}

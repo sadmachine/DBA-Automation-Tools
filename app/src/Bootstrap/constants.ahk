@@ -24,8 +24,8 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-Env["QUEUE_PATH"] := Lib.Path.concat(Env["PROJECT_ROOT"], "queue")
 Env["APP_PATH"] := Lib.Path.concat(Env["PROJECT_ROOT"], "app")
+Env["QUEUE_PATH"] := Lib.Path.concat(Env["APP_ROOT"], "queue")
 Env["STORAGE_PATH"] := Lib.Path.concat(Env["APP_PATH"], "storage")
 Env["LOGS_PATH"] := Lib.Path.concat(Env["STORAGE_PATH"], "logs")
 Env["MODS_PATH"] := Lib.Path.concat(Env["APP_PATH"], "modules")

@@ -38,7 +38,7 @@ class Receiver
         }
         set
         {
-            this._poNumber := String.toUpper(value)
+            this._poNumber := Str.toUpper(value)
             return this._poNumber
         }
     }
@@ -107,14 +107,14 @@ class Receiver
 
     assertPoHasPartNumber()
     {
-        if (!Models.DBA.podetl.has({"ponum=": this.poNumber, "reference=": this.partNumber})) {
+        if (!Models.DBA.podetl.has(Format("ponum='{}' reference='{}'", this.poNumber, this.partNumber))) {
             throw new Core.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' did not contain a line with the specified part number '" this.partNumber "'.")
         }
     }
 
     assertPoHasCorrectQty()
     {
-        if (!Models.DBA.podetl.has({"ponum=": this.poNumber, "reference=": this.partNumber, "(qty*1.1)-qtyr>=": this.lots["current"].quantity})) {
+        if (!Models.DBA.podetl.has(Format("ponum='{}' reference='{}' (qty*1.1)-qtyr>='{}'", this.poNumber, this.partNumber, this.lots["current"].quantity))) {
             throw new Core.ValidationException(A_ThisFunc, "The qty '" this.lots["current"].quantity "' was more than allowed by any line numbers on PO '" this.poNumber "'.")
         }
     }

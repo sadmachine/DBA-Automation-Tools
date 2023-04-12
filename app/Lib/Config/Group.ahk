@@ -31,9 +31,9 @@ class Group
         if (this.slug == -1 && this.label == "") {
             className := this.__Class
             modifiedClassName := RegExReplace(className, "Group$", "")
-            this.slug := String.toLower(SubStr(modifiedClassName, 1, 1)) . SubStr(modifiedClassName, 2)
+            this.slug := Str.toLower(SubStr(modifiedClassName, 1, 1)) . SubStr(modifiedClassName, 2)
         } else {
-            this.slug := String.toCamelCase(this.label)
+            this.slug := Str.toCamelCase(this.label)
         }
     }
 

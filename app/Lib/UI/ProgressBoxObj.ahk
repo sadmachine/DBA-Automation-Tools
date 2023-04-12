@@ -32,7 +32,7 @@ class ProgressBoxObj extends UI.Base
     {
         this.displayText := displayText
         this.title := (title ? title : displayText)
-        base.__New(title, options)
+        super.__New(title, options)
     }
 
     SetRange(firstVal, secondVal := "")

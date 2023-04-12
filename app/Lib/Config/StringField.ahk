@@ -13,6 +13,6 @@ class StringField extends Config.BaseField
             this.max := options["max"]
         }
 
-        base.__New("string", label, scope, options)
+        super.__New("string", label, scope, options)
     }
 }

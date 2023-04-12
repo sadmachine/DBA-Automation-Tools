@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Base Dialog
 ; Description ..: Base Dialog for all other dialogs to inherit from
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -21,33 +21,25 @@
 class BaseDialog extends UI.Base
 {
     data := ""
-    resultVar := ""
+    addedControls := []
     controls := []
+    output := {}
 
     __New(title, data := "")
     {
         this.data := data
-        Random, randomNum
-        this.resultVar := StrReplace(this.__Class, ".", "") randomNum
-        this.autoSize := true
+        randomNum := Random()
         options := "-SysMenu +AlwaysOnTop"
 
-        base.__New(title, options)
+        super.__New(options, title, this)
 
         this.define()
     }
 
     addControl(controlType, options := "", text := "")
     {
-        resultVarOptionString := "v" this.resultVar
-        if (RegExMatch(options, "v[a-zA-Z0-9_]+")) {
-            options := RegexReplace(options, "v[a-zA-Z0-9_]+", resultVarOptionString)
-        } else {
-            options .= resultVarOptionString
-        }
-
         ; If text was not passed in, and our data has a "value" key, use that for text
-        if (text == "" && this.data.hasKey("value")) {
+        if (text == "" && this.data.Has("value")) {
             text := this.data.value
         }
 
@@ -64,30 +56,33 @@ class BaseDialog extends UI.Base
         }
 
         for n, control in this.controls {
-            this.Add(control["controlType"], control["options"], control["text"])
+            if (n == 1) {
+                this.mainControl := this.Add(control["controlType"], control["options"], control["text"])
+            } else {
+                this.Add(control["controlType"], control["options"], control["text"])
+            }
         }
 
         SaveButton := this.Add("Button", "xm Default", "Save")
         CancelButton := this.Add("Button", "x+10", "Cancel")
-        this.bind(SaveButton, "SubmitEvent")
-        this.bind(CancelButton, "CancelEvent")
+
+        SaveButton.OnEvent("Click", "SubmitEvent")
+        CancelButton.OnEvent("Click", "CancelEvent")
+
         this.Show("xCenter yCenter")
-        WinWaitClose, % this.title
+        WinWaitClose(this.title)
+
         return this.output
     }
 
-    SubmitEvent()
+    SubmitEvent(guiCtrlObj, info)
     {
-        Global
-        this.Submit()
-        resultVar := this.resultVar
-        resultValue := %resultVar%
+        resultValue := this.mainControl.Text
         this.output := {value: resultValue, canceled: false}
     }
 
-    CancelEvent()
+    CancelEvent(guiCtrlObj, info)
     {
-        Global
         this.Destroy()
         this.output := {value: "", canceled: true}
     }

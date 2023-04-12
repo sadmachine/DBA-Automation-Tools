@@ -1,4 +1,4 @@
-﻿#Include "String.ahk"
+﻿#Include "Str.ahk"
 #Include "UI.ahk"
 class Config
 {

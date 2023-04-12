@@ -24,7 +24,7 @@ class DbConnection extends OdbcConnection
         }
         this._buildConnectionStr()
 
-        base.__New(this.connectionStr)
+        super.__New(this.connectionStr)
     }
 
     ReadOnly(is_ro)

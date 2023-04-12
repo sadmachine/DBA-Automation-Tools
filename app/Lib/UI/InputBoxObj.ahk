@@ -1,4 +1,4 @@
-; UI.InputBox
+﻿; UI.InputBox
 class InputBoxObj extends UI.Base
 {
     output := {}
@@ -9,11 +9,11 @@ class InputBoxObj extends UI.Base
         this.promptMsg := prompt
         if (this.title == "")
         {
-            return base.__New(prompt, options)
+            return super.__New(prompt, options)
         }
         else
         {
-            return base.__New(title, options)
+            return super.__New(title, options)
         }
     }
 
@@ -46,7 +46,7 @@ class InputBoxObj extends UI.Base
 
         this.Show("w" this.width + (this.margin*2))
 
-        WinWaitClose, % this.title
-        return % this.output
+        WinWaitClose(this.title)
+        return this.output
     }
 }

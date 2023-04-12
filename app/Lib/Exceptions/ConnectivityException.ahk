@@ -4,6 +4,6 @@ class ConnectivityException extends Core.UnexpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("ConnectivityException", where, message, data)
+        super.__New("ConnectivityException", where, message, data)
     }
 }

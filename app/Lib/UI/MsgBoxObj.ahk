@@ -17,9 +17,9 @@ class MsgBoxObj extends UI.Base
     {
         this.promptMsg := prompt
         if (title == "") {
-            base.__New(prompt, options)
+            super.__New(prompt, options)
         } else {
-            base.__New(title, options)
+            super.__New(title, options)
         }
     }
 

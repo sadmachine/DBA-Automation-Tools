@@ -4,6 +4,6 @@ class ValidationException extends Core.ExpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("ValidationException", where, message, data)
+        super.__New("ValidationException", where, message, data)
     }
 }

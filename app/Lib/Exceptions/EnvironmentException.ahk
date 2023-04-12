@@ -4,6 +4,6 @@ class EnvironmentException extends Core.UnexpectedException
 {
     __New(where, message, data := "")
     {
-        base.__New("EnvironmentException", where, message, data)
+        super.__New("EnvironmentException", where, message, data)
     }
 }
