@@ -16,9 +16,13 @@
 ; Revision 2 (02/28/2023)
 ; * Include Temp as subclass (Path.Temp)
 ;
-; Revision 4 (03/05/2023)
+; Revision 3 (03/05/2023)
 ; * Add lockPaths variable, and cleanup all lockfiles on exit
 ;
+; Revision 4 (04/13/2023)
+; * Change how cleanup methods are registered to be safer
+; * Fix bugs with InUse method that would lock-up files on certain systems
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -30,6 +34,7 @@ class Path
     #Include "Path/Temp.ahk"
 
     static lockPaths := {}
+    static registeredCleanup := false
 
     makeAbsolute(path)
     {
@@ -80,10 +85,11 @@ class Path
 
     createLock(path, waitPeriod := 200)
     {
-        if (Lib.Path.lockPaths.Count == 0) {
+        if (!Lib.Path.registeredCleanup) {
             cleanupMethod := ObjBindMethod(this, "_cleanup")
             OnExit(cleanupMethod, -1)
-            OnError(%cleanupMethod%, -1)
+            OnError(cleanupMethod, -1)
+            Lib.Path.registeredCleanup := true
         }
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
@@ -163,7 +169,12 @@ class Path
         if (FileExist(temporaryFile)) {
             return true
         }
-        return FileExist(path) && !FileOpen(path, "rw")
+        try {
+            size := FileGetsize(path)
+            return false
+        } catch OSError as e {
+            return true
+        }
     }
 
     _cleanup()
@@ -172,5 +183,18 @@ class Path
             FileDelete(path)
         }
         return 0
+    }
+
+    convertToUnc(path) 
+    {
+        SplitPath(path, , , , , &thisDrive)
+        if (InStr(thisDrive, ":") && !InStr("A: B: C: D:", thisDrive)) {
+            networkPath := DriveMap.get(thisDrive)
+            if (networkPath != "") {
+                path := SubStr(path, 3)
+                path := DriveMap.get(thisDrive) path
+            }
+        }
+        return path
     }
 }
