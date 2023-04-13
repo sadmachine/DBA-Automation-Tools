@@ -19,6 +19,11 @@
 ; Revision 4 (03/05/2023)
 ; * Add lockPaths variable, and cleanup all lockfiles on exit
 ;
+; Revision 5 (04/12/2023)
+; * Fix issues with `inUse()` where it would lock files indefinitely on certain
+; * ... systems
+; * Update how OnError and OnExit methods are registered
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
