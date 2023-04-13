@@ -30,6 +30,7 @@ class Path
     #Include <#Path/Path/Temp>
 
     static lockPaths := {}
+    static registered := false
 
     makeAbsolute(path)
     {
@@ -80,10 +81,11 @@ class Path
 
     createLock(path, waitPeriod := 200)
     {
-        if (#.Path.lockPaths.Count() == 0) {
+        if (!#.Path.registered) {
             cleanupMethod := ObjBindMethod(this, "_cleanup")
             OnExit(cleanupMethod, -1)
             OnError(cleanupMethod, -1)
+            #.Path.registered := true
         }
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
@@ -163,7 +165,12 @@ class Path
         if (FileExist(temporaryFile)) {
             return true
         }
-        return FileExist(path) && !FileOpen(path, "rw")
+        FileGetsize, size, % path
+        if (Errorlevel) {
+            return true
+        } else {
+            return false
+        }
     }
 
     _cleanup()
