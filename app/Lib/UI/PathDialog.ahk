@@ -15,12 +15,17 @@
 ; * Convenience and UI updates
 ; * Populate file/folder by default if a value is passed to the dialog
 ;
+; Revision 2 (04/13/2023)
+; * Add ability to convert drives E: - Z: to UNC paths
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; UI.PathDialog
 class PathDialog extends UI.BaseDialog
 {
+    static convertDrivesToUnc := true
+
     define()
     {
         if (!this.data.HasKey("pathType")) {
@@ -112,6 +117,9 @@ class PathDialog extends UI.BaseDialog
                     Continue
                 }
                 canceled := (ErrorLevel == 0) ? false : true
+                if (this.convertDrivesToUnc) {
+                    path := Path.convertToUnc(path)
+                }
                 result := {value: path, canceled: canceled}
                 return result
             } else {
@@ -123,10 +131,14 @@ class PathDialog extends UI.BaseDialog
                 if (path == "") {
                     canceled := true
                 }
+                if (this.convertDrivesToUnc) {
+                    path := Path.convertToUnc(path)
+                }
                 result := {value: path, canceled: canceled}
                 return result
             }
         }
 
     }
+
 }
