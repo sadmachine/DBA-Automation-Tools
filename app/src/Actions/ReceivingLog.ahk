@@ -29,6 +29,9 @@
 ; Revision 6 (04/08/2023)
 ; * Add receiver ID to output
 ;
+; Revision 7 (04/13/2023)
+; * Edit files directly, instead of using tempfiles
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -67,13 +70,81 @@ class ReceivingLog extends Actions.Base
         fileDestination := receivingLogConfig.get("file.destination")
         templateFile := receivingLogConfig.get("file.template")
         filePath := Lib.Path.concat(fileDestination, "Incoming Inspection Log.xlsx")
-        tempPath := new Lib.Path.Temp("DBA AutoTools")
-        tempFilePath := tempPath.concat("Incoming Inspection Log.xlsx")
-
         reportData := this.data["data"]
 
-        Lib.log("queue").info(A_ThisFunc, "Incoming Inspection Log Path: " filePath)
+        this._prepareFile(fileDestination, filePath, templateFile)
 
+        try {
+            Lib.Path.createLock(filePath)
+            Lib.log("queue").info(A_ThisFunc, "Acquired file lock")
+
+            xlApp := ""
+            xlWorkbooks := ""
+            xlWorkBook := ""
+            xlSheet := ""
+            lastRowCells := ""
+            lastRowEnd := ""
+            lastRow := ""
+            emptyRowOffset := ""
+            emptyRow := ""
+            xlApp := ComObject("Excel.Application")
+            Lib.log("queue").info(A_ThisFunc, "Created excel app")
+            xlWorkbooks := xlApp.Workbooks
+            xlWorkbook := xlWorkbooks.Open(filePath) ; Open the master file
+            Lib.log("queue").info(A_ThisFunc, "Opened workbook")
+            xlSheet := xlWorkbook.Sheets(1)
+            ; Get the last cell in column A, then save a reference to the cell next to it (column B)
+
+            lastRowCells := xlSheet.Cells(xlApp.Rows.Count, 1)
+            lastRowEnd := lastRowCells.End(xlUp := -4162)
+            lastRow := lastRowEnd.Rows(1)
+            emptyRowOffset := lastRow.Offset(1, 0)
+            emptyRow := emptyRowOffset.Rows(1)
+            datestr := FormatTime(, "MM/dd/yyyy")
+
+            if (lastRow.Row != 2) {
+                lastRow.Copy()
+                emptyRow.PasteSpecial(xlPasteFormats := -4122)
+            }
+
+            excelColumns := receivingLogConfig.get("excelColumnMapping")
+
+            for key, value in reportData {
+                emptyRowRange := emptyRow.Range(excelColumns.get(key) "1")
+                emptyRowRange.Value := value
+                emptyRowRange := ""
+            }
+
+            Lib.log("queue").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
+
+            xlWorkbook.Save()
+            Lib.log("queue").info(A_ThisFunc, "Saved Workbook")
+
+            xlApp.Quit()
+            Lib.log("queue").info(A_ThisFunc, "Quit Excel App")
+            emptyRow := ""
+            emptyRowOffset := ""
+            lastRow := ""
+            lastRowEnd := ""
+            lastRowCells := ""
+            xlSheet := ""
+            xlWorkBook := ""
+            xlWorkbooks := ""
+            xlApp := ""
+
+            Lib.Path.freeLock(filePath)
+            Lib.log("queue").info(A_ThisFunc, "Released file lock")
+        } catch Any as e {
+            Lib.Path.freeLock(filePath)
+            Lib.log("queue").info(A_ThisFunc, "Released file lock")
+            throw e
+        }
+
+        return true
+    }
+
+    _prepareFile(fileDestination, filePath, templateFile)
+    {
         if (!FileExist(fileDestination) == "D") {
             throw new Core.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
         }
@@ -88,87 +159,5 @@ class ReceivingLog extends Actions.Base
         if (Lib.Path.inUse(filePath)) {
             throw new Core.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
-
-        Lib.Cmd.attrib("-h", filePath)
-
-        Lib.Path.createLock(filePath)
-        Lib.log("queue").info(A_ThisFunc, "Acquired file lock")
-
-        Lib.log("queue").info(A_ThisFunc, "Copying Incoming Inspection... ", {filepath: filePath, tempFilePath: tempFilePath})
-        Lib.Cmd.copy(filePath, tempFilePath)
-        Lib.log("queue").info(A_ThisFunc, "Success")
-
-        if (ErrorLevel) {
-            throw new Core.FilesystemException(A_ThisFunc, "Could not copy '" filePath "' to '" tempFilePath "'")
-        }
-
-        xlApp := ""
-        xlWorkbooks := ""
-        xlWorkBook := ""
-        xlSheet := ""
-        lastRowCells := ""
-        lastRowEnd := ""
-        lastRow := ""
-        emptyRowOffset := ""
-        emptyRow := ""
-        xlApp := ComObject("Excel.Application")
-        Lib.log("queue").info(A_ThisFunc, "Created excel app")
-        xlWorkbooks := xlApp.Workbooks
-        xlWorkbook := xlWorkbooks.Open(tempFilePath) ; Open the master file
-        Lib.log("queue").info(A_ThisFunc, "Opened workbook")
-        xlSheet := xlWorkbook.Sheets(1)
-        ; Get the last cell in column A, then save a reference to the cell next to it (column B)
-
-        lastRowCells := xlSheet.Cells(xlApp.Rows.Count, 1)
-        lastRowEnd := lastRowCells.End(xlUp := -4162)
-        lastRow := lastRowEnd.Rows(1)
-        emptyRowOffset := lastRow.Offset(1, 0)
-        emptyRow := emptyRowOffset.Rows(1)
-        datestr := FormatTime(, "MM/dd/yyyy")
-
-        if (lastRow.Row != 2) {
-            lastRow.Copy()
-            emptyRow.PasteSpecial(xlPasteFormats := -4122)
-        }
-
-        excelColumns := receivingLogConfig.get("excelColumnMapping")
-
-        for key, value in reportData {
-            emptyRowRange := emptyRow.Range(excelColumns.get(key) "1")
-            emptyRowRange.Value := value
-            emptyRowRange := ""
-        }
-
-        Lib.log("queue").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
-
-        xlWorkbook.Save()
-        Lib.log("queue").info(A_ThisFunc, "Saved Workbook")
-
-        xlApp.Quit()
-        Lib.log("queue").info(A_ThisFunc, "Quit Excel App")
-        emptyRow := ""
-        emptyRowOffset := ""
-        lastRow := ""
-        lastRowEnd := ""
-        lastRowCells := ""
-        xlSheet := ""
-        xlWorkBook := ""
-        xlWorkbooks := ""
-        xlApp := ""
-
-        Lib.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-        Lib.Cmd.move(tempFilePath, filePath)
-        Lib.log("queue").info(A_ThisFunc, "Success")
-
-        if (ErrorLevel) {
-            throw new Core.FilesystemException(A_ThisFunc, "Could not copy incoming inspection log from the temp directory to its destination.")
-        }
-
-        Lib.Cmd.attrib("-h", filePath)
-
-        Lib.Path.freeLock(filePath)
-        Lib.log("queue").info(A_ThisFunc, "Released file lock")
-
-        return true
     }
 }
