@@ -123,7 +123,6 @@ class ReceivingGroup extends Config.Group
 
         printJobsSection := new Config.Section("Print Jobs")
         printJobsSection.add(new Config.PathField("Location", "directory")
-            .setScope(Config.Scope.LOCAL)
             .setDescription("The directory that the Receiving Label print job .csv files should be placed to be picked up by the print server."))
 
         labelsFile.add(printJobsSection)
