@@ -121,7 +121,12 @@ class Cmd
             }
         }
 
-        return this.exec('echo F|xcopy /H /Y /I "' path1 '" "' path2 '" && del /AH "' path1 '"')
+        return this.exec('echo F|xcopy /H /Y /I "' path1 '" "' path2 '" && del "' path1 '"')
+    }
+
+    del(path)
+    {
+        return this.exec('del "' path '"')
     }
 
     attrib(attribs, path)
