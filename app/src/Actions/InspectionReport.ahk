@@ -30,6 +30,9 @@
 ; Revision 6 (04/06/2023)
 ; * Tested locally and seems to be working
 ;
+; Revision 7 (04/12/2023)
+; * Edit the file directly, instead of using tempfiles
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -84,45 +87,44 @@ class InspectionReport extends Actions.Base
         FileCreateDir, % inspectionFolder
         filename := inspectionNumber " - Inspection Report.xlsx"
         filepath := #.Path.concat(inspectionFolder, filename)
-        tempFilepath := tempDir.concat(filename)
         #.Cmd.copy(template, filepath)
-        #.Cmd.copy(template, tempFilepath)
 
         if (#.Path.inUse(filepath)) {
             throw new @.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
-        #.Path.createLock(filepath)
-        #.log("queue").info(A_ThisFunc, "Acquired file lock")
 
-        xlApp := ComObjCreate("Excel.Application")
-        #.log("queue").info(A_ThisFunc, "Created excel app")
-        CurrWbk := xlApp.Workbooks.Open(tempFilepath) ; Open the master file
-        #.log("queue").info(A_ThisFunc, "Opened workbook")
-        CurrSht := CurrWbk.Sheets(1)
+        try {
+            #.Path.createLock(filepath)
+            #.log("queue").info(A_ThisFunc, "Acquired file lock")
 
-        excelColumns := inspectionReportConfig.get("excelColumnMapping")
+            xlApp := ComObjCreate("Excel.Application")
+            ; xlHwnd := xlApp.hwnd
+            ; DetectHiddenWindows, On
+            ; WinGet, xlProcessId, PID, % "ahk_id" xlHwnd
+            #.log("queue").info(A_ThisFunc, "Created excel app")
+            CurrWbk := xlApp.Workbooks.Open(filepath) ; Open the master file
+            #.log("queue").info(A_ThisFunc, "Opened workbook")
+            CurrSht := CurrWbk.Sheets(1)
 
-        for columnName, value in reportData {
-            CurrSht.range[excelColumns.get(columnName)].Value := value
+            excelColumns := inspectionReportConfig.get("excelColumnMapping")
+
+            for columnName, value in reportData {
+                CurrSht.range[excelColumns.get(columnName)].Value := value
+            }
+
+            CurrWbk.Save()
+            #.log("queue").info(A_ThisFunc, "Saved Workbook")
+
+            xlApp.Quit()
+            #.log("queue").info(A_ThisFunc, "Quit Excel App")
+            xlApp := "", CurrWbk := "", CurrSht := "", xlHwnd := ""
+
+            #.Path.freeLock(filepath)
+            #.log("queue").info(A_ThisFunc, "Released file lock")
+        } catch e {
+            #.Path.freeLock(filePath)
+            throw e
         }
-
-        CurrWbk.Save()
-        #.log("queue").info(A_ThisFunc, "Saved Workbook")
-
-        xlApp.Quit()
-        #.log("queue").info(A_ThisFunc, "Quit Excel App")
-        xlApp := "", CurrWbk := "", CurrSht := ""
-
-        #.log("queue").info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-        #.Cmd.move(tempFilePath, filePath)
-        #.log("queue").info(A_ThisFunc, "Success")
-
-        if (ErrorLevel) {
-            throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.", {tempFilePath: tempFilePath, filePath: filePath})
-        }
-
-        #.Path.freeLock(filepath)
-        #.log("queue").info(A_ThisFunc, "Released file lock")
         return true
     }
 }
