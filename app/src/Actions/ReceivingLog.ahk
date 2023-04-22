@@ -32,6 +32,9 @@
 ; Revision 7 (04/13/2023)
 ; * Edit files directly, instead of using tempfiles
 ; 
+; Revision 8 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -50,7 +53,7 @@ class ReceivingLog extends Actions.Base
         dateStr := FormatTime(, "MM/dd/yyyy")
         lot := this.receiver.lots[this.lotIndex]
 
-        this.data["data"] := {}
+        this.data["data"] := Map()
         this.data["data"]["date"] := dateStr
         this.data["data"]["stelrayItemNumber"] := this.receiver.partNumber
         this.data["data"]["materialDescription"] := this.receiver.partDescription
@@ -115,7 +118,7 @@ class ReceivingLog extends Actions.Base
                 emptyRowRange := ""
             }
 
-            Lib.log("queue").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
+            Lib.log("queue").info(A_ThisFunc, "Added line for inspection number: " reportData["inspectionNumber"])
 
             xlWorkbook.Save()
             Lib.log("queue").info(A_ThisFunc, "Saved Workbook")
@@ -146,18 +149,18 @@ class ReceivingLog extends Actions.Base
     _prepareFile(fileDestination, filePath, templateFile)
     {
         if (!FileExist(fileDestination) == "D") {
-            throw new Core.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
+            throw Core.FilesystemException(A_ThisFunc, "The destination location for the Receiving Log file could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Destination' to be a valid directory.")
         }
 
         if (!FileExist(filePath)) {
             if (!FileExist(templateFile)) {
-                throw new Core.FilesystemException(A_ThisFunc, "The template file for the Receiving Log either could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Template' to be a valid .xlsx file.")
+                throw Core.FilesystemException(A_ThisFunc, "The template file for the Receiving Log either could not be accessed or does not exist. Please update 'Receiving.Incoming Inspection Log.File.Template' to be a valid .xlsx file.")
             }
             Lib.Cmd.copy(templateFile, filePath)
         }
 
         if (Lib.Path.inUse(filePath)) {
-            throw new Core.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
+            throw Core.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
     }
 }

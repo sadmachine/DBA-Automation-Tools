@@ -22,6 +22,9 @@
 ; Revision 4 (04/06/2023)
 ; * Only delete queuejob file if executed successfully (returned true)
 ;
+; Revision 5 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -33,7 +36,7 @@ class Queue
     #Include "Queue/FileDrivers.ahk"
 
     ; --- Instance/Static Variables --------------------------------------------
-    static registeredHandlers := {}
+    static registeredHandlers := Map()
     static namespaces := []
     static interval := 1000
     static fileDriver := {}
@@ -68,7 +71,7 @@ class Queue
 
     getWaitingJobs()
     {
-        queueFiles := {}
+        queueFiles := Map()
         for n, namespace in this.namespaces {
             queueFiles[namespace] := this.fileDriver.retrieveFiles(namespace)
         }
@@ -83,7 +86,7 @@ class Queue
                 for n, jobFile in jobFiles[queueHandler.getNamespace()] {
                     try {
                         jobData := this.fileDriver.readFile(jobFile)
-                        job := new queueHandler()
+                        job := queueHandler()
                         job.setData(jobData)
                         success := job.execute()
                         if (success) {

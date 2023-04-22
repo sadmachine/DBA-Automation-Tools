@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: ProgressBoxObj
 ; Description ..: Utility class for easily creating progress GUIs
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -16,7 +16,9 @@
 ; Revision 2 (02/27/2023)
 ; * Don't allow count to show more than max count
 ;
-;
+; Revision 3 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 class ProgressBoxObj extends UI.Base
@@ -86,7 +88,7 @@ class ProgressBoxObj extends UI.Base
         if (!this._indeterminate) {
             this.ProgressText := this.Add("Text", "Center w280 r1", this._getStartValue() " / " this._maxCount)
         }
-        base.Show(options, title)
+        super.Show(options, title)
     }
 
     Update(progressBarValue, textValue)
@@ -94,10 +96,10 @@ class ProgressBoxObj extends UI.Base
         progressBar := this.ProgressBar
         progressText := this.ProgressText
         if (this._indeterminate) {
-            GuiControl,, % %progressBar%, +1
+            progressBar.Value := 1
         } else {
-            GuiControl,, % %progressBar%, % progressBarValue
-            GuiControl,, % %progressText%, % textValue " / " this._maxCount
+            progressBar.Value := progressBarValue
+            progressText.Text := textValue " / " this._maxCount
         }
     }
 
@@ -106,14 +108,14 @@ class ProgressBoxObj extends UI.Base
         progressBar := this.ProgressBar
         progressText := this.ProgressText
         if (this._indeterminate) {
-            GuiControl,, % %progressBar%, +1
+            progressBar.Value := 1
         } else {
             this._currentCount += 1
             if (this._currentCount > this._maxCount) {
                 this._currentCount := this._maxCount
             }
-            GuiControl,, % %progressBar%, % this._currentCount
-            GuiControl,, % %progressText%, % this._currentCount " / " this._maxCount
+            progressBar.Value := this._currentCount
+            progressText.Text := this._currentCount " / " this._maxCount
         }
     }
 }

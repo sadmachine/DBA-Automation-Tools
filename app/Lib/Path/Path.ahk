@@ -23,6 +23,9 @@
 ; * Change how cleanup methods are registered to be safer
 ; * Fix bugs with InUse method that would lock-up files on certain systems
 ; 
+; Revision 5 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -33,10 +36,10 @@ class Path
 
     #Include "Path/Temp.ahk"
 
-    static lockPaths := {}
+    static lockPaths := Map()
     static registeredCleanup := false
 
-    makeAbsolute(path)
+    static makeAbsolute(path)
     {
         global
         cc := DllCall("GetFullPathName", "str", path, "uint", 0, "ptr", 0, "ptr", 0, "uint")
@@ -45,13 +48,13 @@ class Path
         return buf
     }
 
-    parseDirectory(path)
+    static parseDirectory(path)
     {
         SplitPath(path, , &dir)
         return dir
     }
 
-    parseFilename(path, extension := true)
+    static parseFilename(path, extension := true)
     {
         if (extension) {
             SplitPath(path, &filename)
@@ -61,29 +64,29 @@ class Path
         return filenameWithExtension
     }
 
-    parseExtension(path)
+    static parseExtension(path)
     {
         SplitPath(path, , , &extension)
         return extension
     }
 
-    parseDrive(path)
+    static parseDrive(path)
     {
         SplitPath(path, , , , , &drive)
         return drive
     }
 
-    isLocked(path) {
+    static isLocked(path) {
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
-            throw new Core.FilesystemException(A_ThisFunc, "'" path "' does not exist or is a directory")
+            throw Core.FilesystemException(A_ThisFunc, "'" path "' does not exist or is a directory")
         }
 
         lockPath := path ".lock"
         return (FileExist(lockPath) != "")
     }
 
-    createLock(path, waitPeriod := 200)
+    static createLock(path, waitPeriod := 200)
     {
         if (!Lib.Path.registeredCleanup) {
             cleanupMethod := ObjBindMethod(this, "_cleanup")
@@ -93,7 +96,7 @@ class Path
         }
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
-            throw new Core.FilesystemException(A_ThisFunc, "'" path "' does not exist or is a directory")
+            throw Core.FilesystemException(A_ThisFunc, "'" path "' does not exist or is a directory")
         }
 
         lockPath := path ".lock"
@@ -105,17 +108,17 @@ class Path
                 Sleep(waitPeriod)
             }
         }
-        FileAppend(, lockPath)
+        FileAppend("", lockPath)
         Lib.Path.lockPaths[lockPath] := lockPath
         FileSetAttrib("+H", lockPath)
         return true
     }
 
-    freeLock(path)
+    static freeLock(path)
     {
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
-            throw new Core.FilesystemException(A_ThisFunc, "'" path "' does not exist or is a directory")
+            throw Core.FilesystemException(A_ThisFunc, "'" path "' does not exist or is a directory")
         }
 
         lockPath := path ".lock"
@@ -128,19 +131,19 @@ class Path
         return true
     }
 
-    isType(path, pathType)
+    static isType(path, pathType)
     {
         local exists
         exists := FileExist(path)
         return InStr(exists, pathType)
     }
 
-    concat(path1, path2)
+    static concat(path1, path2)
     {
         return RTrim(path1, "/\") "\" LTrim(path2, "/\")
     }
 
-    normalize(path)
+    static normalize(path)
     {
         path := this.makeAbsolute(path)
         ; Standardize on backslashes for paths
@@ -154,13 +157,13 @@ class Path
         return path
     }
 
-    parentOf(path)
+    static parentOf(path)
     {
         path := this.normalize(path)
         return this.normalize(RegExReplace(path, "[^\\]+\\?$"))
     }
 
-    inUse(path)
+    static inUse(path)
     {
         path := this.normalize(path)
         directory := this.parseDirectory(path)
@@ -177,7 +180,7 @@ class Path
         }
     }
 
-    _cleanup()
+    static _cleanup()
     {
         for index, path in Lib.Path.lockPaths {
             FileDelete(path)
@@ -185,14 +188,14 @@ class Path
         return 0
     }
 
-    convertToUnc(path) 
+    static convertToUnc(path) 
     {
         SplitPath(path, , , , , &thisDrive)
         if (InStr(thisDrive, ":") && !InStr("A: B: C: D:", thisDrive)) {
-            networkPath := DriveMap.get(thisDrive)
+            networkPath := Lib.DriveMap.get(thisDrive)
             if (networkPath != "") {
                 path := SubStr(path, 3)
-                path := DriveMap.get(thisDrive) path
+                path := Lib.DriveMap.get(thisDrive) . path
             }
         }
         return path

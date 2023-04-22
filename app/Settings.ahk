@@ -13,11 +13,14 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 #Include "src\Bootstrap.ahk"
 
-settingsGui := new UI.Settings("DBA AutoTools Settings")
+settingsGui := UI.Settings("DBA AutoTools Settings")
 settingsGui.show()
 settingsGui.WaitClose()
 

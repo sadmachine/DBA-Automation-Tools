@@ -22,16 +22,19 @@
 ; Revision 4 (04/09/2023)
 ; * Added `has` method to check for existing module
 ;
+; Revision 5 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Possibly turn this into a controller
 ; TODO - Revisit/refactor/optimize
 ; ==============================================================================
-#Include "src\ModuleObj.ahk"
+#Include "ModuleObj.ahk"
 
 class ModuleLoader
 {
-    static modules := {}
-    static sections := {}
+    static modules := Map()
+    static sections := Map()
     static module_titles := []
     static section_titles := []
     static module_location := ""
@@ -52,7 +55,7 @@ class ModuleLoader
         Loop Parse, mod_sections, "`n"
         {
             cur_section := StrReplace(A_LoopField, "_", " ")
-            this.sections[cur_section] := {}
+            this.sections[cur_section] := Map()
             this.section_titles.push(cur_section)
             mod_keys := IniRead(mods_ini, cur_section)
             Loop Parse, mod_keys, "`n"
@@ -60,7 +63,7 @@ class ModuleLoader
                 ini_parts := StrSplit(A_LoopField, "=")
                 key := StrReplace(ini_parts[1], "_", " ")
                 value := ini_parts[2]
-                module := new ModuleObj(key, cur_section, value)
+                module := ModuleObj(key, cur_section, value)
                 this.modules[key] := module
                 this.sections[cur_section][key] := module
                 this.module_titles.push(key)

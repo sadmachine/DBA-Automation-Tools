@@ -16,20 +16,34 @@
 ; Revision 2 (03/31/2023)
 ; * Add methods for getting global vars with defaults
 ;
+; Revision 3 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 class Env
 {
-    __Get(key, default := "")
+    static data := Map()
+    static __Item[name] 
     {
-        this.get(key, default)
+        get {
+            return this.get(name)
+        } 
+        set {
+            this.set(name, value)
+        } 
     }
 
-    get(key, default := "")
+    static get(key, default := "")
     {
-        if (!this.Has(key)) {
+        if (!this.data.Has(key)) {
             return default
         }
-        return this[key]
+        return this.data[key]
+    }
+
+    static set(key, value)
+    {
+        this.data[key] := value
     }
 }

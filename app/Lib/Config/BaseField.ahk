@@ -1,4 +1,21 @@
-﻿; Config.Field
+﻿; === Script Information =======================================================
+; Name .........: BaseField
+; Description ..: Base Config field for all others to extend
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: BaseField.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
+; Config.Field
 class BaseField
 {
     type := ""
@@ -6,7 +23,7 @@ class BaseField
     required := ""
     label := ""
     slug := ""
-    options := []
+    options := Map()
     value := ""
     oldValue := ""
     section := ""
@@ -14,20 +31,21 @@ class BaseField
 
     static defaultRequirementValue := false
 
-    path[] {
+    path
+    {
         get {
             if (this.scope == Config.Scope.GLOBAL) {
                 return this.section.path["global"]
             } else if (this.scope == Config.Scope.LOCAL) {
                 return this.section.path["local"]
             }
-            throw new Core.ProgrammerException(A_ThisFunc, "Invalid scope, this.scope = " this.scope)
+            throw Core.ProgrammerException(A_ThisFunc, "Invalid scope, this.scope = " this.scope)
         }
     }
 
-    __New(type, label, scope := "", options := "")
+    __New(type, label, scope := "", options := Map())
     {
-        if (this.options != "") {
+        if (options != Map()) {
             this.options := options
         }
 
@@ -41,13 +59,13 @@ class BaseField
         this.type := type
         this.label := label
         this.slug := Str.toCamelCase(this.label)
-        if (options.Has("slug")) {
+        if (this.options.Has("slug")) {
             this.slug := options["slug"]
         }
-        if (options.Has("default")) {
+        if (this.options.Has("default")) {
             this.default := options["default"]
         }
-        if (options.Has("required")) {
+        if (this.options.Has("required")) {
             this.required := options["required"]
         }
     }
@@ -99,14 +117,14 @@ class BaseField
         if (!FileExist(this.path)) {
             fileObj := FileOpen(this.path, "w")
             if (!IsObject(fileObj)) {
-                throw new Core.FilesystemException(A_ThisFunc, "Could not create file, path = " this.path)
+                throw Core.FilesystemException(A_ThisFunc, "Could not create file, path = " this.path)
             }
             fileObj.Close()
         }
 
         if (this._valueIsUndefined()) {
             if (this.required && this.default == "") {
-                throw new Core.RequiredFieldException(A_ThisFunc, this, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
+                throw Core.RequiredFieldException(A_ThisFunc, this, "path = " this.path "`nsection = " this.section.slug "`nfield = " this.slug)
             }
             IniWrite(this.default, this.path, this.section.slug, this.slug)
         }
@@ -115,13 +133,13 @@ class BaseField
 
     setOption(option, value)
     {
-        this[option] := value
+        this.options[option] := value
         return this
     }
 
     getOption(option)
     {
-        return this[option]
+        return this.options[option]
     }
 
     get()

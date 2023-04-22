@@ -5,7 +5,7 @@
 ; Tested on:      Win XP SP3 - AHK A32/U32 (Win 7 - AHK A32/U32 by HotKeyIt, THX)
 ; Version:        1.0.00.00/2013-11-04/just me
 ; ======================================================================================================================
-Class DriveMap {
+class DriveMap {
    ;--------------------------------------------------------------------------------------------------------------------
    Static MinDL := "D" ; minimum drive letter
    Static MaxDL := "Z" ; maximum drive letter

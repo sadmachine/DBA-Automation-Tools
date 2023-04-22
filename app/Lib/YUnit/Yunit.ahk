@@ -1,4 +1,4 @@
-;#NoEnv
+﻿;#NoEnv
 
 class Yunit
 {
@@ -12,22 +12,22 @@ class Yunit
 
     Use(Modules*)
     {
-        return new this.Tester(Modules)
+        return this.Tester(Modules)
     }
 
     Test(classes*) ; static method
     {
-        instance := new this("")
-        instance.results := {}
+        instance := this("")
+        instance.results := Map()
         instance.classes := classes
         instance.Modules := []
-        for k,module in instance.base.Modules
-            instance.Modules[k] := new module(instance)
-        while (A_Index <= classes.Length())
+        for k,module in instance.super.Modules
+            instance.Modules[k] := module(instance)
+        while (A_Index <= classes.Length)
         {
             cls := classes[A_Index]
             instance.current := A_Index
-            instance.results[cls.__class] := obj := {}
+            instance.results[cls.__class] := obj := Map()
             instance.TestClass(obj, cls)
         }
     }
@@ -40,7 +40,7 @@ class Yunit
 
     TestClass(results, cls)
     {
-        environment := new cls() ; calls __New
+        environment := cls() ; calls __New
         for k,v in cls
         {
             if IsObject(v) && IsFunc(v) ;test

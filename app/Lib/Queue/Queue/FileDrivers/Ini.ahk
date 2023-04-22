@@ -20,6 +20,9 @@
 ; * Add constructor
 ; * Major bug fixes and optimizations
 ;
+; Revision 4 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -36,15 +39,15 @@ class Ini extends Lib.Queue.FileDrivers.Base
         local file
         filePath := this._getUniqueFilename(namespace)
 
-        file := new Lib.IniFile(filePath)
-        file.writeObject(data)
+        file := Lib.IniFile(filePath)
+        file.writeMap(data)
     }
 
     readFile(filePath)
     {
         local file
-        file := new Lib.IniFile(filePath)
-        data := file.readObject()
+        file := Lib.IniFile(filePath)
+        data := file.readMap()
         return data
     }
 

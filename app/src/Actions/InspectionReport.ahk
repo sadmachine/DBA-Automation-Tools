@@ -33,6 +33,9 @@
 ; Revision 7 (04/13/2023)
 ; * Edit the file directly, instead of using tempfiles
 ; 
+; Revision 8 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -59,7 +62,7 @@ class InspectionReport extends Actions.Base
         dateOfGeneration := FormatTime(, "ShortDate")
         lot := this.receiver.lots[this.lotIndex]
 
-        this.data["data"] := {}
+        this.data["data"] := Map()
         this.data["data"]["inspectionFormNumber"] := lot.inspectionNumber
         this.data["data"]["reportDate"] := dateOfGeneration
         this.data["data"]["stelrayMaterialNumber"] := this.receiver.partNumber
@@ -90,7 +93,7 @@ class InspectionReport extends Actions.Base
         Lib.Cmd.copy(template, filepath)
 
         if (Lib.Path.inUse(filepath)) {
-            throw new Core.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
+            throw Core.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
         }
 
         try {

@@ -13,6 +13,9 @@
 ; Revision 1 (03/11/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -59,7 +62,7 @@ class Channel
     {
         if (!Lib.Path.isType(this.logPath, "D")) {
             this.logPath := ""
-            throw new Core.ProgrammerException(A_ThisFunc, "Log Location must be a directory, non-directory specified: `n" path)
+            throw Core.ProgrammerException(A_ThisFunc, "Log Location must be a directory, non-directory specified: `n" this.logPath)
         }
     }
 

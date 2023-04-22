@@ -13,15 +13,18 @@
 ; Revision 1 (02/13/2023)
 ; * Added this banner
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
 #Include "src/Bootstrap.ahk"
 
 try {
-    receivingController := new Controllers.Receiving()
+    receivingController := Controllers.Receiving()
 
-    receivingController.bootstrapReceiver(new Models.Receiver())
+    receivingController.bootstrapReceiver(Models.Receiver())
 
     receivingController.displayReceivingResults()
 } catch Any as e {

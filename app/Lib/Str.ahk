@@ -14,6 +14,9 @@
 ; * Added This Banner
 ; * Added getRenderDimensions method
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 class Str
@@ -40,17 +43,24 @@ class Str
     ; Examples:
     ;		width := GetTextSize("string to be measured", "bold s22, Courier New" )
     ;
-    getRenderDimensions(pStr, pFont:="", pHeight:=false, pAdd:=0) {
-        local height, weight, italic, underline, strikeout , nCharSet
+    static getRenderDimensions(pStr, pFontOrObj:="", pHeight:=false, pAdd:=0) {
+        local height := [], fontFace := Map(), weight, italic, underline, strikeout , nCharSet
         local hdc := DllCall("GetDC", "Uint", 0)
         local hFont, hOldFont
         local resW, resH, SIZE
+
+        if (IsObject(pFontOrObj)) {
+            pFont := pFontOrObj.font["options"] . ", " . pFontOrObj.font["fontName"]
+        } else {
+            pFont := pFontOrObj
+        }
 
         ;parse font
         italic		:= InStr(pFont, "italic")	 ? 1	: 0
         underline	:= InStr(pFont, "underline") ? 1	: 0
         strikeout	:= InStr(pFont, "strikeout") ? 1	: 0
         weight		:= InStr(pFont, "bold")		 ? 700	: 400
+        nCharSet    := 0
 
         ;height
         RegExMatch(pFont, "(?<=[S|s])(\d{1,2})(?=[ ,])", &height)
@@ -61,23 +71,29 @@ class Str
         Height := -DllCall("MulDiv", "int", height[0], "int", LogPixels, "int", 72)
         ;face
         RegExMatch(pFont, "(?<=,).+", &fontFace)
-        if (fontFace[0] != "")
+        if (fontFace[0] != "") {
             fontFace := RegExReplace(fontFace[0], "(^\s*)|(\s*$)")		;trim
-        else fontFace := "MS Sans Serif"
+        } else {
+            fontFace := "MS Sans Serif"
+        }
 
-            ;create font
-            hFont	:= DllCall("CreateFont", "int", height[0], "int", 0, "int", 0, "int", 0, "int", weight, "Uint", italic, "Uint", underline, "uint", strikeOut, "Uint", nCharSet, "Uint", 0, "Uint", 0, "Uint", 0, "Uint", 0, "str", fontFace[0])
+        height := IsObject(height) ? height[0] : height
+        fontFace := IsObject(height) ? height[0] : height
+
+        ;create font
+        hFont	:= DllCall("CreateFont", "int", height, "int", 0, "int", 0, "int", 0, "int", weight, "Uint", italic, "Uint", underline, "uint", strikeOut, "Uint", nCharSet, "Uint", 0, "Uint", 0, "Uint", 0, "Uint", 0, "str", fontFace)
         hOldFont := DllCall("SelectObject", "Uint", hDC, "Uint", hFont)
 
-        VarSetStrCapacity(&SIZE, 16) ; V1toV2: if 'SIZE' is NOT a UTF-16 string, use 'SIZE := Buffer(16)'
+        ; VarSetStrCapacity(&SIZE, 16) ; V1toV2: if 'SIZE' is NOT a UTF-16 string, use 'SIZE := Buffer(16)'
+        SIZE := Buffer(16, 0x0)
         curW := "0"
         Loop Parse, pStr, "`n"
         {
-            DllCall("DrawTextA", "uint", hDC, "str", A_LoopField, "int", StrLen(pStr), "uint", SIZE, "uint", 0x400)
+            DllCall("DrawTextA", "uint", hDC, "str", A_LoopField, "int", StrLen(pStr), "uint", SIZE.ptr, "uint", 0x400)
             resW := this._ExtractInteger(SIZE, 8)
             curW := resW > curW ? resW : curW
         }
-        DllCall("DrawTextA", "uint", hDC, "str", pStr, "int", StrLen(pStr), "uint", SIZE, "uint", 0x400)
+        DllCall("DrawTextA", "uint", hDC, "str", pStr, "int", StrLen(pStr), "uint", SIZE.ptr, "uint", 0x400)
         ;clean
 
         DllCall("SelectObject", "Uint", hDC, "Uint", hOldFont)
@@ -93,52 +109,55 @@ class Str
         return resW
     }
 
-    _ExtractInteger(&pSource, pOffset := 0, pIsSigned := false, pSize := 4)
+    static _ExtractInteger(pSource, pOffset := 0, pIsSigned := false, pSize := 4)
     {
+        result := 0
         Loop pSize
-            result += NumGet(&pSource, pOffset, A_Index-1) << 8*(A_Index-1)
+            val := NumGet(pSource.ptr, pOffset + A_Index-1, "UInt")
+            val := val << 8*(A_Index-1)
+            result += val
         if (!pIsSigned OR pSize > 4 OR result < 0x80000000)
             return result
         return -(0xFFFFFFFF - result + 1)
     }
 
-    toUpper(str)
+    static toUpper(s)
     {
-        output := StrUpper(str)
+        output := StrUpper(s)
         return output
     }
 
-    toTitleCase(str)
+    static toTitleCase(s)
     {
-        output := StrTitle(str)
+        output := StrTitle(s)
         return output
     }
 
-    toLower(str)
+    static toLower(s)
     {
-        output := StrLower(str)
+        output := StrLower(s)
         return output
     }
 
-    toSlug(str)
+    static toSlug(s)
     {
-        str := Str.toLower(str)
-        str := RegExReplace(str, "[^a-z0-9 -]+", "")
-        str := StrReplace(str, " ", "-")
-        return Trim(str, "-")
+        s := Str.toLower(s)
+        s := RegExReplace(s, "[^a-z0-9 -]+", "")
+        s := StrReplace(s, " ", "-")
+        return Trim(s, "-")
     }
 
-    toCamelCase(str)
+    static toCamelCase(s)
     {
-        str := Str.toSlug(str)
-        parts := StrSplit(str, "-")
-        str := parts[1]
+        s := Str.toSlug(s)
+        parts := StrSplit(s, "-")
+        s := parts[1]
         for index, part in parts {
             if (A_Index == 1) {
                 Continue
             }
-            str .= Str.toTitleCase(part)
+            s .= Str.toTitleCase(part)
         }
-        return str
+        return s
     }
 }

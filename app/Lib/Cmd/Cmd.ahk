@@ -14,6 +14,9 @@
 ; * Added This Banner
 ; * Add exec, copy, move commands
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 class Cmd
@@ -54,7 +57,7 @@ class Cmd
         {
             DllCall("CloseHandle", "Ptr", hPipeRead)
             DllCall("CloseHandle", "Ptr", hPipeWrite)
-            throw Exception("CreateProcess is failed, " A_LastError)
+            throw Error("CreateProcess is failed, " A_LastError)
         }
         DllCall("CloseHandle", "Ptr", hPipeWrite)
         VarSetStrCapacity(&sTemp, 4096), nSize := 0 ; V1toV2: if 'sTemp' is NOT a UTF-16 string, use 'sTemp := Buffer(4096)'
@@ -74,14 +77,14 @@ class Cmd
     ;     RunWait, % comspec " /S /C """ command """", UseErrorLevel
 
     ;     if (ErrorLevel = "ERROR") {
-    ;         throw new Core.UnexpectedException("CommandException", A_ThisFunc, "The command '" command "' was unable to run.")
+    ;         throw Core.UnexpectedException("CommandException", A_ThisFunc, "The command '" command "' was unable to run.")
     ;     }
     ; }
 
     copy(path1, path2, overwrite := true)
     {
         if (!FileExist(path1)) {
-            throw new Core.FilesystemException(A_ThisFunc, "The Path '" path1 "' did not exist, and so it could not be copied.")
+            throw Core.FilesystemException(A_ThisFunc, "The Path '" path1 "' did not exist, and so it could not be copied.")
         }
         path1 := Lib.Path.normalize(path1)
         path2 := Lib.Path.normalize(path2)
@@ -104,7 +107,7 @@ class Cmd
     move(path1, path2, overwrite := true)
     {
         if (!FileExist(path1)) {
-            throw new Core.FilesystemException(A_ThisFunc, "The Path '" path1 "' did not exist, and so it could not be copied.")
+            throw Core.FilesystemException(A_ThisFunc, "The Path '" path1 "' did not exist, and so it could not be copied.")
         }
         path1 := Lib.Path.normalize(path1)
         path2 := Lib.Path.normalize(path2)
@@ -133,7 +136,7 @@ class Cmd
     {
         path := Lib.Path.normalize(path)
         if (!FileExist(path)) {
-            throw new Core.FilesystemException(A_ThisFunc, "The Path '" path "' did not exist, and so it could not be edited.")
+            throw Core.FilesystemException(A_ThisFunc, "The Path '" path "' did not exist, and so it could not be edited.")
         }
 
         return this.exec('attrib ' attribs ' "' path '"')

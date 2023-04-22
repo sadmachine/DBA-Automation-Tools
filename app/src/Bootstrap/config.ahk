@@ -19,10 +19,13 @@
 ; Revision 3 (04/09/2023)
 ; * Update messaging for missing config fields
 ;
+; Revision 4 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 if (!FileExist(Env["SETTINGS_INI_FILE"])) {
-    throw new Core.FilesystemException(A_ThisFunc, "Could not locate the settings.ini file.")
+    throw Core.FilesystemException(A_ThisFunc, "Could not locate the settings.ini file.")
 }
 
 Config.BaseField.defaultRequirementValue := true
@@ -32,8 +35,8 @@ localConfigLocation := IniRead(Env["SETTINGS_INI_FILE"], "location", "local")
 
 Config.setLocalConfigLocation(localConfigLocation)
 Config.setGlobalConfigLocation(globalConfigLocation)
-Config.register(new DatabaseGroup())
-Config.register(new ReceivingGroup())
+Config.register(DatabaseGroup())
+Config.register(ReceivingGroup())
 
 while (!Config.initialized) {
     try {
@@ -43,10 +46,10 @@ while (!Config.initialized) {
             throw e
         }
         field := e.field
-        previousWidth := UI.MsgBoxObj.width
+        previousWidth := UI.MsgBoxObj.defaultWidth
         UI.MsgBoxObj.width := 400
         UI.MsgBox("The config field:`n`n '" field.getFullIdentifier() "'`n`nis required, but missing a value. Please supply a value to continue.`n", "Required Field Missing")
-        UI.MsgBoxObj.width := previousWidth
+        UI.MsgBoxObj.defaultWidth := previousWidth
         dialog := UI.DialogFactory.fromConfigField(field)
         result := dialog.prompt()
         if (result.canceled) {

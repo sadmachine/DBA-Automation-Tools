@@ -16,6 +16,9 @@
 ; Revision 2 (03/21/2023)
 ; * Added helper `readObject` and `writeObject` methods for getting/setting
 ;
+; Revision 3 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -43,7 +46,7 @@ class IniFile
     readSection(section)
     {
         output := IniRead(this.path, section)
-        realOutput := {}
+        realOutput := Map()
         for n, pair in StrSplit(output, "`n") {
             pair := StrSplit(pair, "=")
             realOutput[pair[1]] := pair[2]
@@ -67,25 +70,25 @@ class IniFile
         IniDelete(this.path, section)
     }
 
-    readObject()
+    readMap()
     {
         sections := this.readSections()
-        obj := Map()
+        m := Map()
         for n, sectionName in sections {
-            obj[sectionName] := this.readSection(sectionName)
+            m[sectionName] := this.readSection(sectionName)
         }
-        return obj
+        return m
     }
 
-    writeObject(obj)
+    writeMap(m)
     {
-        if (Core.typeOf(obj) != "Object") {
-            throw new Core.ProgrammerException(A_ThisFunc, "Passed value must be an object", obj)
+        if (Core.typeOf(m) != "Object") {
+            throw Core.ProgrammerException(A_ThisFunc, "Passed value must be an object", m)
         }
 
-        for section, pair in obj {
+        for section, pair in m {
             if (Core.typeOf(pair) != "Object") {
-                throw new Core.ProgrammerException(A_ThisFunc, "Inner value must be an object", {parent: obj, pair: pair})
+                throw Core.ProgrammerException(A_ThisFunc, "Inner value must be an object", {parent: m, pair: pair})
             }
             for key, value in pair {
                 this.write(section, key, value)

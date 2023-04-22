@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Implement
 ; ==============================================================================
@@ -32,7 +35,7 @@ class Installer extends UI.Base
         this.Add("Edit", "w400", installationPath)
         this.Add("Button", "w60 Default", )
 
-        base.build()
+        super.build()
     }
 
 }

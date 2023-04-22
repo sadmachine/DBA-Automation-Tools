@@ -1,4 +1,24 @@
-﻿#Include "ADOSQL.ahk"
+﻿; === Script Information =======================================================
+; Name .........: DBConnection
+; Description ..: Utility for simplifying connections to a database
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: Query.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
+; === TO-DOs ===================================================================
+; ==============================================================================
+#Include "ADOSQL.ahk"
 
 class DBConnection
 {
@@ -38,7 +58,7 @@ class DBConnection
         qStr := RTrim(qStr)
         if (SubStr(qStr, -1) != ";")
             qStr .= ";"
-        return new Results(ADOSQL(this.connectionStr, qStr), this.colDelim)
+        return Results(ADOSQL(this.connectionStr, qStr), this.colDelim)
     }
 }
 
@@ -51,7 +71,7 @@ class Results
     {
         if (ADOSQL_LastError)
         {
-            throw new Core.SQLException(A_ThisFunc, "Query error:`n" ADOSQL_LastError)
+            throw Core.SQLException(A_ThisFunc, "Query error:`n" ADOSQL_LastError)
         }
         this.delim := colDelim
         this.rawAnswer := queryOutput
@@ -59,7 +79,7 @@ class Results
         this.lvHeaders := StrReplace(this.answer[1], "_", " ")
         columnHeaders := StrSplit(this.answer[1], this.delim)
         this.columnHeaders := columnHeaders
-        this.headerIndex := {}
+        this.headerIndex := Map()
         for index,header in columnHeaders
         {
             this.headerIndex[header] := index

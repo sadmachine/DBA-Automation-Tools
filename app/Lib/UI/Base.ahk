@@ -14,148 +14,191 @@
 ; * Added This Banner
 ; * Added `actions` and `fields` objects for storing controls
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 class Base extends Gui
 {
     ; --- Variables ------------------------------------------------------------
+    actions := Map()
+    fields := Map()
+    _dimensions := Map("width", "", "height", "")
+    _font := Map("options", "", "fontName", "")
 
-    _width := ""
-    _margin := ""
-    _color := ""
-    _autoSize := false
-    _built := false
-    actions := {}
-    fields := {}
+    static _defaultDimensions := Map("width", "480", "height", "320")
+    static _defaultFont := Map("options", "s9", "fontName", "Segoe UI")
 
-    static _defaultWidth := 240
-    static _defaultMargin := 10
-    static _defaultColor := {"windowColor": "", "controlColor": ""}
+    dimensions[key?]
+    {
+        get 
+        {
+            dimensionsMap := this._dimensions
+            if (this._dimensions["width"] == "" && this._dimensions["height"] == "") {
+                dimensionsMap := UI.Base.defaultDimensions
+            } 
+            if (IsSet(key)) {
+                if (type(dimensionsMap) == "Object") {
+                    if (dimensionsMap.hasOwnProp(key)) {
+                        return dimensionsMap.%key%
+                    } else {
+                        throw Core.ProgrammerException(A_ThisFunc, "Invalid key for dimensions", { key: key })
+                    }
+                } else {
+                    if (dimensionsMap.has(key)) {
+                        return dimensionsMap[key]
+                    } else {
+                        throw Core.ProgrammerException(A_ThisFunc, "Invalid key for dimensions", { key: key })
+                    }
+                }
+            } 
+            return dimensionsMap
+        }
 
-    ; --- Properties -----------------------------------------------------------
+        set 
+        {
+            if (IsSet(key)) {
+                if (this._dimensions.has(key)) {
+                    this._dimensions[key] := value
+                } else {
+                    throw Core.ProgrammerException(A_ThisFunc, "Invalid key for dimensions", { key: key })
+                }
+            } 
+            this._dimensions := value
+        }
+    }
 
     width
     {
-        get {
-            if (this._width == "") {
-                return this._defaultWidth
-            }
-            return this._width
+        get
+        {
+            return this.dimensions["width"]
         }
-        set {
-            this._width := value
-            return this._width
+        set
+        {
+            this.dimensions["width"] := value
         }
     }
 
-    margin
+    height
     {
-        get {
-            if (this._margin == "") {
-                return this._defaultMargin
-            }
-            return this._margin
+        get
+        {
+            return this.dimensions["height"]
         }
-        set {
-            local thisLabel := this.label
-            this._margin := value
-            this.MarginX := this.margin, this.MarginY := this.margin
-            return this._margin
+        set
+        {
+            this.dimensions["height"] := value
         }
     }
 
-    color[key := ""] {
-        get {
-            color := this._color
-            if (this._color == "") {
-                color := this._defaultColor
+    font[key?]
+    {
+        get 
+        {
+            fontMap := this._font
+            if (this._font["options"] == "" && this._font["fontName"] == "") {
+                fontMap := UI.Base.defaultFont
             }
-            if (key == "") {
-                return color
-            }
-            if (color.Has(key)) {
-                return color[key]
-            }
-            throw new Core.ProgrammerException(A_ThisFunc, "Invalid key for color: " key)
-        }
-        set {
-            local thisLabel := this.label
-            if (key == "") {
-                if (!IsObject(value)) {
-                    throw new Core.ProgrammerException(A_ThisFunc, "You must supply an object (keys: windowColor, controlColor) if you're setting color without a key.")
+            if (IsSet(key)) {
+                if (type(fontMap) == 'Object') {
+                    if (fontMap.hasOwnProp(key)) {
+                        return fontMap.%key%
+                    } else {
+                        throw Core.ProgrammerException(A_ThisFunc, "Invalid key for font", { key: key })
+                    }
+                } else {
+                    if (fontMap.has(key)) {
+                        return fontMap[key]
+                    } else {
+                        throw Core.ProgrammerException(A_ThisFunc, "Invalid key for font", { key: key })
+                    }
                 }
-                this._color := value
-            }
-            if (!InStr("windowColor controlColor", key)) {
-                throw new Core.ProgrammerException(A_ThisFunc, "Key supplied for color should be either ""windowColor"" or ""controlColor""")
-            }
+            } 
+            return fontMap
+        }
 
-            this._color[key] := value
-
-            this.BackColor := this.color["windowColor"]
-            return this._color
+        set
+        {
+            if (IsSet(key)) {
+                if (this._font.has(key)) {
+                    this._font[key] := value
+                } else {
+                    throw Core.ProgrammerException(A_ThisFunc, "Invalid key for font", { key: key })
+                }
+            } 
+            this._font := value
         }
     }
 
-    defaultOptions
+    static defaultFont[key?]
     {
-        get {
-            return this._defaultOptions
-        }
-
-        set {
-            this._defaultOptions := value
-            return this._defaultOptions
-        }
-    }
-
-    defaultFont
-    {
-        get {
+        get
+        {
+            if (IsSet(key)) {
+                if (this._defaultFont.has(key)) {
+                    return this._defaultFont[key]
+                } else {
+                    throw Core.ProgrammerException(A_ThisFunc, "Invalid key for defaultFont", { key: key })
+                }
+            } 
             return this._defaultFont
         }
 
-        set {
+        set
+        {
+            if (IsSet(key)) {
+                if (this._defaultFont.has(key)) {
+                    this._defaultFont[key] := value
+                } else {
+                    throw Core.ProgrammerException(A_ThisFunc, "Invalid key for defaultFont", { key: key })
+                }
+            } 
             this._defaultFont := value
-            %thisLabel%.SetFont(this._defaultFont["options"], this._defaultFont["fontName"])
-            return this._defaultFont
         }
     }
 
-    defaultWidth
+    static defaultDimensions[key?]
     {
-        get {
-            return this._defaultWidth
+        get
+        {
+            if (IsSet(key)) {
+                if (this._defaultDimensions.has(key)) {
+                    return this._defaultDimensions[key]
+                } else {
+                    throw Core.ProgrammerException(A_ThisFunc, "Invalid key for defaultDimensions", { key: key })
+                }
+            } 
+            return this._defaultDimensions
         }
 
-        set {
-            this._defaultWidth := value
-            return this._defaultWidth
+        set
+        {
+            if (IsSet(key)) {
+                if (this._defaultDimensions.has(key)) {
+                    this._defaultDimensions[key] := value
+                } else {
+                    throw Core.ProgrammerException(A_ThisFunc, "Invalid key for defaultDimensions", { key: key })
+                }
+            } 
+            this._defaultDimensions := value
         }
     }
 
-    defaultMargin
+    __New(title, options, eventSink?)
     {
-        get {
-            return this._defaultMargin
-        }
-
-        set {
-            this._defaultMargin := value
-            %thisLabel%.MarginX := this._defaultMargin, %thisLabel%.MarginY := this._defaultMargin
-            return this._defaultMargin
+        if (IsSet(eventSink)) {
+            super.__New(options, title, eventSink)
+        } else {
+            super.__New(options, title)
         }
     }
 
-    autoSize
+    ApplyFont()
     {
-        get {
-            return this._autoSize
-        }
-        set {
-            this._autoSize := value
-            return this._autoSize
-        }
+        fontMap := this.font
+        this.SetFont(this.font["options"], this.font["fontName"])
     }
 
     WaitClose()

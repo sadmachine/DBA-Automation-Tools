@@ -14,6 +14,9 @@
 ; * Added This Banner
 ; * Improved value parsing (true/false, strings), _parseValue() method added
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Make more robust and validate keys/values
 ; ==============================================================================
@@ -26,14 +29,14 @@ class DotEnv
     __New(filepath)
     {
         if (!FileExist(filepath)) {
-            throw new Core.ProgrammerException(A_ThisFunc, "DotEnv Filepath did not exist", {filepath: filepath})
+            throw Core.ProgrammerException(A_ThisFunc, "DotEnv Filepath did not exist", {filepath: filepath})
         }
         this.filepath := filepath
     }
 
-    toObject()
+    toMap()
     {
-        ret := {}
+        ret := Map()
         Loop Read, this.filepath
         {
             line := Trim(A_LoopReadLine)

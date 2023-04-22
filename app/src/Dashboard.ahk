@@ -26,6 +26,9 @@
 ; Revision 5 (04/10/2023)
 ; * Properly disable receiving modules if not present
 ;
+; Revision 6 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Abstract out to a controller and a view
 ; TODO - Update to actually handle modules (old way is broken, only works for single module)
@@ -79,14 +82,14 @@ class Dashboard
         this.guiObj.MarginX := "0", this.guiObj.MarginY := "0"
         this.guiObj.SetFont("s12")
         this._buildReceivingSection()
-        this.guiObj.Opt("+OwnDialogs +AlwaysOnTop HWNDhChild")
+        this.guiObj.Opt("+OwnDialogs +AlwaysOnTop")
 
         ; Build/Add menus
         this._setupApplicationMenu()
 
         ; Get a reference to the "parent" and "child" window
         this.hwnd["parent"] := WinExist(DBA.Windows.Main)
-        this.hwnd["child"] := hChild
+        this.hwnd["child"] := this.hwnd
 
         this.built := true
 
@@ -99,7 +102,7 @@ class Dashboard
     {
         Global
         this.guiObj.Title := "Automation Tools"
-        this.guiObj.Show(UI.opts({"h": this.height, "w": this.width, "x": this.display_x, "y": this.display_y}))
+        this.guiObj.Show(UI.opts({h: this.height, w: this.width, x: this.display_x, y: this.display_y}))
         ; Need to set the parent of the gui to the "DBA NG Sub-Assy Jobs" program
         ; This makes it so our dashboard moves with the parent window, and acts like its part of the program
         UI.setParent(this.hwnd["child"], this.hwnd["parent"])
@@ -173,11 +176,11 @@ class Dashboard
 
         applicationLog()
         {
-            tempDir := new Lib.Path.Temp("DBA AutoTools")
+            tempDir := Lib.Path.Temp("DBA AutoTools")
             tempApplicationLogPath := tempDir.concat("application.log")
             applicationLogPath := Lib.Path.concat(Env["PROJECT_ROOT"], "modules\application.log")
             Lib.Cmd.copy(applicationLogPath, tempApplicationLogPath)
-            Run("notepad.exe """ tempApplicationLogPath """")
+            Run('notepad.exe "' tempApplicationLogPath '"')
         }
     }
 

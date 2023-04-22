@@ -14,6 +14,9 @@
 ; * Added This Banner
 ; * Update to auto set control text to data.value, if it exists + no text given
 ;
+; Revision 2 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -23,7 +26,7 @@ class BaseDialog extends UI.Base
     data := ""
     addedControls := []
     controls := []
-    output := {}
+    output := Map()
 
     __New(title, data := "")
     {
@@ -31,7 +34,7 @@ class BaseDialog extends UI.Base
         randomNum := Random()
         options := "-SysMenu +AlwaysOnTop"
 
-        super.__New(options, title, this)
+        super.__New(title, options, this)
 
         this.define()
     }
@@ -51,15 +54,15 @@ class BaseDialog extends UI.Base
         Global
         this.ApplyFont()
 
-        if (promptMessage != "") {
-            this.Add("Text", "w" this.width - this.margin * 4, promptMessage)
-        }
+        text := promptMessage || this.title
+
+        this.Add("Text", "w" textWidth, text)
 
         for n, control in this.controls {
             if (n == 1) {
-                this.mainControl := this.Add(control["controlType"], control["options"], control["text"])
+                this.mainControl := this.Add(control.controlType, control.options, control.text)
             } else {
-                this.Add(control["controlType"], control["options"], control["text"])
+                this.Add(control.controlType, control.options, control.text)
             }
         }
 
@@ -77,6 +80,8 @@ class BaseDialog extends UI.Base
 
     SubmitEvent(guiCtrlObj, info)
     {
+        this.Submit()
+        MsgBox "test"
         resultValue := this.mainControl.Text
         this.output := {value: resultValue, canceled: false}
     }

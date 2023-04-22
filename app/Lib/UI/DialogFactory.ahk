@@ -15,27 +15,30 @@
 ; * Specify more descriptive title for dialogs
 ; * Supply configField to all dialog types, by default
 ;
+; Revision 2 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; UI.DialogFactory
 class DialogFactory
 {
-    fromConfigField(configField)
+    static fromConfigField(configField)
     {
         fieldType := configField.type
         title := configField.label " (" configField.getFullIdentifier() ")"
         switch fieldType {
         case "date":
-            return new UI.DateDialog(title, configField)
+            return UI.DateDialog(title, configField)
         case "dropdown":
-            return new UI.DropdownDialog(title, configField)
+            return UI.DropdownDialog(title, configField)
         case "path":
-            return new UI.PathDialog(title, configField)
+            return UI.PathDialog(title, configField)
         case "number":
-            return new UI.NumberDialog(title, configField)
+            return UI.NumberDialog(title, configField)
         case "string":
-            return new UI.StringDialog(title, configField)
+            return UI.StringDialog(title, configField)
         }
     }
 }

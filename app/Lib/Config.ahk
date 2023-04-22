@@ -1,4 +1,21 @@
-﻿#Include "Str.ahk"
+﻿; === Script Information =======================================================
+; Name .........: Config
+; Description ..: Parent class for all config classes
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: Config.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
+#Include "Str.ahk"
 #Include "UI.ahk"
 class Config
 {
@@ -13,66 +30,66 @@ class Config
     #Include "Config/StringField.ahk"
     #Include "Config/PathField.ahk"
 
-    static groups := {}
-    static groupsByLabel := {}
-    static loaded := {}
+    static groups := Map()
+    static groupsByLabel := Map()
+    static loaded := Map()
     static localConfigLocation := A_ScriptDir "/config"
     static globalConfigLocation := ""
     static initialized := false
     static UNDEFINED := "__UNDEFINED__"
 
-    setLocalConfigLocation(localConfigLocation)
+    static setLocalConfigLocation(localConfigLocation)
     {
         this.localConfigLocation := localConfigLocation
     }
 
-    setGlobalConfigLocation(globalConfigLocation)
+    static setGlobalConfigLocation(globalConfigLocation)
     {
         this.globalConfigLocation := globalConfigLocation
     }
 
-    localPath(append)
+    static localPath(append)
     {
         return RTrim(this.localConfigLocation, "/\") "\" LTrim(append, "/\")
     }
 
-    globalPath(append)
+    static globalPath(append)
     {
         return RTrim(this.globalConfigLocation, "/\") "\" LTrim(append, "/\")
     }
 
-    register(group)
+    static register(group)
     {
         this.groups[group.slug] := group
         this.groupsByLabel[group.label] := group
     }
 
-    load(identifier)
+    static load(identifier)
     {
         t := this._parseIdentifier(identifier)
         thisGroup := this.groups[t["group"]].load(t["file"])
         return thisGroup
     }
 
-    lock(identifier, scope := "")
+    static lock(identifier, scope := "")
     {
         t := this._parseIdentifier(identifier)
         return this.groups[t["group"]].files[t["file"]].lock(scope)
     }
 
-    unlock(identifier, scope := "")
+    static unlock(identifier, scope := "")
     {
         t := this._parseIdentifier(identifier)
         return this.groups[t["group"]].files[t["file"]].unlock(scope)
     }
 
-    store(identifier)
+    static store(identifier)
     {
         t := this._parseIdentifier(identifier)
         return this.groups[t["group"]][t["group"]].store()
     }
 
-    get(identifier)
+    static get(identifier)
     {
         t := this._parseIdentifier(identifier)
         thisFile := ""
@@ -83,28 +100,28 @@ class Config
         }
         if (t["section"] != "" && t["field"] == "") {
             return thisFile.section[t["section"]]
-        } else if (t["section"] != "" & t["field"] != "") {
+        } else if (t["section"] != "" && t["field"] != "") {
             return thisFile.get(t["section"] "." t["field"])
         } else {
             return thisFile
         }
     }
 
-    resetDefault(identifier)
+    static resetDefault(identifier)
     {
-        throw new Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
+        throw Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
         ; token := this._parseIdentifier(identifier)
         ; default := this.groups[token["group"]].fields[token["field"]].default
         ; return this.groups[token["group"]].fields[token["field"]].value := default
     }
 
-    resetAllDefaults()
+    static resetAllDefaults()
     {
-        throw new Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
+        throw Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
         ; this.initialize(true)
     }
 
-    initialize(force := false)
+    static initialize(force := false)
     {
         if (this.initialized) {
             return
@@ -119,14 +136,14 @@ class Config
         this.initialized := true
     }
 
-    clear()
+    static clear()
     {
         this._deletePaths()
         this._unregisterAll()
     }
 
     ; TODO - Generalize this better
-    getFieldByLabelIdentifier(labelIdentifier)
+    static getFieldByLabelIdentifier(labelIdentifier)
     {
         parts := StrSplit(labelIdentifier, ".")
         if (parts.Length != 4) {
@@ -141,20 +158,20 @@ class Config
 
     ; --- "Private"  methods ---------------------------------------------------
 
-    _assertConfigDirectoriesExist()
+    static _assertConfigDirectoriesExist()
     {
         if (FileExist(this.globalConfigLocation) != "D") {
-            throw new Core.FilesystemException(A_ThisFunc, "The directory " this.globalConfigLocation " does not exist.")
+            throw Core.FilesystemException(A_ThisFunc, "The directory " this.globalConfigLocation " does not exist.")
         }
         if (FileExist(this.localConfigLocation) != "D") {
-            throw new Core.FilesystemException(A_ThisFunc, "The directory " this.localConfigLocation " does not exist.")
+            throw Core.FilesystemException(A_ThisFunc, "The directory " this.localConfigLocation " does not exist.")
         }
     }
 
-    _parseIdentifier(identifier)
+    static _parseIdentifier(identifier)
     {
         parts := StrSplit(identifier, ".")
-        token := {}
+        token := Map()
         token["group"] := (parts.Count() >= 1 ? parts[1] : "")
         token["file"] := (parts.Count() >= 2 ? parts[2] : "")
         token["section"] := (parts.Count() >= 3 ? parts[3] : "")
@@ -162,20 +179,15 @@ class Config
         return token
     }
 
-    _deletePaths()
+    static _deletePaths()
     {
         for groupSlug, group in this.groups {
             group._deletePaths()
         }
     }
 
-    _unregisterAll()
+    static _unregisterAll()
     {
-        this.groups := {}
+        this.groups := Map()
     }
-}
-
-@Config(identifier)
-{
-    Config.get(identifier)
 }

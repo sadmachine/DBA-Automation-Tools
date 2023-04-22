@@ -22,6 +22,9 @@
 ; Revision 4 (04/09/2023)
 ; * Added various constants, mostly paths
 ;
+; Revision 5 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 Env["APP_PATH"] := Lib.Path.concat(Env["PROJECT_ROOT"], "app")
@@ -34,8 +37,8 @@ Env["MODS_INI_FILE"] := Lib.Path.concat(Env["APP_PATH"], "mods.ini")
 
 Env["DOTENV_PATH"]:= Lib.Path.concat(Env["PROJECT_ROOT"], ".env")
 if ((exists := FileExist(Env["DOTENV_PATH"])) && !InStr(exists, "D")) {
-    dotEnvFile := new Lib.DotEnv(Env["DOTENV_PATH"])
-    dotEnvValues := dotEnvFile.toObject()
+    dotEnvFile := Lib.DotEnv(Env["DOTENV_PATH"])
+    dotEnvValues := dotEnvFile.toMap()
     for key, value in dotEnvValues {
         Env[key] := value
     }

@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Settings
 ; Description ..: General Purpose UI for updating/viewing Settings
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -15,6 +15,9 @@
 ; * Update messaging
 ; * Set parent Hwnd for dialogs that need it
 ;
+; Revision 2 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO: Decouple from fields so much
 ; ==============================================================================
@@ -22,10 +25,10 @@
 ; UI.Settings
 class Settings extends UI.Base
 {
-    fields := {}
-    actions := {}
+    fields := Map()
+    actions := Map()
     currentField := ""
-    editedFields := {}
+    editedFields := Map()
 
     __New(title)
     {
@@ -69,9 +72,9 @@ class Settings extends UI.Base
         this.actions["save"] := this.Add("Button", "x+18 ys+0 w110 h30", "&Save")
         this.actions["cancel"] := this.Add("Button", "x+18 ys+0 w110 h30", "&Cancel")
 
-        UI.TreeViewBuilder.fromConfig(this, Config)
+        UI.TreeViewBuilder.fromConfig(this.actions['fieldSelection'], Config)
 
-        base.build()
+        super.build()
     }
 
     bindActions()
@@ -120,7 +123,7 @@ class Settings extends UI.Base
 
     restoreAllDefaults()
     {
-        throw new Core.ProgrammerException(A_ThisFunc, "Not yet implemented.")
+        throw Core.ProgrammerException(A_ThisFunc, "Not yet implemented.")
     }
 
     save()
@@ -128,7 +131,7 @@ class Settings extends UI.Base
         for fieldSlug, field in this.editedFields {
             field.store()
         }
-        this.editedFields := {}
+        this.editedFields := Map()
     }
 
     cancel()
@@ -155,13 +158,12 @@ class Settings extends UI.Base
 
     _buildLabelIdentifier(treeNodeId)
     {
-        this.Default()
         labelIdentifier := ""
         levelCount := 0
-        Loop {
-            TV_GetText(labelText, treeNodeId)
+        Loop{
+            labelText := this.actions['fieldSelection'].GetText(treeNodeId)
             labelIdentifier := labelText "." labelIdentifier
-            treeNodeId := TV_GetParent(treeNodeId)
+            treeNodeId := this.actions['fieldSelection'].GetParent(treeNodeId)
             levelCount++
         } Until (treeNodeId == 0)
         if (levelCount < 4) {

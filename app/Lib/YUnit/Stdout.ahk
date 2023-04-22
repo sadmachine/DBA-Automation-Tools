@@ -1,4 +1,4 @@
-class YunitStdOut
+﻿class YunitStdOut
 {
     Update(Category, Test, Result) ;wip: this only supports one level of nesting?
     {
@@ -12,6 +12,6 @@ class YunitStdOut
             Details := ""
             Status := "PASS"
         }
-        FileAppend, %Status%: %Category%.%Test% %Details%`n, *
+        FileAppend(Status ": " Category "." Test " " Details "`n", "*")
     }
 }

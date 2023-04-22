@@ -13,13 +13,16 @@
 ; Revision 1 (03/20/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Lib.Queue.Job
 class Job
 {
-    data := {}
+    data := Map()
 
     getNamespace()
     {

@@ -1,3 +1,20 @@
+; === Script Information =======================================================
+; Name .........: DBA.QueryBuilder
+; Description ..: Utility class for querying the DBA database
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: QueryBuilder.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
 ; DBA.QueryBuilder
 class QueryBuilder
 {
@@ -14,7 +31,7 @@ class QueryBuilder
         get
         {
             if (this._connection == "") {
-                this.connection := new DBA.DbConnection()
+                this.connection := DBA.DbConnection()
             }
             return this._connection
         }
@@ -35,7 +52,7 @@ class QueryBuilder
 
     from(table, connection := "")
     {
-        builder := new DBA.QueryBuilder(table, connection)
+        builder := DBA.QueryBuilder(table, connection)
         return builder
     }
 

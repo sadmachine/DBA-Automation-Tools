@@ -20,6 +20,9 @@
 ; Revision 3 (03/31/2023)
 ; * Update how global vars are handled
 ;
+; Revision 4 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 Class Core
@@ -40,7 +43,7 @@ Class Core
 
     static primitiveTypes := "Empty,Object,Array,Digit,Float,Hexadecimal,Integer,DateTime,String"
 
-    typeOf(variable)
+    static typeOf(variable)
     {
         if (IsObject(variable)) {
             if (variable.__Class != "") {
@@ -74,14 +77,14 @@ Class Core
         return "String"
     }
 
-    isPrimitiveType(instance)
+    static isPrimitiveType(instance)
     {
         if (InStr(Core.primitiveTypes, Core.typeOf(instance))) {
             return true
         }
     }
 
-    subclassOf(instance, className)
+    static subclassOf(instance, className)
     {
         ; If our instance is a primitive type, return false
         if (Core.isPrimitiveType(instance)) {
@@ -90,22 +93,22 @@ Class Core
         return (InStr(Core.typeOf(instance), className ".") != 0)
     }
 
-    inheritsFrom(instance, className)
+    static inheritsFrom(instance, className)
     {
         if (Core.isPrimitiveType(instance)) {
             return false
         }
         base := instance.base
         while (base != "") {
-            if (base.__Class == className) {
+            if (super.__Class == className) {
                 return true
             }
-            base := base.base
+            base := super.base
         }
         return false
     }
 
-    friendlyException(e)
+    static friendlyException(e)
     {
         if (Env["DEBUG_MODE"] || Core.inheritsFrom(e, "UnexpectedException")) {
             if (!Core.handleException(e)) {
@@ -116,7 +119,7 @@ Class Core
         }
     }
 
-    handleException(e)
+    static handleException(e)
     {
         if (Core.subclassOf(e, "Core")) {
             output := ""
@@ -133,14 +136,14 @@ Class Core
         return 0
     }
 
-    registerExceptionHandler()
+    static registerExceptionHandler()
     {
         Global
         handleExceptionFunc := ObjBindMethod(Core, "handleException")
-        OnError(%handleExceptionFunc%, 1)
+        OnError(handleExceptionFunc, 1)
     }
 
-    vardump(data, level := 0)
+    static vardump(data, level := 0)
     {
         if (!IsObject(data)) {
             if (Core.typeof(data) == "String") {

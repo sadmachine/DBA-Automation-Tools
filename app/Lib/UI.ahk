@@ -14,6 +14,9 @@
 ; * Added This Banner
 ; * Update to not force certain widths on utility *Box methods
 ;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 class UI
@@ -36,28 +39,28 @@ class UI
 
     ; --- Class Functions ------------------------------------------------------
 
-    InputBox(prompt, title := "")
+    static InputBox(prompt, title := "")
     {
-        ib := new UI.InputBoxObj(prompt, title)
+        ib := UI.InputBoxObj(prompt, title)
         return ib.prompt(prompt, title)
     }
 
-    MsgBox(prompt, title := "")
+    static MsgBox(prompt, title := "")
     {
-        mb := new UI.MsgBoxObj(prompt, title)
+        mb := UI.MsgBoxObj(prompt, title)
         mb.autoSize := true
         return mb.OK()
     }
 
-    YesNoBox(prompt, title := "")
+    static YesNoBox(prompt, title := "")
     {
-        mb := new UI.MsgBoxObj(prompt, title)
+        mb := UI.MsgBoxObj(prompt, title)
         return mb.YesNo()
     }
 
     ; --- Utility methods ------------------------------------------------------
 
-    disableCloseButton(hwnd:="")
+    static disableCloseButton(hwnd:="")
     {
         if (hWnd="")
         {
@@ -70,15 +73,15 @@ class UI
         DllCall("DrawMenuBar", "Int", hWnd)
     }
 
-    setParent(child_hwnd, parent_hwnd)
+    static setParent(child_hwnd, parent_hwnd)
     {
         DllCall("SetParent", "Ptr", child_hwnd, "Ptr", parent_hwnd)
     }
 
-    opts(object)
+    static opts(m)
     {
         option_str := ""
-        for key, value in object
+        for key, value in m
         {
             option_str .= key value " "
         }

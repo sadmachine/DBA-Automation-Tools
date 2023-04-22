@@ -1,10 +1,27 @@
-﻿; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+﻿; === Script Information =======================================================
+; Name .........: File
+; Description ..: Handles Config files
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: File.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
+; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Config.File
 class File
 {
     group := ""
-    sections := {}
-    sectionsByLabel := {}
+    sections := Map()
+    sectionsByLabel := Map()
     slug := ""
     loaded := false
     hasLock := false
@@ -17,7 +34,7 @@ class File
             } else if (key == "local") {
                 return Config.localpath(this.group.slug "\" this.slug ".ini")
             }
-            throw new Core.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
+            throw Core.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
         }
         set {
             return value
@@ -58,10 +75,10 @@ class File
     {
         t := this._parseIdentifier(identifier)
         if (t["section"] == "") {
-            throw new Core.ProgrammerException(A_ThisFunc, "You must supply a section handle.")
+            throw Core.ProgrammerException(A_ThisFunc, "You must supply a section handle.")
         }
         if (!this.sections.Has(t["section"])) {
-            throw new Core.ProgrammerException(A_ThisFunc, "The section handle supplied '" t["section"] "' is invalid.")
+            throw Core.ProgrammerException(A_ThisFunc, "The section handle supplied '" t["section"] "' is invalid.")
         }
         if (t["field"] == "") {
             return this.sections[t["section"]]
@@ -120,7 +137,7 @@ class File
     lock(scope := "")
     {
         if (this.hasLock) {
-            throw new Core.FilesystemException(A_ThisFunc, "Cannot relock a file thats already locked.")
+            throw Core.FilesystemException(A_ThisFunc, "Cannot relock a file thats already locked.")
         }
         if (scope == "" || scope == Config.Scope.GLOBAL) {
             if (FileExist(this.path["global"])) {
@@ -138,7 +155,7 @@ class File
     unlock(scope := "")
     {
         if (!this.hasLock) {
-            throw new Core.FilesystemException(A_ThisFunc, "Cannot unlock a file if you do not own the lock.")
+            throw Core.FilesystemException(A_ThisFunc, "Cannot unlock a file if you do not own the lock.")
         }
 
         if (scope == "" || scope == Config.Scope.GLOBAL) {
@@ -177,7 +194,7 @@ class File
     _parseIdentifier(identifier)
     {
         parts := StrSplit(identifier, ".")
-        token := {}
+        token := Map()
         token["section"] := ""
         token["field"] := ""
         if (parts.Count() >= 1) {

@@ -19,6 +19,9 @@
 ; Revision 3 (03/31/2023)
 ; * Add dotenv class
 ;
+; Revision 4 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 class Lib
@@ -31,7 +34,7 @@ class Lib
     #Include "Queue\Queue.ahk"
     #Include "DriveMap\DriveMap.ahk"
 
-    log(channelSlug)
+    static log(channelSlug)
     {
         return Lib.Logger.getChannel(channelSlug)
     }

@@ -2,7 +2,7 @@
 @echo off
 set OLDPROMPT=%PROMPT%
 set COMPILER="%AHK_COMPILER%"
-set BINFILE="%AHK_COMPILER_BINFILE%"
+set BINFILE="%AHK2_COMPILER_BINFILE%"
 setlocal EnableDelayedExpansion
 PROMPT $G$S
 

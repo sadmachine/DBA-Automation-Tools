@@ -19,6 +19,9 @@
 ; Revision 3 (03/05/2023)
 ; * Cleanup temp directories on exit/error
 ;
+; Revision 4 (04/19/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Create static list of temp directories to destroy on error/exit
 ; ==============================================================================
@@ -49,7 +52,7 @@ class Temp
             return
         }
         if (!FileExist(A_Temp)) {
-            throw new Core.FilesystemException(A_ThisFunc, "The temporary directory, " A_Temp ", did not exist.")
+            throw Core.FilesystemException(A_ThisFunc, "The temporary directory, " A_Temp ", did not exist.")
         }
 
         cleanupMethod := ObjBindMethod(this, "_cleanup")
@@ -65,7 +68,7 @@ class Temp
         if (FileExist(namespacePath) != "D") {
             DirCreate(namespacePath)
             if (ErrorLevel) {
-                throw new Core.FilesystemException(A_ThisFunc, "Failure when attempting to create temporary directory: " namespacePath)
+                throw Core.FilesystemException(A_ThisFunc, "Failure when attempting to create temporary directory: " namespacePath)
             }
         }
         this.path := namespacePath

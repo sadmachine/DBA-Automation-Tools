@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
@@ -22,10 +25,10 @@ class DatabaseGroup extends Config.Group
     {
         this.label := "Database"
 
-        connectionFile := new Config.File("Connection")
+        connectionFile := Config.File("Connection")
 
-        mainSection := new Config.Section("Main")
-        mainSection.add(new Config.StringField("DSN")
+        mainSection := Config.Section("Main")
+        mainSection.add(Config.StringField("DSN")
             .setScope(Config.Scope.LOCAL)            
             .setDescription("The ODBC identifier for the database connection."))
 

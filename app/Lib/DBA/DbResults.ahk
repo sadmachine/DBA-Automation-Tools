@@ -1,4 +1,21 @@
-﻿; DBA.DbResult
+﻿; === Script Information =======================================================
+; Name .........: DBA.DbResults
+; Description ..: Represents a set of raw results from the database
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: DbResults.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
+; DBA.DbResult
 class DbResults
 {
     answer := ""
@@ -7,10 +24,11 @@ class DbResults
 
     __New(queryOutput, colDelim := "|")
     {
+        global ADOSQL_LastError
         local header, index, row
-        if (ADOSQL_LastError)
+        if (IsSet(ADOSQL_LastError))
         {
-            throw new Core.SQLException(A_ThisFunc, "Query error:`n" ADOSQL_LastError)
+            throw Core.SQLException(A_ThisFunc, "Query error:`n" ADOSQL_LastError)
         }
 
         this.delim := colDelim
@@ -22,7 +40,7 @@ class DbResults
 
         ; Keep track of the actual order of each header
         ; so we can put them back in the right order later
-        this.headerIndex := {}
+        this.headerIndex := Map()
         for index,header in columnHeaders
         {
             this.headerIndex[header] := index

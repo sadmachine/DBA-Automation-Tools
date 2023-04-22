@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO: Fix objects with string keys 
 ; ==============================================================================
@@ -27,7 +30,7 @@ class Receiver
     lineQuantity := ""
     supplier := ""
     _lots := []
-    related := {}
+    related := Map()
     identification := ""
 
     poNumber
@@ -70,7 +73,7 @@ class Receiver
             } else if (index == "current") {
                 lot := this._lots[this._lots.MaxIndex()]
             } else {
-                throw new Core.ProgrammerException(A_ThisFunc, "key:=" key "]")
+                throw Core.ProgrammerException(A_ThisFunc, "key:=" key "]")
             }
             if (key == "" || !lot.Has(key))
                 return lot
@@ -87,35 +90,35 @@ class Receiver
     assertPoExists()
     {
         if (this.related["porder"].Count() == 0) {
-            throw new Core.ValidationException(A_ThisFunc, "No POs matched the PO # entered ('" this.poNumber "').")
+            throw Core.ValidationException(A_ThisFunc, "No POs matched the PO # entered ('" this.poNumber "').")
         }
     }
 
     assertPoIsUnique()
     {
         if (this.related["porder"].Count() > 1) {
-            throw new Core.ValidationException(A_ThisFunc, "this must be an error.")
+            throw Core.ValidationException(A_ThisFunc, "this must be an error.")
         }
     }
 
     assertPoHasCorrectStatus()
     {
         if (!InStr("Opened,Printed", this.related["porder"][1].status)) {
-            throw new Core.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' has status '" this.related["porder"][1].status "'. Status should be either 'Opened' or 'Printed'")
+            throw Core.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' has status '" this.related["porder"][1].status "'. Status should be either 'Opened' or 'Printed'")
         }
     }
 
     assertPoHasPartNumber()
     {
         if (!Models.DBA.podetl.has(Format("ponum='{}' reference='{}'", this.poNumber, this.partNumber))) {
-            throw new Core.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' did not contain a line with the specified part number '" this.partNumber "'.")
+            throw Core.ValidationException(A_ThisFunc, "The PO '" this.poNumber "' did not contain a line with the specified part number '" this.partNumber "'.")
         }
     }
 
     assertPoHasCorrectQty()
     {
         if (!Models.DBA.podetl.has(Format("ponum='{}' reference='{}' (qty*1.1)-qtyr>='{}'", this.poNumber, this.partNumber, this.lots["current"].quantity))) {
-            throw new Core.ValidationException(A_ThisFunc, "The qty '" this.lots["current"].quantity "' was more than allowed by any line numbers on PO '" this.poNumber "'.")
+            throw Core.ValidationException(A_ThisFunc, "The qty '" this.lots["current"].quantity "' was more than allowed by any line numbers on PO '" this.poNumber "'.")
         }
     }
 
@@ -136,9 +139,9 @@ class Receiver
     _buildLineInfo()
     {
         this.receivedLine := Models.DBA.podetl.build("line='" this.lineReceived "' AND ponum='" this.poNumber "' AND reference='" this.partNumber "'")[1]
-        this.receivedItem := new Models.DBA.item(this.receivedLine.reference)
+        this.receivedItem := Models.DBA.item(this.receivedLine.reference)
         if (!this.receivedLine.exists || !this.receivedItem.exists) {
-            throw new Core.NoRowsException(A_ThisFunc, "Could not pull in additional receiving details from PO")
+            throw Core.NoRowsException(A_ThisFunc, "Could not pull in additional receiving details from PO")
         }
         this.supplier := this.receivedItem.supplier
         this.partDescription := this.receivedItem.descript

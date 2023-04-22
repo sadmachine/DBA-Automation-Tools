@@ -12,14 +12,14 @@ class DbaTests
 
             WithValidPrimaryKey_ShouldReturnRecordWithAttributes()
             {
-                local porder := new Models.DBA.porder("PO114")
+                local porder := Models.DBA.porder("PO114")
                 YUnit.assert(porder.exists, "porder did not exist when it should have")
                 YUnit.assert(porder.status = "Closed", "porder.status equaled '" porder.status "'")
             }
 
             WithoutValidPrimaryKey_ShouldReturnEmptyRecord()
             {
-                local porder := new Models.DBA.porder("")
+                local porder := Models.DBA.porder("")
                 YUnit.assert(!porder.exists, "porder existed when it should not have")
             }
 

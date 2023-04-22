@@ -1,9 +1,26 @@
-﻿; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
+﻿; === Script Information =======================================================
+; Name .........: Config.Group
+; Description ..: Handles config groups (directories)
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: Group.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
+; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
 ; Config.Group
 class Group
 {
-    files := {}
-    filesByLabel := {}
+    files := Map()
+    filesByLabel := Map()
     label := ""
     slug := ""
     initialized := false
@@ -15,7 +32,7 @@ class Group
             } else if (key == "local") {
                 return Config.localpath(this.slug)
             }
-            throw new Core.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
+            throw Core.ProgrammerException(A_ThisFunc, "'" key "' is not a valid path key.")
         }
         set {
             return value
@@ -80,7 +97,7 @@ class Group
 
     setDefaults()
     {
-        throw new Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
+        throw Core.ProgrammerException(A_ThisFunc, "Not yet implemented")
     }
 
     exists()
@@ -132,7 +149,7 @@ class Group
     _parseIdentifier(identifier)
     {
         parts := StrSplit(identifier, ".")
-        token := {}
+        token := Map()
         token["file"] := parts[1]
         token["section"] := parts[2]
         token["field"] := parts[3]

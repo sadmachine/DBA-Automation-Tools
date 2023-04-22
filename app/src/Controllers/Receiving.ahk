@@ -22,6 +22,9 @@
 ; Revision 4 (04/06/2023)
 ; * Run receiving log and inspection reports as queue jobs
 ;
+; Revision 5 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -49,7 +52,7 @@ class Receiving extends Controllers.Base
         this.receiver.identification := UI.Required.InputBox("Enter Employee ID #")
         this.receiver.poNumber := UI.Required.InputBox("Enter PO #")
         this.receiver.partNumber := UI.Required.InputBox("Enter Part #")
-        this.receiver.lots.push(new Models.LotInfo())
+        this.receiver.lots.push(Models.LotInfo())
         this.receiver.lots["current"].lotNumber := UI.Required.InputBox("Enter Lot #")
         this.receiver.lots["current"].quantity := UI.Required.InputBox("Enter Quantity")
 
@@ -72,7 +75,7 @@ class Receiving extends Controllers.Base
 
     displayReceivingResults()
     {
-        this.receivingResults := new Views.PoLookupResults(this)
+        this.receivingResults := Views.PoLookupResults(this)
         this.receivingResults.display(this.receiver)
     }
 
@@ -83,13 +86,13 @@ class Receiving extends Controllers.Base
             this.receiver.lineReceived := this.receivingResults.getSelectedLine()
             receiver := this.receiver
 
-            new Actions.ReceivingTransaction(&receiver)
+            Actions.ReceivingTransaction(&receiver)
             receiver.acquireInspectionNumbers()
-            new Actions.PrintLabels(receiver)
+            Actions.PrintLabels(receiver)
             for n, lot in receiver.lots {
-                ; Queue.createJob(new Actions.PrintLabels(receiver, n))
-                Lib.Queue.createJob(new Actions.ReceivingLog(receiver, n))
-                Lib.Queue.createJob(new Actions.InspectionReport(receiver, n))
+                ; Queue.createJob(Actions.PrintLabels(receiver, n))
+                Lib.Queue.createJob(Actions.ReceivingLog(receiver, n))
+                Lib.Queue.createJob(Actions.InspectionReport(receiver, n))
             }
             this.receiver := receiver
         } catch Any as e {

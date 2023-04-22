@@ -13,10 +13,13 @@
 ; Revision 1 (03/15/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
-Core.registerExceptionHandler()
+; Core.registerExceptionHandler()
 
 Env["PROJECT_ROOT"] := ""
 if (InStr("DBA AutoTools.exe,QueueManager.exe,Settings.exe", A_ScriptName)) {

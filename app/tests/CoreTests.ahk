@@ -68,7 +68,7 @@ class CoreTests
 
         ClassIsFullyQualifiedClassName()
         {
-            typeOf := Core.typeOf(new Core.RequiredFieldException())
+            typeOf := Core.typeOf(Core.RequiredFieldException())
             YUnit.assert(typeOf == "Core.RequiredFieldException", "Found: " typeOf)
         }
 
@@ -140,19 +140,19 @@ class CoreTests
     {
         FooIsSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := Core.subclassOf(new Foo.Bar.Baz(), "Foo")
+            subclassOf := Core.subclassOf(Foo.Bar.Baz(), "Foo")
             YUnit.assert(subclassOf == true, "Found: " subclassOf)
         }
 
         BarIsSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := Core.subclassOf(new Foo.Bar.Baz(), "Bar")
+            subclassOf := Core.subclassOf(Foo.Bar.Baz(), "Bar")
             YUnit.assert(subclassOf == true, "Found: " subclassOf)
         }
 
         BazIsNotSubclassOfFoo_Bar_Baz()
         {
-            subclassOf := Core.subclassOf(new Foo.Bar.Baz(), "Baz")
+            subclassOf := Core.subclassOf(Foo.Bar.Baz(), "Baz")
             YUnit.assert(subclassOf != true, "Found: " subclassOf)
         }
 
@@ -167,25 +167,25 @@ class CoreTests
     {
         GrandChildInheritsFromChild()
         {
-            inheritsFrom := Core.inheritsFrom(new GrandChild(), "Child")
+            inheritsFrom := Core.inheritsFrom(GrandChild(), "Child")
             YUnit.assert(inheritsFrom == true, "Found: " inheritsFrom)
         }
 
         GrandChildInheritsFromParent()
         {
-            inheritsFrom := Core.inheritsFrom(new GrandChild(), "Parent")
+            inheritsFrom := Core.inheritsFrom(GrandChild(), "Parent")
             YUnit.assert(inheritsFrom == true, "Found: " inheritsFrom)
         }
 
         ChildInheritsFromParent()
         {
-            inheritsFrom := Core.inheritsFrom(new Child(), "Parent")
+            inheritsFrom := Core.inheritsFrom(Child(), "Parent")
             YUnit.assert(inheritsFrom == true, "Found: " inheritsFrom)
         }
 
         ParentDoesNotInheritFromItself()
         {
-            inheritsFrom := Core.inheritsFrom(new Parent(), "Parent")
+            inheritsFrom := Core.inheritsFrom(Parent(), "Parent")
             YUnit.assert(inheritsFrom != true, "Found: " inheritsFrom)
         }
 

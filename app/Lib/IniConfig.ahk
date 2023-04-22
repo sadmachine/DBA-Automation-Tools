@@ -1,4 +1,24 @@
-﻿class IniConfig
+﻿; === Script Information =======================================================
+; Name .........: IniConfig
+; Description ..: Utility for treating .ini files as config files
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: IniConfig.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; Revision 2 (04/19/2023)
+; * Update for ahk v2
+; 
+; === TO-DOs ===================================================================
+; ==============================================================================
+class IniConfig
 {
     config_name := ""
     filename := ""
@@ -36,7 +56,7 @@
 
     getSection(section_title)
     {
-        output := {}
+        output := Map()
         keys := IniRead(this.getConfigPath(), section_title)
         Loop Parse, keys, "`n"
         {
@@ -66,12 +86,12 @@
 
     getAll()
     {
-        output := {}
+        output := Map()
         sections := IniRead(this.getConfigPath())
         Loop Parse, sections, "`n"
         {
             cur_section := StrReplace(A_LoopField, "_", " ")
-            output[cur_section] := {}
+            output[cur_section] := Map()
             keys := IniRead(this.getConfigPath(), cur_section)
             Loop Parse, keys, "`n"
             {

@@ -24,10 +24,13 @@
 ; Revision 4 (04/06/2023)
 ; * Add Inspection report jobs to queue
 ;
+; Revision 5 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
-Lib.Queue.setFileDriver(new Lib.Queue.FileDrivers.Ini(Env["QUEUE_PATH"]))
+Lib.Queue.setFileDriver(Lib.Queue.FileDrivers.Ini(Env["QUEUE_PATH"]))
 Lib.log("queue").info(A_ScriptName, "Set File Driver", {queuePath: Env["QUEUE_PATH"]})
 
 Lib.Queue.registerHandler("1", Actions.ReceivingLog)

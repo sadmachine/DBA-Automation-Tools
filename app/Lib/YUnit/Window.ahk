@@ -1,10 +1,13 @@
-class YunitWindow
+﻿class YunitWindow
 {
     __new(instance)
     {
         global YunitWindowTitle, YunitWindowEntries, YunitWindowStatusBar
-        Gui, Yunit:Font, s16, Arial
-        Gui, Yunit:Add, Text, x0 y0 h30 vYunitWindowTitle Center, Test Results
+        Yunit := Gui()
+        Yunit.OnEvent("Close", YunitGuiClose)
+        Yunit.OnEvent("Size", YunitGuiSize)
+        Yunit.SetFont("s16", "Arial")
+        this.text := Yunit.Add("Text", "x0 y0 h30 vYunitWindowTitle Center", "Test Results")
 
         hImageList := IL_Create()
         IL_Add(hImageList,"shell32.dll",132) ;red X
@@ -13,38 +16,43 @@ class YunitWindow
         IL_Add(hImageList,"shell32.dll",135) ;two sheets of paper
         this.icons := {fail: "Icon1", issue: "Icon2", pass: "Icon3", detail: "Icon4"}
 
-        Gui, Yunit:Font, s10
-        Gui, Yunit:Add, TreeView, x10 y30 vYunitWindowEntries ImageList%hImageList%
+        Yunit.SetFont("s10")
+        this.treeView := Yunit.Add("TreeView", "x10 y30 vYunitWindowEntries ImageList" . hImageList)
 
-        Gui, Yunit:Font, s8
-        Gui, Yunit:Add, StatusBar, vYunitWindowStatusBar -Theme BackgroundGreen
-        Gui, Yunit:+Resize +MinSize320x200
-        Gui, Yunit:Show, w500 h400, Yunit Testing
-        Gui, Yunit:+LastFound
+        Yunit.SetFont("s8")
+        this.statusBar := Yunit.Add("StatusBar", "vYunitWindowStatusBar -Theme BackgroundGreen")
+        Yunit.Opt("+Resize +MinSize320x200")
+        Yunit.Title := "Yunit Testing"
+        Yunit.Show("w500 h400")
+        Yunit.Opt("+LastFound")
 
-        this.Categories := {}
+        this.Categories := Map()
         Return this
 
-        YunitGuiSize:
-            GuiControl, Yunit:Move, YunitWindowTitle, w%A_GuiWidth%
-            GuiControl, Yunit:Move, YunitWindowEntries, % "w" . (A_GuiWidth - 20) . " h" . (A_GuiHeight - 60)
-            Gui, Yunit:+LastFound
+        YunitGuiSize(thisGui, MinMax, A_GuiWidth, A_GuiHeight)
+        { ; V1toV2: Added bracket
+            this.text.Move(, , A_GuiWidth)
+            this.treeView.Move(, , (A_GuiWidth - 20), (A_GuiHeight - 60))
+            Yunit.Opt("+LastFound")
             DllCall("user32.dll\InvalidateRect", "uInt", WinExist(), "uInt", 0, "uInt", 1)
-        Return
+            Return
+        } ; V1toV2: Added bracket before function
 
-        YunitGuiClose:
-        ExitApp
-    }
+        YunitGuiClose(*)
+        { ; V1toV2: Added bracket
+            ExitApp()
+        }
+    } ; V1toV2: Added bracket before function
 
     Update(Category, TestName, Result)
     {
-        Gui, Yunit:Default
-        If !this.Categories.HasKey(Category)
+        Yunit.Default()
+        If !this.Categories.Has(Category)
             this.AddCategories(Category)
         Parent := this.Categories[Category]
         If IsObject(result)
         {
-            hChildNode := TV_Add(TestName,Parent,this.icons.fail)
+            hChildNode := this.treeView.Add(TestName, Parent, this.icons.fail)
             outputStr := ""
             outputStr .= "Line #" result.line ": " result.message
             if (result.what != "") {
@@ -53,21 +61,21 @@ class YunitWindow
             if (result.extra != "") {
                 outputStr .= " -> " result.extra
             }
-            TV_Add(outputStr,hChildNode,this.icons.detail)
-            GuiControl, Yunit: +BackgroundRed, YunitWindowStatusBar
+            this.treeView.Add(outputStr, hChildNode, this.icons.detail)
+            this.statusBar.Options("+BackgroundRed")
             key := category
             pos := 1
             while (pos)
             {
-                TV_Modify(this.Categories[key], "Expand " . this.icons.issue)
-                pos := InStr(key, ".", false, (A_AhkVersion < "2") ? 0 : -1, 1)
+                this.treeView.Modify(this.Categories[key], "Expand " . this.icons.issue)
+                pos := InStr(key, ".", false, ((VerCompare(A_AhkVersion, "2") < 0) ? 0 : -1)<1 ? ((VerCompare(A_AhkVersion, "2") < 0) ? 0 : -1)-1 : ((VerCompare(A_AhkVersion, "2") < 0) ? 0 : -1), 1)
                 key := SubStr(key, 1, pos-1)
             }
-            TV_Modify(Parent, "Expand")
+            this.treeView.Modify(Parent, "Expand")
         }
         Else
-            TV_Add(TestName,Parent,this.icons.pass)
-        TV_Modify(TV_GetNext(), "VisFirst") ;// scroll the treeview back to the top
+            this.treeView.Add(TestName, Parent, this.icons.pass)
+        this.treeView.Modify(this.treeView.GetNext(), "VisFirst") ;// scroll the treeview back to the top
     }
 
     AddCategories(Categories)
@@ -78,9 +86,11 @@ class YunitWindow
         for k,v in Categories_Array
         {
             Category .= (Category == "" ? "" : ".") v
-            If (!this.Categories.HasKey(Category))
-                this.Categories[Category] := TV_Add(v, Parent, this.icons.pass)
+            If (!this.Categories.Has(Category))
+                this.Categories[Category] := this.treeView.Add(v, Parent, this.icons.pass)
             Parent := this.Categories[Category]
         }
     }
 }
+
+

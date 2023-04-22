@@ -1,4 +1,21 @@
-﻿; DBA.RecordSet
+﻿; === Script Information =======================================================
+; Name .........: DBA.RecordSet
+; Description ..: Handles a set of ActiveRecords returned from the database
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 04/19/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: RecordSet.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (04/19/2023)
+; * Added This Banner
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
+; DBA.RecordSet
 class RecordSet
 {
     records := []
@@ -13,7 +30,7 @@ class RecordSet
         local index, row
         tableName := classObjOrTable
         if (IsObject(classObjOrTable)) {
-            tableName := classObj.tableName
+            tableName := classObjOrTable.tableName
         }
 
         results := DBA.QueryBuilder
@@ -28,7 +45,7 @@ class RecordSet
         records := []
 
         for index, row in results.data() {
-            records.push(new DBA.ActiveRecord(row))
+            records.push(DBA.ActiveRecord(row))
         }
 
         return records

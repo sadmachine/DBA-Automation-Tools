@@ -1,4 +1,4 @@
-; === Script Information =======================================================
+﻿; === Script Information =======================================================
 ; Name .........: Path Dialog
 ; Description ..: Dialog for asking for path data
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
@@ -18,6 +18,9 @@
 ; Revision 2 (04/13/2023)
 ; * Add ability to convert drives E: - Z: to UNC paths
 ;
+; Revision 3 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -28,28 +31,28 @@ class PathDialog extends UI.BaseDialog
 
     define()
     {
-        if (!this.data.HasKey("pathType")) {
-            throw new Core.ProgrammerException(A_ThisFunc, "data.pathType is missing, must be one of ['file', 'folder', 'directory']")
+        if (!this.data.Has("pathType")) {
+            throw Core.ProgrammerException(A_ThisFunc, "data.pathType is missing, must be one of ['file', 'folder', 'directory']")
         }
         if (!InStr("file, folder, directory", this.data["pathType"])) {
-            throw new Core.ProgrammerException(A_ThisFunc, "data.pathType must be one of ['file', 'folder', 'directory']")
+            throw Core.ProgrammerException(A_ThisFunc, "data.pathType must be one of ['file', 'folder', 'directory']")
         }
 
-        EnvGet, userHome, % "USERPROFILE"
+        userHome := EnvGet("USERPROFILE")
         this.pathType := this.data["pathType"]
 
         ; Generic option
         if (this.title == "") {
-            this.title := this.data.hasKey("title") ? this.data.title : "Select a Folder"
+            this.title := this.data.Has("title") ? this.data.title : "Select a Folder"
         }
 
         ; Pathtype specific options
         if (this.pathType = "file") {
-            if (this.data.hasKey("value")) {
+            if (this.data.Has("value")) {
                 this.startingPath := this.data.value
             } else {
-                this.defaultFileName := this.data.hasKey("defaultFilename") ? this.data.defaultFilename : ""
-                this.startingFolder := this.data.hasKey("startingFolder") ? this.data.startingFolder : userHome
+                this.defaultFileName := this.data.Has("defaultFilename") ? this.data.defaultFilename : ""
+                this.startingFolder := this.data.Has("startingFolder") ? this.data.startingFolder : userHome
                 this.startingPath := ""
                 if (this.startingFolder != "") {
                     this.startingPath := this.startingFolder
@@ -58,67 +61,72 @@ class PathDialog extends UI.BaseDialog
                     }
                 }
             }
-            this.filter := this.data.hasKey("filter") ? this.data.filter : ""
-            this.dialogOptions := this.data.hasKey("dialogOptions") ? this.data.dialogOptions : 3
+            this.filter := this.data.Has("filter") ? this.data.filter : ""
+            this.dialogOptions := this.data.Has("dialogOptions") ? this.data.dialogOptions : 3
         } else {
-            this.startingPath := this.data.hasKey("value") ? this.data.value : userHome
+            this.startingPath := this.data.Has("value") ? this.data.value : userHome
         }
     }
 
     SelectFolderEx(StartingFolder := "", Prompt := "", OwnerHwnd := 0, OkBtnLabel := "") {
-        Static OsVersion := DllCall("GetVersion", "UChar")
-            , IID_IShellItem := 0
-            , InitIID := VarSetCapacity(IID_IShellItem, 16, 0)
-            & DllCall("Ole32.dll\IIDFromString", "WStr", "{43826d1e-e718-42ee-bc55-a1e261c37bfe}", "Ptr", &IID_IShellItem)
-            , Show := A_PtrSize * 3
-            , SetOptions := A_PtrSize * 9
-            , SetFolder := A_PtrSize * 12
-            , SetTitle := A_PtrSize * 17
-            , SetOkButtonLabel := A_PtrSize * 18
-            , GetResult := A_PtrSize * 20
+        static OsVersion := DllCall("GetVersion", "UChar"), 
+            IID_IShellItem := 0, 
+            InitIID := IID_IShellItem := Buffer(16, 0) ; V1toV2: if 'IID_IShellItem' is a UTF-16 string, use 'VarSetStrCapacity(&IID_IShellItem, 16)'
+            & DllCall("Ole32.dll\IIDFromString", "WStr", "{43826d1e-e718-42ee-bc55-a1e261c37bfe}", "Ptr", IID_IShellItem), 
+            Show := A_PtrSize * 3, 
+            SetOptions := A_PtrSize * 9, 
+            SetFolder := A_PtrSize * 12, 
+            SetTitle := A_PtrSize * 17,
+            SetOkButtonLabel := A_PtrSize * 18, 
+            GetResult := A_PtrSize * 20
+
         SelectedFolder := ""
-        If (OsVersion < 6) { ; IFileDialog requires Win Vista+, so revert to FileSelectFolder
-            FileSelectFolder, SelectedFolder, *%StartingFolder%, 3, %Prompt%
-            Return SelectedFolder
+        if (OsVersion < 6) { ; IFileDialog requires Win Vista+, so revert to FileSelectFolder
+            SelectedFolder := DirSelect("*" StartingFolder, 3, Prompt)
+            return SelectedFolder
         }
+
         OwnerHwnd := DllCall("IsWindow", "Ptr", OwnerHwnd, "UInt") ? OwnerHwnd : 0
-        If !(FileDialog := ComObjCreate("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}", "{42f85136-db7e-439c-85f1-e4075d135fc8}"))
-            Return ""
+        if !(FileDialog := ComObject("{DC1C5A9C-E88A-4dde-A5A1-60F82A20AEF7}", "{42f85136-db7e-439c-85f1-e4075d135fc8}"))
+            return ""
         VTBL := NumGet(FileDialog + 0, "UPtr")
         ; FOS_CREATEPROMPT | FOS_NOCHANGEDIR | FOS_PICKFOLDERS
         DllCall(NumGet(VTBL + SetOptions, "UPtr"), "Ptr", FileDialog, "UInt", 0x00002028, "UInt")
-        If (StartingFolder <> "")
-            If !DllCall("Shell32.dll\SHCreateItemFromParsingName", "WStr", StartingFolder, "Ptr", 0, "Ptr", &IID_IShellItem, "PtrP", FolderItem)
+        if (StartingFolder  != "")
+            if !DllCall("Shell32.dll\SHCreateItemFromParsingName", "WStr", StartingFolder, "Ptr", 0, "Ptr", IID_IShellItem, "PtrP", &FolderItem)
                 DllCall(NumGet(VTBL + SetFolder, "UPtr"), "Ptr", FileDialog, "Ptr", FolderItem, "UInt")
-        If (Prompt <> "")
+        if (Prompt != "")
             DllCall(NumGet(VTBL + SetTitle, "UPtr"), "Ptr", FileDialog, "WStr", Prompt, "UInt")
-        If (OkBtnLabel <> "")
+        if (OkBtnLabel != "")
             DllCall(NumGet(VTBL + SetOkButtonLabel, "UPtr"), "Ptr", FileDialog, "WStr", OkBtnLabel, "UInt")
-        If !DllCall(NumGet(VTBL + Show, "UPtr"), "Ptr", FileDialog, "Ptr", OwnerHwnd, "UInt") {
-            If !DllCall(NumGet(VTBL + GetResult, "UPtr"), "Ptr", FileDialog, "PtrP", ShellItem, "UInt") {
+        if (!DllCall(NumGet(VTBL + Show, "UPtr"), "Ptr", FileDialog, "Ptr", OwnerHwnd, "UInt")) {
+            if !DllCall(NumGet(VTBL + GetResult, "UPtr"), "Ptr", FileDialog, "PtrP", &ShellItem, "UInt") {
                 GetDisplayName := NumGet(NumGet(ShellItem + 0, "UPtr"), A_PtrSize * 5, "UPtr")
-                If !DllCall(GetDisplayName, "Ptr", ShellItem, "UInt", 0x80028000, "PtrP", StrPtr) ; SIGDN_DESKTOPABSOLUTEPARSING
+                if !DllCall(GetDisplayName, "Ptr", ShellItem, "UInt", 0x80028000, "PtrP", &StrPtr) { ; SIGDN_DESKTOPABSOLUTEPARSING
                     SelectedFolder := StrGet(StrPtr, "UTF-16"), DllCall("Ole32.dll\CoTaskMemFree", "Ptr", StrPtr)
+                }
                 ObjRelease(ShellItem)
-        } }
-        If (FolderItem)
+            } 
+        }
+        if (FolderItem) {
             ObjRelease(FolderItem)
+        }
         ObjRelease(FileDialog)
-        Return SelectedFolder
+        return SelectedFolder
     }
 
     prompt()
     {
-        Loop {
+        Loop{
             if (this.pathType = "file") {
-                FileSelectFile, path, % this.dialogOptions, % this.startingPath, % this.title, % this.filter
+                path := FileSelect(this.dialogOptions, this.startingPath, this.title, this.filter)
                 if (InStr(FileExist(path), "D")) {
                     UI.MsgBox("You have selected a folder/directory, please select a file.")
                     Continue
                 }
                 canceled := (ErrorLevel == 0) ? false : true
                 if (this.convertDrivesToUnc) {
-                    path := Path.convertToUnc(path)
+                    path := Lib.Path.convertToUnc(path)
                 }
                 result := {value: path, canceled: canceled}
                 return result
@@ -132,7 +140,7 @@ class PathDialog extends UI.BaseDialog
                     canceled := true
                 }
                 if (this.convertDrivesToUnc) {
-                    path := Path.convertToUnc(path)
+                    path := Lib.Path.convertToUnc(path)
                 }
                 result := {value: path, canceled: canceled}
                 return result

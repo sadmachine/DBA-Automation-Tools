@@ -29,6 +29,9 @@
 ; Revision 5 (04/10/2023)
 ; * Don't overwrite certain files on install
 ;
+; Revision 6 (04/19/2023)
+; * Update to ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Initialize config files on installation
 ; TODO - Utilize settings ui to set required values, isntead of dialogs
@@ -37,9 +40,9 @@
 ; TODO - Detect install vs update
 ; ==============================================================================
 
-#Include "src/Autoload.ahk"
+#Include "Autoload.ahk"
 
-Core.registerExceptionHandler()
+; Core.registerExceptionHandler()
 
 GetInstallationLocation()
 
@@ -70,7 +73,7 @@ GetInstallationLocation()
     ; installationGui.Add("Button", "w400", installationPath)
 
     installationPath := DirSelect("*" installationPath, 3, "Installation Location")
-    if (ErrorLevel) {
+    if (installationPath == "") {
         MsgBox("You must supply an installation location to continue. Exiting...")
         ExitApp()
     }
@@ -120,23 +123,55 @@ InstallFiles()
     Global
 
     ; Files in project root folder
-    FileInstall("..\dist\DBA AutoTools.exe", Lib.Path.concat(projectPath, "DBA AutoTools.exe"), 1)
-    FileInstall("..\dist\QueueManager.exe", Lib.Path.concat(projectPath, "QueueManager.exe"), 1)
-    FileInstall("..\dist\Settings.exe", Lib.Path.concat(projectPath, "Settings.exe"), 1)
-    FileInstall("..\dist\.env", Lib.Path.concat(projectPath, ".env"), 0)
+    try {
+        FileInstall("..\dist\DBA AutoTools.exe", Lib.Path.concat(projectPath, "DBA AutoTools.exe"), 1)
+    } catch Any as e {
+    }
+    try {
+        FileInstall("..\dist\QueueManager.exe", Lib.Path.concat(projectPath, "QueueManager.exe"), 1)
+    } catch Any as e {
+    }
+    try {
+        FileInstall("..\dist\Settings.exe", Lib.Path.concat(projectPath, "Settings.exe"), 1)
+    } catch Any as e {
+    }
+    try {
+        FileInstall("..\dist\.env", Lib.Path.concat(projectPath, ".env"), 0)
+    } catch Any as e {
+    }
+
 
     ; Files in app folder
-    FileInstall("..\dist\app\settings.example.ini", Lib.Path.concat(appPath, "settings.example.ini"), 1)
-    FileInstall("..\dist\app\settings.ini", Lib.Path.concat(appPath, "settings.ini"), 0)
-    FileInstall("..\dist\app\mods.ini", Lib.Path.concat(appPath, "mods.ini"), 0)
+    try {
+        FileInstall("..\dist\app\settings.example.ini", Lib.Path.concat(appPath, "settings.example.ini"), 1)
+    } catch Any as e {
+    }
+    try {
+        FileInstall("..\dist\app\settings.ini", Lib.Path.concat(appPath, "settings.ini"), 0)
+    } catch Any as e {
+    }
+    try {
+        FileInstall("..\dist\app\mods.ini", Lib.Path.concat(appPath, "mods.ini"), 0)
+    } catch Any as e {
+    }
 
     ; Files in modules folder
-    FileInstall("..\dist\app\modules\PO_Verification.exe", Lib.Path.concat(modulesPath, "PO_Verification.exe"), 1)
+    try {
+        FileInstall("..\dist\app\modules\PO_Verification.exe", Lib.Path.concat(modulesPath, "PO_Verification.exe"), 1)
+    } catch Any as e {
+    }
 
     ; Files in templates folder
-    FileInstall("..\dist\app\templates\Incoming Inspection Log Template.xlsx", Lib.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1)
-    FileInstall("..\dist\app\templates\Incoming Inspection Report Template.xlsx", Lib.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1)
+    try {
+        FileInstall("..\dist\app\templates\Incoming Inspection Log Template.xlsx", Lib.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1)
+    } catch Any as e {
+    }
+    try {
+        FileInstall("..\dist\app\templates\Incoming Inspection Report Template.xlsx", Lib.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1)
+    } catch Any as e {
+    }
 }
+
 
 SetupConfigIni()
 {

@@ -16,6 +16,9 @@
 ; Revision 2 (03/05/2023)
 ; * Implement temp dir and CMD copy/move
 ;
+; Revision 3 (04/21/2023)
+; * Update for ahk v2
+; 
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -30,19 +33,19 @@ class PrintLabels extends Actions.Base
 
         ; Name/Check for file existence
         if (!InStr(FileExist(printJobLocation), "D")) {
-            throw new Core.FilesystemException(A_ThisFunc, "The Print Job location '" printJobLocation " does not exist or is not a valid directory.")
+            throw Core.FilesystemException(A_ThisFunc, "The Print Job location '" printJobLocation " does not exist or is not a valid directory.")
         }
 
         fileDateTime := FormatTime(, "yyyy-MM-dd+HH-mm-ss")
         fileRandomNumber := Random(0, 10000)
         filename := Format("{1:s}_{2:i}_{3:s}.csv", fileDateTime, fileRandomNumber, receiver.identification)
-        tempDir := new Lib.Path.Temp("DBA AutoTools")
+        tempDir := Lib.Path.Temp("DBA AutoTools")
         finalFilepath := Lib.Path.concat(printJobLocation, filename)
         filepath := tempDir.concat(filename)
         printJobFile := FileOpen(filepath, "w")
 
         if (!printJobFile) {
-            throw new Core.FilesystemException(A_ThisFunc, "The Print Job file '" printJobFile "' could not be created.")
+            throw Core.FilesystemException(A_ThisFunc, "The Print Job file '" printJobFile "' could not be created.")
         }
 
         ; Pull together data to add to csv
@@ -50,7 +53,7 @@ class PrintLabels extends Actions.Base
 
         ; Loop over data and put into csv
         for n, lot in receiver.lots {
-            printQtyDialog := new UI.NumberDialog("Lot Label Qty", {min: 1, max: 100})
+            printQtyDialog := UI.NumberDialog("Lot Label Qty", {min: 1, max: 100})
             result := printQtyDialog.prompt("How many labels should be printed for lot # " lot.lotNumber "?")
             printQty := result.value
             labelName := (lot.hasCert == "Yes" ? "Main" : "QA HOLD")
