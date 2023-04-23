@@ -97,7 +97,6 @@ RunQueueManager()
 {
     Global
     Process, Exist, QueueManager.exe
-    ; If QueueManager.exe isn't running, run it
     if (!ErrorLevel) {
         Run, % #.path.concat($["PROJECT_ROOT"], "QueueManager.exe")
     }

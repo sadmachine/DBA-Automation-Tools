@@ -29,6 +29,9 @@
 ; Revision 5 (04/10/2023)
 ; * Don't overwrite certain files on install
 ;
+; Revision 6 (04/23/2023)
+; * Create separate file for version, version.ini
+;
 ; === TO-DOs ===================================================================
 ; TODO - Initialize config files on installation
 ; TODO - Utilize settings ui to set required values, isntead of dialogs
@@ -127,6 +130,7 @@ InstallFiles()
 
     ; Files in app folder
     FileInstall, ..\dist\app\settings.example.ini, % #.Path.concat(appPath, "settings.example.ini"), 1
+    FileInstall, ..\dist\app\version.ini, % #.Path.concat(appPath, "version.ini"), 1
     FileInstall, ..\dist\app\settings.ini, % #.Path.concat(appPath, "settings.ini"), 0
     FileInstall, ..\dist\app\mods.ini, % #.Path.concat(appPath, "mods.ini"), 0
 
