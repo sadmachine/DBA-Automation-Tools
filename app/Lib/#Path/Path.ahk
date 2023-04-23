@@ -24,6 +24,10 @@
 ; * ... systems
 ; * Update how OnError and OnExit methods are registered
 ;
+; Revision 6 (04/23/2023)
+; * Normalize paths on concatenation
+; * inUse returns false now if the file doesn't exist
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -138,7 +142,7 @@ class Path
 
     concat(path1, path2)
     {
-        return RTrim(path1, "/\") "\" LTrim(path2, "/\")
+        return this.normalize(RTrim(path1, "/\") "\" LTrim(path2, "/\"))
     }
 
     normalize(path)
@@ -163,6 +167,10 @@ class Path
 
     inUse(path)
     {
+        if (!FileExist(path)) {
+            return false
+        }
+
         path := this.normalize(path)
         directory := this.parseDirectory(path)
         filename := this.parseFilename(path)
@@ -175,6 +183,13 @@ class Path
             return true
         } else {
             return false
+        }
+    }
+
+    waitFree(path, waitPeriod:= 200)
+    {
+        while (this.inUse(path)) {
+            sleep 200
         }
     }
 
