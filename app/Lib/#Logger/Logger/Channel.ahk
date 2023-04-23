@@ -13,6 +13,9 @@
 ; Revision 1 (03/11/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/23/2023)
+; * If log file is in use, create unique file and write to that instead
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -26,6 +29,7 @@ class Channel
     {
         this.logPath := #.Path.normalize(path)
         this.logFilename := filename
+        this.location := #.Path.concat(this.logPath, this.logFilename)
         this._assertLogPathExists()
     }
 
@@ -37,9 +41,14 @@ class Channel
         if (data != "") {
             data := this._prepareData(data)
         }
+        filePath := this.location
+        if (#.path.inUse(filePath)) {
+            filePath := this._createUnique(filePath)
+        }
+
         FileAppend
-            , % dateAndTime " [" level "] [" (!where ? "<global>" : where) "] " message "`n" data
-            , % #.Path.normalize(#.Path.concat(this.logPath, this.logFilename))
+            , % dateAndTime " [" level "] [" A_UserName "] [" (!where ? "<global>" : where) "] " message "`n" data
+            , % filePath
     }
 
     info(where, message, data := "")
@@ -55,6 +64,20 @@ class Channel
     error(where, message, data := "")
     {
         this.log("!err", where, message, data)
+    }
+
+    _createUnique(path)
+    {
+        filePathBase := this.logPath
+        filenameBase := #.path.parseFilename(path, false)
+        index := -1
+        loop {
+            index += 1
+            filename := filenameBase "." index ".ini"
+            filePath := #.Path.concat(filePathBase, filename)
+        } until (!#.path.inUse(filePath))
+
+        return filePath
     }
 
     _assertLogPathExists()
