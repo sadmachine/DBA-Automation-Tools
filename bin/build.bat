@@ -15,7 +15,7 @@ if "%1" NEQ "" (
   )
 )
 
-inifile "%CD%\dist\app\settings.ini" [version] current=%CURRENT_VERSION%
+inifile "%CD%\dist\app\version.ini" [version] current=%CURRENT_VERSION%
 
 :: Kill existing processes that will affect builds
 tasklist /fi "imagename eq DBA AutoTools.exe" |find ":" > nul
