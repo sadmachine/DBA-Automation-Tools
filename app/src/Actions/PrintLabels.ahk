@@ -16,6 +16,9 @@
 ; Revision 2 (03/05/2023)
 ; * Implement temp dir and CMD copy/move
 ;
+; Revision 3 (04/30/2023)
+; * Add additional logging
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -56,7 +59,7 @@ class PrintLabels extends Actions.Base
             labelName := (lot.hasCert == "Yes" ? "Main" : "QA HOLD")
             outputLine := Format("""{:s}"",""{:s}"",""{:s}"",{:i},""{:s}""", receiver.partNumber, receiver.partDescription, lot.lotNumber, printQty, labelName)
             printJobFile.writeLine(outputLine)
-            #.log("app").info(A_ThisFunc, "Wrote line: " outputLine)
+            #.log("app").info(A_ThisFunc, "Created label job file: " outputLine)
         }
 
         printJobFile.Close()

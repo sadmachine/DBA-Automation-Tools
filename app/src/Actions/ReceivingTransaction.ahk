@@ -16,6 +16,9 @@
 ; Revision 2 (04/06/2023)
 ; * Add in checks to validate the location was entered correctly for each lot
 ;
+; Revision 3 (04/30/2023)
+; * Add additional logging
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -28,8 +31,10 @@ class ReceivingTransaction extends Actions.Base
         local location
         this.receiver := receiver
         indexNumber := this._getLineNumberIndex()
+        #.log("app").info(A_ThisFunc, "Line #: " indexNumber)
 
         this._preparePoWindow(indexNumber)
+        #.log("app").info(A_ThisFunc, "PO Window prepared")
 
         loopAgain := true
         while (loopAgain)
@@ -38,9 +43,12 @@ class ReceivingTransaction extends Actions.Base
                 this._nextReceiptLine()
                 this.receiver.lots.push(new Models.LotInfo())
                 this.receiver.lots["current"].lotNumber := UI.Required.InputBox("Enter Lot #")
+                #.log("app").info(A_ThisFunc, "Added Lot #: " this.receiver.lots["current"].lotNumber)
                 this.receiver.lots["current"].quantity := UI.Required.InputBox("Enter Quantity")
+                #.log("app").info(A_ThisFunc, "Added Quantity to Lot # " this.receiver.lots["current"].lotNumber ": " this.receiver.lots["current"].quantity)
             }
             this.receiver.lots["current"].hasCert := UI.Required.YesNoBox("Does lot # " this.receiver.lots["current"].lotNumber " have certification?")
+            #.log("app").info(A_ThisFunc, "Lot # " this.receiver.lots["current"].lotNumber " has Cert: " this.receiver.lots["current"].hasCert)
             location := UI.Required.InputBox("Enter Location")
 
             while (!Models.DBA.Locations.hasOne(location)) {
@@ -49,10 +57,12 @@ class ReceivingTransaction extends Actions.Base
             }
 
             this.receiver.lots["current"].location := location
+            #.log("app").info(A_ThisFunc, "Added location for Lot # " this.receiver.lots["current"].lotNumber ": " this.receiver.lots["current"].location)
 
             this._receiveLotInfo()
 
             loopAgain := (UI.YesNoBox("Add another lot/qty?").value == "Yes")
+            #.log("app").info(A_ThisFunc, "Another lot/qty requested.")
         }
 
         this._saveAndExitPoWindow()

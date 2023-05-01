@@ -26,6 +26,9 @@
 ; Revision 5 (04/10/2023)
 ; * Properly disable receiving modules if not present
 ;
+; Revision 6 (04/30/2023)
+; * Add additional logging
+;
 ; === TO-DOs ===================================================================
 ; TODO - Abstract out to a controller and a view
 ; TODO - Update to actually handle modules (old way is broken, only works for single module)
@@ -91,6 +94,7 @@ class Dashboard
         if (show) {
             this.show()
         }
+        #.log("app").info(A_ThisFunc, "Gui loaded into DBA")
     }
 
     show()

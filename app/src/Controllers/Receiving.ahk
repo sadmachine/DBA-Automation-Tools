@@ -22,6 +22,9 @@
 ; Revision 4 (04/06/2023)
 ; * Run receiving log and inspection reports as queue jobs
 ;
+; Revision 5 (04/30/2023)
+; * Add additional logging
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -47,11 +50,16 @@ class Receiving extends Controllers.Base
     {
         this.receiver := receiver
         this.receiver.identification := UI.Required.InputBox("Enter Employee ID #")
+        #.log("app").info(A_ThisFunc, "Identification: " this.receiver.identification)
         this.receiver.poNumber := UI.Required.InputBox("Enter PO #")
+        #.log("app").info(A_ThisFunc, "PO #: " this.receiver.poNumber)
         this.receiver.partNumber := UI.Required.InputBox("Enter Part #")
+        #.log("app").info(A_ThisFunc, "Part #: " this.receiver.partNumber)
         this.receiver.lots.push(new Models.LotInfo())
         this.receiver.lots["current"].lotNumber := UI.Required.InputBox("Enter Lot #")
+        #.log("app").info(A_ThisFunc, "Lot #: " this.receiver.lots["current"].lotNumber)
         this.receiver.lots["current"].quantity := UI.Required.InputBox("Enter Quantity")
+        #.log("app").info(A_ThisFunc, "Quantity: " this.receiver.lots["current"].quantity)
 
         this.receiver.buildRelated()
 
@@ -68,6 +76,8 @@ class Receiving extends Controllers.Base
             @.friendlyException(e, "PO Criteria is Invalid")
             ExitApp
         }
+
+        #.log("app").info(A_ThisFunc, "Complete")
     }
 
     displayReceivingResults()
@@ -81,6 +91,7 @@ class Receiving extends Controllers.Base
         try {
 
             this.receiver.lineReceived := this.receivingResults.getSelectedLine()
+            #.log("app").info(A_ThisFunc, "Line Received: " this.receiver.lineReceived)
             receiver := this.receiver
 
             new Actions.ReceivingTransaction(receiver)

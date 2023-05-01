@@ -31,6 +31,9 @@
 ; Revision 6 (04/09/2023)
 ; * Update to use MODS_PATH global variable
 ;
+; Revision 7 (04/30/2023)
+; * Add additional logging
+;
 ; === TO-DOs ===================================================================
 ; TODO - Use Bootstrap.ahk
 ; ==============================================================================
@@ -46,23 +49,6 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #Include src\ModuleLoader.ahk
 #Include src\Dashboard.ahk
 
-; --- Global var setup ---------------------------------------------------------
-
-; Whether or not debug mode is active
-DEBUG_MODE := false
-; The folder where modules can be found
-
-; --- Setup steps --------------------------------------------------------------
-
-for n, param in A_Args
-{
-    if (param == "-d")
-    {
-        DEBUG_MODE := true
-    }
-
-}
-
 ModuleLoader.boot($["MODS_PATH"], $["MODS_INI_FILE"])
 Dashboard.initialize()
 ;initialize_hub_gui()
@@ -72,10 +58,6 @@ SetTimer, RunQueueManager, 1000
 Return
 
 ; --- Labels -------------------------------------------------------------------
-
-RunUtility:
-
-return
 
 ; --- Functions ----------------------------------------------------------------
 
@@ -89,6 +71,7 @@ LaunchModule(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "")
 {
     Global
     GuiControlGet, module_title,, % CtrlHwnd
+    #.log("app").info(A_ThisFunc, "Launch module: " module_title)
     mod := ModuleLoader.get(module_title)
     Run % $["MODS_PATH"] "/" ModuleLoader.get(module_title).file
 }
@@ -98,6 +81,7 @@ RunQueueManager()
     Global
     Process, Exist, QueueManager.exe
     if (!ErrorLevel) {
+        #.log("app").info(A_ThisFunc, "QueueManager.exe process not found, launching")
         Run, % #.path.concat($["PROJECT_ROOT"], "QueueManager.exe")
     }
 }

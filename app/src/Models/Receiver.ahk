@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/30/2023)
+; * Add additional logging
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -126,7 +129,7 @@ class Receiver
             nextInspectionNumber := inspectionNumberfile.get("last.number") + 1
             lot.inspectionNumber := nextInspectionNumber
             inspectionNumberFile.set("last.number", nextInspectionNumber)
-            #.log("app").info(A_ThisFunc, "Got inspection number: " nextInspectionNumber)
+            #.log("app").info(A_ThisFunc, "Acquired inspection number for lot # " lot.lotNumber ": " nextInspectionNumber)
         }
         inspectionNumberFile.store()
         Config.unlock("receiving.inspectionNumber", Config.Scope.GLOBAL)
