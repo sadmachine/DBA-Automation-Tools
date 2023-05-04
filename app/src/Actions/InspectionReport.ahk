@@ -19,6 +19,23 @@
 ; Revision 3 (03/05/2023)
 ; * Add progress gui, implement CMD copy/move
 ;
+; Revision 4 (03/15/2023)
+; * Converted to creating a queued job instead of immediately creating
+; * Moved some methods from here to IniFile utility class
+;
+; Revision 5 (03/31/2023)
+; * Near finished implementing queue job interface
+; * Removed legacy poll() method
+;
+; Revision 6 (04/06/2023)
+; * Tested locally and seems to be working
+;
+; Revision 7 (04/12/2023)
+; * Edit the file directly, instead of using tempfiles
+;
+; Revision 8 (05/04/2023)
+; * Change how `lineQuantity` is formatted to remove unnecessary trailing 0's
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -26,73 +43,94 @@
 ; Actions.InspectionReport
 class InspectionReport extends Actions.Base
 {
-    __New(ByRef receiver)
+    /*
+        @var string partNumber
+        @var string partDescription
+        @var string poNumber
+        @var string supplier
+        @var string lineQuantity
+        @var LotInfo[] lots
+    */
+    __New(receiver, lotIndex)
     {
-        Global
-        this.reportCount := receiver.lots.Count()
+        this.receiver := receiver
+        this.lotIndex := lotIndex
+    }
 
-        this.progressGui := new UI.ProgressBoxObj("Creating Inspection Reports, please wait...", "Creating Inspection Reports")
-        this.progressGui.SetRange(0, this.reportCount)
-        this.progressGui.SetStartValue(0)
-        this.progressGui.Show()
+    create()
+    {
+        FormatTime, dateOfGeneration,, ShortDate
+        lot := this.receiver.lots[this.lotIndex]
 
+        lineQuantity := RTrim(this.receiver.lineQuantity, "0")
+        lineQuantity := RTrim(lineQuantity, ".")
+
+        this.data["data"] := {}
+        this.data["data"]["inspectionFormNumber"] := lot.inspectionNumber
+        this.data["data"]["reportDate"] := dateOfGeneration
+        this.data["data"]["stelrayMaterialNumber"] := this.receiver.partNumber
+        this.data["data"]["materialDescription"] := this.receiver.partDescription
+        this.data["data"]["lotNumber"] := lot.lotNumber
+        this.data["data"]["poNumber"] := this.receiver.poNumber
+        this.data["data"]["vendorName"] := this.receiver.supplier
+        this.data["data"]["quantityOnPo"] := lineQuantity
+        this.data["data"]["quantityReceived"] := lot.quantity
+
+        return this.data
+    }
+
+    execute()
+    {
         inspectionReportConfig := Config.load("receiving.inspectionReport")
         template := inspectionReportConfig.get("file.template")
         destination := inspectionReportConfig.get("file.destinationFolder")
         tempDir := new #.Path.Temp("DBA AutoTools")
-        FormatTime, dateOfGeneration,, ShortDate
 
-        for n, lot in receiver.lots {
-            inspectionFolder := RTrim(destination, "/\") "\" lot.inspectionNumber
-            FileCreateDir, % inspectionFolder
-            filename := lot.inspectionNumber " - Inspection Report.xlsx"
-            filepath := #.Path.concat(inspectionFolder, filename)
-            tempFilepath := tempDir.concat(filename)
-            #.Cmd.copy(template, filepath)
-            #.Cmd.copy(template, tempFilepath)
+        reportData := this.data["data"]
 
+        inspectionNumber := reportData["inspectionFormNumber"]
+        inspectionFolder := #.Path.concat(destination, inspectionNumber)
+        FileCreateDir, % inspectionFolder
+        filename := inspectionNumber " - Inspection Report.xlsx"
+        filepath := #.Path.concat(inspectionFolder, filename)
+        #.Cmd.copy(template, filepath)
+
+        if (#.Path.inUse(filepath)) {
+            throw new @.FileInUseException(A_ThisFunc, "The filepath is currently in use", {filepath: filepath})
+        }
+
+        try {
             #.Path.createLock(filepath)
-            #.Logger.info(A_ThisFunc, "Acquired file lock")
+            #.log("queue").info(A_ThisFunc, "Acquired file lock")
 
             xlApp := ComObjCreate("Excel.Application")
-            #.Logger.info(A_ThisFunc, "Created excel app")
-            CurrWbk := xlApp.Workbooks.Open(tempFilepath) ; Open the master file
-            #.Logger.info(A_ThisFunc, "Opened workbook")
+            ; xlHwnd := xlApp.hwnd
+            ; DetectHiddenWindows, On
+            ; WinGet, xlProcessId, PID, % "ahk_id" xlHwnd
+            #.log("queue").info(A_ThisFunc, "Created excel app")
+            CurrWbk := xlApp.Workbooks.Open(filepath) ; Open the master file
+            #.log("queue").info(A_ThisFunc, "Opened workbook")
             CurrSht := CurrWbk.Sheets(1)
 
             excelColumns := inspectionReportConfig.get("excelColumnMapping")
 
-            CurrSht.range[excelColumns.get("inspectionFormNumber")].Value := lot.inspectionNumber
-            CurrSht.range[excelColumns.get("reportDate")].Value := dateOfGeneration
-            CurrSht.range[excelColumns.get("stelrayMaterialNumber")].Value := receiver.partNumber
-            CurrSht.range[excelColumns.get("materialDescription")].Value := receiver.partDescription
-            CurrSht.range[excelColumns.get("lotNumber")].Value := lot.lotNumber
-            CurrSht.range[excelColumns.get("poNumber")].Value := receiver.poNumber
-            CurrSht.range[excelColumns.get("vendorName")].Value := receiver.supplier
-            CurrSht.range[excelColumns.get("quantityOnPo")].Value := receiver.lineQuantity
-            CurrSht.range[excelColumns.get("quantityReceived")].Value := lot.quantity
-
-            CurrWbk.Save()
-            #.Logger.info(A_ThisFunc, "Saved Workbook")
-
-            xlApp.Quit()
-            #.Logger.info(A_ThisFunc, "Quit Excel App")
-            xlApp := "", CurrWbk := "", CurrSht := ""
-
-            #.Logger.info(A_ThisFunc, "Moving tempfile to real location...", {tempFilePath: tempFilePath, filePath: filePath})
-            #.Cmd.move(tempFilePath, filePath)
-            #.Logger.info(A_ThisFunc, "Success")
-
-            if (ErrorLevel) {
-                throw new @.FilesystemException(A_ThisFunc, "Could not copy Inspection Report from the temp directory to its destination.")
+            for columnName, value in reportData {
+                CurrSht.range[excelColumns.get(columnName)].Value := value
             }
 
+            CurrWbk.Save()
+            #.log("queue").info(A_ThisFunc, "Saved Workbook")
+
+            xlApp.Quit()
+            #.log("queue").info(A_ThisFunc, "Quit Excel App")
+            xlApp := "", CurrWbk := "", CurrSht := "", xlHwnd := ""
+
             #.Path.freeLock(filepath)
-            #.Logger.info(A_ThisFunc, "Released file lock")
-
-            this.progressGui.Increment()
+            #.log("queue").info(A_ThisFunc, "Released file lock")
+        } catch e {
+            #.Path.freeLock(filePath)
+            throw e
         }
-
-        this.progressGui.Destroy()
+        return true
     }
 }

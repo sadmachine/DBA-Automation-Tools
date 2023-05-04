@@ -19,6 +19,21 @@
 ; Revision 2 (03/07/2023)
 ; * Remove redundant imports
 ;
+; Revision 3 (03/15/2023)
+; * Run queue manager on startup
+;
+; Revision 4 (03/16/2023)
+; * Run queue manager on an interval
+;
+; Revision 5 (03/26/2023)
+; * Use global var with a different syntax
+;
+; Revision 6 (04/09/2023)
+; * Update to use MODS_PATH global variable
+;
+; Revision 7 (04/30/2023)
+; * Add additional logging
+;
 ; === TO-DOs ===================================================================
 ; TODO - Use Bootstrap.ahk
 ; ==============================================================================
@@ -34,43 +49,15 @@ SetWorkingDir %A_ScriptDir% ; Ensures a consistent starting directory.
 #Include src\ModuleLoader.ahk
 #Include src\Dashboard.ahk
 
-; --- Global var setup ---------------------------------------------------------
-
-; Whether or not debug mode is active
-DEBUG_MODE := false
-; The folder where modules can be found
-MODS_FOLDER := A_ScriptDir "/modules"
-
-; --- Setup steps --------------------------------------------------------------
-
-for n, param in A_Args
-{
-    if (param == "-d")
-    {
-        DEBUG_MODE := true
-    }
-
-    if (InStr(param, "--module-location="))
-    {
-        parts := StrSplit(param, "=")
-        location := Trim(parts[2], OmitChars = "/")
-        MODS_FOLDER := "/" parts[2]
-    }
-}
-
-#.Logger.info(A_LineFile, "", {DEBUG_MODE: DEBUG_MODE, MODS_FOLDER: MODS_FOLDER})
-
-ModuleLoader.boot(MODS_FOLDER)
+ModuleLoader.boot($["MODS_PATH"], $["MODS_INI_FILE"])
 Dashboard.initialize()
 ;initialize_hub_gui()
+
+SetTimer, RunQueueManager, 1000
 
 Return
 
 ; --- Labels -------------------------------------------------------------------
-
-RunUtility:
-
-return
 
 ; --- Functions ----------------------------------------------------------------
 
@@ -84,6 +71,17 @@ LaunchModule(CtrlHwnd, GuiEvent, EventInfo, ErrLevel := "")
 {
     Global
     GuiControlGet, module_title,, % CtrlHwnd
+    #.log("app").info(A_ThisFunc, "Launch module: " module_title)
     mod := ModuleLoader.get(module_title)
-    Run % MODS_FOLDER "/" ModuleLoader.get(module_title).file
+    Run % $["MODS_PATH"] "/" ModuleLoader.get(module_title).file
+}
+
+RunQueueManager()
+{
+    Global
+    Process, Exist, QueueManager.exe
+    if (!ErrorLevel) {
+        #.log("app").info(A_ThisFunc, "QueueManager.exe process not found, launching")
+        Run, % #.path.concat($["PROJECT_ROOT"], "QueueManager.exe")
+    }
 }

@@ -19,6 +19,15 @@
 ; Revision 4 (03/05/2023)
 ; * Add lockPaths variable, and cleanup all lockfiles on exit
 ;
+; Revision 5 (04/12/2023)
+; * Fix issues with `inUse()` where it would lock files indefinitely on certain
+; * ... systems
+; * Update how OnError and OnExit methods are registered
+;
+; Revision 6 (04/23/2023)
+; * Normalize paths on concatenation
+; * inUse returns false now if the file doesn't exist
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -30,6 +39,7 @@ class Path
     #Include <#Path/Path/Temp>
 
     static lockPaths := {}
+    static registered := false
 
     makeAbsolute(path)
     {
@@ -80,10 +90,11 @@ class Path
 
     createLock(path, waitPeriod := 200)
     {
-        if (#.Path.lockPaths.Count() == 0) {
+        if (!#.Path.registered) {
             cleanupMethod := ObjBindMethod(this, "_cleanup")
             OnExit(cleanupMethod, -1)
             OnError(cleanupMethod, -1)
+            #.Path.registered := true
         }
         fileStatus := FileExist(path)
         if (InStr("D", fileStatus) || fileStatus == "") {
@@ -131,7 +142,7 @@ class Path
 
     concat(path1, path2)
     {
-        return RTrim(path1, "/\") "\" LTrim(path2, "/\")
+        return this.normalize(RTrim(path1, "/\") "\" LTrim(path2, "/\"))
     }
 
     normalize(path)
@@ -156,6 +167,10 @@ class Path
 
     inUse(path)
     {
+        if (!FileExist(path)) {
+            return false
+        }
+
         path := this.normalize(path)
         directory := this.parseDirectory(path)
         filename := this.parseFilename(path)
@@ -163,7 +178,19 @@ class Path
         if (FileExist(temporaryFile)) {
             return true
         }
-        return FileExist(path) && !FileOpen(path, "rw")
+        FileGetsize, size, % path
+        if (Errorlevel) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+    waitFree(path, waitPeriod:= 200)
+    {
+        while (this.inUse(path)) {
+            sleep 200
+        }
     }
 
     _cleanup()

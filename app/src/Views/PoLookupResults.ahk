@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/30/2023)
+; * Add additional logging/fix typo
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -60,7 +63,7 @@ class PoLookupResults extends UI.Base
         }
 
         ; Make sure first row is selected
-        LV_Modify(1, "Focuse")
+        LV_Modify(1, "Focus")
         LV_Modify(1, "Select")
 
         this.Show()

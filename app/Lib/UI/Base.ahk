@@ -1,8 +1,8 @@
 ; === Script Information =======================================================
 ; Name .........: UI.Base
-; Description ..: Base UI class, basically a wrapper around GUI commands + some
+; Description ..: The Base UI object for all others to extend
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
-; Start Date ...: 03/08/2023
+; Start Date ...: 04/10/2023
 ; OS Version ...: Windows 10
 ; Language .....: English - United States (en-US)
 ; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
@@ -10,8 +10,9 @@
 ; ==============================================================================
 
 ; === Revision History =========================================================
-; Revision 1 (03/08/2023)
+; Revision 1 (04/10/2023)
 ; * Added This Banner
+; * Added `actions` and `fields` objects for storing controls
 ;
 ; === TO-DOs ===================================================================
 ; TODO - Create an actual `Font` Object to interface with (Reset, Apply, etc)
@@ -68,6 +69,8 @@ class Base
     _built := false
     _label := ""
     _children := {}
+    actions := {}
+    fields := {}
 
     static _defaultOptions := ""
     static _defaultFont := {"options": "", "fontName": ""}

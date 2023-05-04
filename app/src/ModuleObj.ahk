@@ -13,6 +13,9 @@
 ; Revision 1 (02/13/2023)
 ; * Added This Banner
 ;
+; Revision 2 (04/30/2023)
+; * Add additional logging
+;
 ; === TO-DOs ===================================================================
 ; TODO - Convert this into a model class
 ; ==============================================================================
@@ -23,5 +26,6 @@ class ModuleObj
         this.title := title
         this.section_title := section_title
         this.file := file
+        #.log("app").info(A_ThisFunc, "Module: {" section_title ", " title ", " file "}")
     }
 }

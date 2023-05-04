@@ -1,17 +1,42 @@
+; === Script Information =======================================================
+; Name .........: @ (at symbol)
+; Description ..: Holds type and exception utilities classes/methods
+; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
+; Start Date ...: 03/21/2023
+; OS Version ...: Windows 10
+; Language .....: English - United States (en-US)
+; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
+; Filename .....: @.ahk
+; ==============================================================================
+
+; === Revision History =========================================================
+; Revision 1 (03/21/2023)
+; * Added This Banner
+;
+; Revision 2 (03/21/2023)
+; * Created vardump helper for turning any variable into a string for output
+; * Vardump get used for data that is passed to exceptions for displaying
+;
+; Revision 3 (03/31/2023)
+; * Update how global vars are handled
+;
+; === TO-DOs ===================================================================
+; ==============================================================================
 Class @
 {
-    #Include <Exceptions/BaseException>
-    #Include <Exceptions/ConnectivityException>
-    #Include <Exceptions/EnvironmentException>
-    #Include <Exceptions/ExpectedException>
-    #Include <Exceptions/FilesystemException>
-    #Include <Exceptions/NoRowsException>
-    #Include <Exceptions/NotFoundException>
-    #Include <Exceptions/ProgrammerException>
-    #Include <Exceptions/RequiredFieldException>
-    #Include <Exceptions/SQLException>
-    #Include <Exceptions/UnexpectedException>
-    #Include <Exceptions/ValidationException>
+    #Include <@Exceptions/BaseException>
+    #Include <@Exceptions/ConnectivityException>
+    #Include <@Exceptions/EnvironmentException>
+    #Include <@Exceptions/ExpectedException>
+    #Include <@Exceptions/FilesystemException>
+    #Include <@Exceptions/FileInUseException>
+    #Include <@Exceptions/NoRowsException>
+    #Include <@Exceptions/NotFoundException>
+    #Include <@Exceptions/ProgrammerException>
+    #Include <@Exceptions/RequiredFieldException>
+    #Include <@Exceptions/SQLException>
+    #Include <@Exceptions/UnexpectedException>
+    #Include <@Exceptions/ValidationException>
 
     static primitiveTypes := "Empty,Object,Array,Digit,Float,Hexadecimal,Integer,DateTime,String"
 
@@ -82,8 +107,7 @@ Class @
 
     friendlyException(e)
     {
-        GLOBAL DEBUG_MODE
-        if (DEBUG_MODE || @.inheritsFrom(e, "UnexpectedException")) {
+        if ($["DEBUG_MODE"] || @.inheritsFrom(e, "UnexpectedException")) {
             if (!@.handleException(e)) {
                 throw e
             }
@@ -99,7 +123,10 @@ Class @
             output .= "Exception: `t" e.what "`n"
             output .= "Where: `t`t" e.where "`n`n"
             output .= "Details: `n" e.message
-            #.Logger.error(e.where, "<" e.what "> " e.message)
+            if (e.data != "") {
+                output .= "Context: `n" @.vardump(e.data)
+            }
+            #.log("app").error(e.where, "<" e.what "> " e.message)
             UI.MsgBox(output, "Exception Occurred")
             return 1
         }
@@ -111,5 +138,36 @@ Class @
         Global
         handleExceptionFunc := ObjBindMethod(@, "handleException")
         OnError(handleExceptionFunc, 1)
+    }
+
+    vardump(data, level := 0)
+    {
+        if (!IsObject(data)) {
+            if (@.typeof(data) == "String") {
+                return """" data """,`n"
+            }
+            return data ",`n"
+        }
+
+        indentStep := "` ` ` ` "
+        indentMore := "" indentStep
+        indent := ""
+        Loop % level {
+            indent .= indentStep
+            indentMore .= indentStep
+        }
+
+        dataStr := ""
+
+        dataStr .= "{`n"
+        for index, value in data {
+            dataStr .= indentMore index ": " @.vardump(value, level+1)
+        }
+        dataStr .= indent "}"
+        if (level != 0) {
+            dataStr .= ","
+        }
+        dataStr .= "`n"
+        return dataStr
     }
 }

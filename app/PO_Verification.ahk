@@ -29,7 +29,7 @@ try {
     receivingController.cleanup()
 }
 
-#.Logger.info(A_LineFile, "Before ExitApp")
+#.log("app").info(A_LineFile, "Before ExitApp")
 
 ExitApp
 

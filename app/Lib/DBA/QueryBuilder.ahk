@@ -112,9 +112,8 @@ class QueryBuilder
 
     Run()
     {
-        Global DEBUG_MODE
         query := this._buildQuery()
-        if (DEBUG_MODE) {
+        if ($["SHOW_QUERIES"]) {
             UI.MsgBox(query)
         }
         return this.connection.query(query)
