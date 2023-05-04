@@ -33,6 +33,9 @@
 ; Revision 7 (04/12/2023)
 ; * Edit the file directly, instead of using tempfiles
 ;
+; Revision 8 (05/04/2023)
+; * Change how `lineQuantity` is formatted to remove unnecessary trailing 0's
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -59,6 +62,9 @@ class InspectionReport extends Actions.Base
         FormatTime, dateOfGeneration,, ShortDate
         lot := this.receiver.lots[this.lotIndex]
 
+        lineQuantity := RTrim(this.receiver.lineQuantity, "0")
+        lineQuantity := RTrim(lineQuantity, ".")
+
         this.data["data"] := {}
         this.data["data"]["inspectionFormNumber"] := lot.inspectionNumber
         this.data["data"]["reportDate"] := dateOfGeneration
@@ -67,7 +73,7 @@ class InspectionReport extends Actions.Base
         this.data["data"]["lotNumber"] := lot.lotNumber
         this.data["data"]["poNumber"] := this.receiver.poNumber
         this.data["data"]["vendorName"] := this.receiver.supplier
-        this.data["data"]["quantityOnPo"] := this.receiver.lineQuantity
+        this.data["data"]["quantityOnPo"] := lineQuantity
         this.data["data"]["quantityReceived"] := lot.quantity
 
         return this.data
