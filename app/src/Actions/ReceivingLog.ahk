@@ -32,6 +32,10 @@
 ; Revision 7 (04/12/2023)
 ; * Update to edit file directly instead of tempfile
 ;
+; Revision 8 (05/04/2023)
+; * Add verification that the excel file was properly filled
+; * Use a finally block to make sure excel closes properly
+;
 ; === TO-DOs ===================================================================
 ; TODO - Decouple from Receiver model
 ; ==============================================================================
@@ -47,7 +51,7 @@ class ReceivingLog extends Actions.Base
 
     create()
     {
-        FormatTime, dateStr,, % "MM/dd/yyyy"
+        FormatTime, dateStr,, % "M/d/yyyy"
         lot := this.receiver.lots[this.lotIndex]
 
         this.data["data"] := {}
@@ -72,6 +76,8 @@ class ReceivingLog extends Actions.Base
         filePath := #.Path.concat(fileDestination, "Incoming Inspection Log.xlsx")
 
         reportData := this.data["data"]
+
+        #.log("queue").info(A_ThisFunc, "Receiving Log Execute", {reportData: reportData})
 
         this._prepareFile(fileDestination, filePath, templateFile)
 
@@ -117,20 +123,36 @@ class ReceivingLog extends Actions.Base
             excelColumns := receivingLogConfig.get("excelColumnMapping")
 
             for key, value in reportData {
-                emptyRowRange := emptyRow.Range(excelColumns.get(key) "1")
+                cellAddress := excelColumns.get(key) "1"
+                emptyRowRange := emptyRow.Range(cellAddress)
                 emptyRowRange.Value := value
-                emptyRowRange := ""
+                #.log("queue").info(A_ThisFunc, key " (" cellAddress ") => " emptyRowRange.Value " (Expected: " value ")")
             }
 
-            #.log("queue").info(A_ThisFunc, "Added line for inspection number: " lot.inspectionNumber)
+            for key, value in reportData {
+                cellAddress := excelColumns.get(key) "1"
+                emptyRowRange := emptyRow.Range(cellAddress)
+                if (emptyRowRange.Value != value) {
+                    foundValue := emptyRowRange
+                    throw new @.ValidationException(A_ThisFunc, "Excel data did not match queue job data after writing.", {expectedValue: value, foundValue: foundValue})
+                }
+            }
 
             xlWorkbook.Save()
             #.log("queue").info(A_ThisFunc, "Saved Workbook")
 
+        } catch e {
+            throw e
+        } finally {
+            xlApp.DisplayAlerts := false
+            xlWorkBook.Close()
+            xlApp.DisplayAlerts := true
             xlApp.Quit()
             #.log("queue").info(A_ThisFunc, "Quit Excel App")
+
             emptyRow := ""
             emptyRowOffset := ""
+            emptyRowRange := ""
             lastRow := ""
             lastRowEnd := ""
             lastRowCells := ""
@@ -141,9 +163,6 @@ class ReceivingLog extends Actions.Base
 
             #.Path.freeLock(filePath)
             #.log("queue").info(A_ThisFunc, "Released file lock")
-        } catch e {
-            #.Path.freeLock(filePath)
-            throw e
         }
 
         return true
