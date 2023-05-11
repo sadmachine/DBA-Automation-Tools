@@ -1,6 +1,6 @@
 ; === Script Information =======================================================
-; Name .........: Views.Installers.Base
-; Description ..: The GUI interface used for installation
+; Name .........: Views.Migration.Base
+; Description ..: The GUI interface used for version migrations
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
 ; Start Date ...: 02/13/2023
 ; OS Version ...: Windows 10
@@ -20,7 +20,7 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
-; Views.Installers.Base
+; Views.Migration.Base
 class Base extends UI.Base
 {
     actions := {}

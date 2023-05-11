@@ -1,6 +1,6 @@
 ; === Script Information =======================================================
-; Name .........: Controllers.Installations.Base
-; Description ..: A base controller class for the installation process
+; Name .........: Controllers.Migrations.Base
+; Description ..: A base controller class for the version migration process
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
 ; Start Date ...: 02/22/2023
 ; OS Version ...: Windows 10
@@ -20,7 +20,7 @@
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
-; Controllers.Installations.Base
+; Controllers.Migrations.Base
 class Base extends Controllers.Base
 {
     model := ""

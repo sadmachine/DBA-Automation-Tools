@@ -5,45 +5,27 @@ skinparam LegendBackgroundColor #FAFAFA
 
 start
 
-:New version of DBA AutoTools ready to install;
+:User Starts Installation Program;
 
-partition Server Installation {
+:Select installation location;
 
-  :Copy Server Installation .exe to server;
+if (Existing installation detected?) then (yes) 
+  :Check version number;
 
-  :Run Server Installation program;
-
-  if (Existing Server Installation?) then (yes)
-    while (installed version != current version)
-      :Perform intermediate version migrations;
-    endwhile
+  if (existing version = current version?) then (yes)
+    stop
   else (no)
-    :Perform fresh install (write all files from current version);
-    :Initialize Global Configuration;
+    :Find migrations for existing version;
+    while (existing version < current version) is (true)
+      :Perform migrations to next version;
+      :Set existing version = next version;
+    endwhile (false)
   endif
-}
+else (no)
+  :Perform fresh install of current version;
+endif
 
-partition Client Installation {
-  switch (Existing Client Installation?)
-    case ( Yes, Explicit Upgrade )
-      :Run the Client Installation program from a client;
-      while (installed version != current version)
-        :Perform intermediate version migrations;
-      endwhile
-    case ( Yes, Implicit Upgrade )
-      :Next time user opens program, check for program version;
-      if (Update available?) then (yes)
-        while (installed version != current version)
-          :Perform intermediate version migrations;
-        endwhile
-      endif
-    case ( No, Standard Installation )
-      :Run the Client Installation program from a client;
-      :Perform fresh install (write all config files from current version);
-      :Initialize Global Configuration;
-      :Create Shortcuts;
-  endswitch
-}
+:Show installation complete screen;
 
 stop
 

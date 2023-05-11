@@ -1,32 +1,23 @@
 ; === Script Information =======================================================
-; Name .........: Models.Installation
-; Description ..: Represents data needed for the installation process
+; Name .........: Controllers.Migrations (parent class)
+; Description ..: A parent class for all Migrations subclasses
 ; AHK Version ..: 1.1.36.02 (Unicode 64-bit)
-; Start Date ...: 02/22/2023
+; Start Date ...: 03/08/2023
 ; OS Version ...: Windows 10
 ; Language .....: English - United States (en-US)
 ; Author .......: Austin Fishbaugh <austin.fishbaugh@gmail.com>
-; Filename .....: Installation.ahk
+; Filename .....: Installations.ahk
 ; ==============================================================================
 
 ; === Revision History =========================================================
-; Revision 1 (02/22/2023)
+; Revision 1 (03/08/2023)
 ; * Added This Banner
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
-; Models.Installation
-class Installation
+; Controllers.Migrations
+class Migrations
 {
-    installationPath := ""
-
-    __New(defaultValues := "")
-    {
-        if (defaultValues != "") {
-            for key, value in defaultValues {
-                this[key] := value
-            }
-        }
-    }
+    #Include src\Controllers\Migrations\Base.ahk
 }
