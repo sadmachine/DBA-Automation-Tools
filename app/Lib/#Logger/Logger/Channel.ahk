@@ -16,6 +16,10 @@
 ; Revision 2 (04/23/2023)
 ; * If log file is in use, create unique file and write to that instead
 ;
+; Revision 3 (05/11/2023)
+; * Create new filenames for each day
+; * Delete log files older than %logLifetime% number of days
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -24,9 +28,13 @@ class Channel
 {
     logPath := ""
     logFilename := ""
+    logLifetime := 7
 
-    __New(path, filename)
+    __New(path, filename, logLifetime := "")
     {
+        if (logLifetime != "") {
+            this.logLifetime := logLifetime
+        }
         this.logPath := #.Path.normalize(path)
         this.logFilename := filename
         this.location := #.Path.concat(this.logPath, this.logFilename)
@@ -36,12 +44,12 @@ class Channel
     log(level, where, message, data := "")
     {
         this._assertLogPathExists()
-        FormatTime, dateAndTime,, % "yyyy-MM-dd hh:mm:ss"
+        FormatTime, dateAndTime,, % "yyyy-MM-dd HH:mm:ss"
         StringUpper, level, level
         if (data != "") {
             data := this._prepareData(data)
         }
-        filePath := this.location
+        filePath := this._getFilePath()
         if (#.path.inUse(filePath)) {
             filePath := this._createUnique(filePath)
         }
@@ -64,6 +72,40 @@ class Channel
     error(where, message, data := "")
     {
         this.log("!err", where, message, data)
+    }
+
+    _getFilePath()
+    {
+        FileGetTime, modTime, % this.location
+        FormatTime, modTimeDate, % modTime, yyyy_MM_dd
+        FormatTime, curDate, , yyyy_MM_dd
+        if (modTimeDate < curDate) {
+            fileBase := #.path.parseFilename(this.logFilename, false)
+            fileExt := #.path.parseExtension(this.logFilename)
+            newFilename := fileBase "." modTimeDate "." fileExt
+
+            newLocation := #.path.concat(this.logPath, newFilename)
+            FileMove, % this.location, % newLocation, 1
+            this._cleanupOldLogs()
+        }
+        return this.location
+    }
+
+    _cleanupOldLogs()
+    {
+        fileBase := #.path.parseFilename(this.location, false)
+        fileExt := #.path.parseExtension(this.location)
+        filePattern := #.path.concat(this.logPath, fileBase ".*." fileExt)
+        Loop, Files, % filePattern
+        {
+            FormatTime, curDate,, yyyyMMdd
+            FileGetTime, modTime, % A_LoopFileLongPath
+            FormatTime, modTimeDate,, yyyyMMdd
+            EnvSub, curDate, % modTime, days
+            if (curDate >= this.logLifeTime) {
+                FileDelete, % A_LoopFileLongPath
+            }
+        }
     }
 
     _createUnique(path)
