@@ -94,6 +94,8 @@ class Receiving extends Controllers.Base
             #.log("app").info(A_ThisFunc, "Line Received: " this.receiver.lineReceived)
             receiver := this.receiver
 
+            this.cleanup()
+
             new Actions.ReceivingTransaction(receiver)
             receiver.acquireInspectionNumbers()
             new Actions.PrintLabels(receiver)
@@ -104,25 +106,40 @@ class Receiving extends Controllers.Base
             }
             this.receiver := receiver
         } catch e {
-            @.friendlyException(e)
-            this.cleanup()
-            ExitApp
+            if (@.subclassOf(e, "@")) {
+                @.friendlyException(e)
+                this.cleanup(true)
+                ExitApp
+            }
+
+            this.cleanup(true)
+            throw e
         }
     }
 
-    cleanup()
+    cleanup(force := false)
     {
         if (WinExist(DBA.Windows.POReceipts)) {
+            WinActivate, % DBA.Windows.POReceipts
             WinClose, % DBA.Windows.POReceipts
-            WinWaitActive, % "Warning", % "&Lose Changes", 1
-            if (!ErrorLevel) {
-                Send % "!L"
-                WinWaitClose, % "Warning",,1
-                if (ErrorLevel) {
-                    WinKill, % "Warning"
-                    WinKill, % DBA.Windows.POReceipts
+            if (force) {
+                WinWaitActive, % "Warning", % "&Lose Changes", 1
+                if (!ErrorLevel) {
+                    Send % "!L"
+                    WinWaitClose, % "Warning",,1
+                    if (ErrorLevel) {
+                        WinKill, % "Warning"
+                        WinKill, % DBA.Windows.POReceipts
+                    }
+                }
+            } else {
+                WinWaitActive, % "Warning", % "&Lose Changes", 1
+                if (!ErrorLevel) {
+                    WinActivate, % "Warning"
+                    WinWaitClose, % "Warning"
                 }
             }
+            WinWaitClose, % DBA.Windows.POReceipts
         }
     }
 }
