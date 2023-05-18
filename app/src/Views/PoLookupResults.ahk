@@ -16,6 +16,9 @@
 ; Revision 2 (04/30/2023)
 ; * Add additional logging/fix typo
 ;
+; Revision 3 (05/18/2023)
+; * Don't display reference as if its a number
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -54,7 +57,7 @@ class PoLookupResults extends UI.Base
 
         for index,record in receiver.related["podetl"]
         {
-            LV_Add("", Floor(record.line), Floor(record.reference), Floor(record.qty), Floor(record.qtyr))
+            LV_Add("", Floor(record.line), record.reference, Floor(record.qty), Floor(record.qtyr))
         }
 
         Loop % columnCount
