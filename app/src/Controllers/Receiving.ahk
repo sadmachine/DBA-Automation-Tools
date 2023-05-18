@@ -25,6 +25,10 @@
 ; Revision 5 (04/30/2023)
 ; * Add additional logging
 ;
+; Revision 6 (05/18/2023)
+; * Better exception handling
+; * More consistent start behavior
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
