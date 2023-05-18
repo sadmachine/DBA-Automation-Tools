@@ -19,6 +19,9 @@
 ; Revision 3 (04/30/2023)
 ; * Add additional logging
 ;
+; Revision 4 (05/18/2023)
+; * Properly get the index number for the given line no
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -79,7 +82,7 @@ class ReceivingTransaction extends Actions.Base
     {
         Global
         lineNumber := this.receiver.lineReceived
-        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND qty-qtyr>='" this.receiver.lots["current"].quantity "' AND closed IS NULL", "line ASC")
+        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "'", "line ASC")
         ; TODO: Error message if empty
         for n, record in records {
             curLine := Floor(record.line)
@@ -177,22 +180,24 @@ class ReceivingTransaction extends Actions.Base
     _enterLocation(location)
     {
         Loop {
+            oldTitleMatchMode := A_TitleMatchMode
+            SetTitleMatchMode, 2
             Send {Enter}
             Sleep 100
             Send % "\"
-            WinWaitActive, % "FrmPopDrpLocationLook_sub",, 5
+            WinWaitActive, % "FrmPopDrpLocationLook",, 5
             if ErrorLevel
             {
                 throw new @.WindowException(A_ThisFunc, "Location submenu never became active (waited 5 seconds).")
             }
             Sleep 200
-            ControlClick, TCheckBox1, % "FrmPopDrpLocationLook_sub",,,,NA
+            ControlClick, TCheckBox1, % "FrmPopDrpLocationLook",,,,NA
             Sleep 200
-            ControlSend, TdxButtonEdit1, % location, % "FrmPopDrpLocationLook_sub"
+            ControlSend, TdxButtonEdit1, % location, % "FrmPopDrpLocationLook"
             Sleep 100
-            ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
+            ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook"
             Sleep 100
-            ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook_sub"
+            ControlSend, TdxButtonEdit1, {Enter}, % "FrmPopDrpLocationLook"
             Sleep 100
             Send {Enter}
             ControlFocus, % "TdxDBGrid1", % DBA.Windows.POReceipts
