@@ -20,6 +20,9 @@
 ; Revision 3 (03/31/2023)
 ; * Update how global vars are handled
 ;
+; Revision 4 (05/18/2023)
+; * Handle system exceptions better
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 Class @
@@ -112,7 +115,11 @@ Class @
                 throw e
             }
         } else {
-            UI.MsgBox(e.message, e.what)
+            if (@.subclassOf(e, "@")) {
+                UI.MsgBox(e.message, e.what)
+            } else {
+                throw e
+            }
         }
     }
 
