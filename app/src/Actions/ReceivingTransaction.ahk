@@ -21,6 +21,7 @@
 ;
 ; Revision 4 (05/18/2023)
 ; * Properly get the index number for the given line no
+; * Still check for closed status on index
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
@@ -82,7 +83,7 @@ class ReceivingTransaction extends Actions.Base
     {
         Global
         lineNumber := this.receiver.lineReceived
-        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "'", "line ASC")
+        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND closed IS NULL", "line ASC")
         ; TODO: Error message if empty
         for n, record in records {
             curLine := Floor(record.line)
