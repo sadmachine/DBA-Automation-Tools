@@ -28,7 +28,7 @@
 ;
 ; Revision 6 (04/21/2023)
 ; * Update for ahk v2
-; 
+;
 ; === TO-DOs ===================================================================
 ; TODO - Abstract out to a controller and a view
 ; TODO - Update to actually handle modules (old way is broken, only works for single module)
@@ -56,7 +56,7 @@ class Dashboard
         Global
         this._setupTrayMenu()
         daemon := ObjBindMethod(Dashboard, "_daemon")
-        SetTimer(daemon,250)
+        SetTimer(daemon, 250)
     }
 
     _daemon() {
@@ -78,7 +78,7 @@ class Dashboard
         WinWaitActive(DBA.Windows.Main)
 
         ; Build the dashboard
-        this.guiObj := Gui(,, this.Events)
+        this.guiObj := Gui(, , this.Events)
         this.guiObj.MarginX := "0", this.guiObj.MarginY := "0"
         this.guiObj.SetFont("s12")
         this._buildReceivingSection()
@@ -102,7 +102,7 @@ class Dashboard
     {
         Global
         this.guiObj.Title := "Automation Tools"
-        this.guiObj.Show(UI.opts({h: this.height, w: this.width, x: this.display_x, y: this.display_y}))
+        this.guiObj.Show(UI.opts({ h: this.height, w: this.width, x: this.display_x, y: this.display_y }))
         ; Need to set the parent of the gui to the "DBA NG Sub-Assy Jobs" program
         ; This makes it so our dashboard moves with the parent window, and acts like its part of the program
         UI.setParent(this.hwnd["child"], this.hwnd["parent"])
@@ -153,7 +153,7 @@ class Dashboard
         exitProgramEvent := ObjBindMethod(this.Events, "exitProgram")
 
         ; Tray Menu Setup
-        Tray:= A_TrayMenu
+        Tray := A_TrayMenu
         Tray.Delete() ; V1toV2: not 100% replacement of NoStandard, Only if NoStandard is used at the beginning
         Tray.Add("Settings", openSettingsEvent)
         AdvancedSubMenu := Menu()

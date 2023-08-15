@@ -15,7 +15,7 @@
 ;
 ; Revision 2 (04/21/2023)
 ; * Update for ahk v2
-; 
+;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -24,7 +24,7 @@ class NumberDialog extends UI.BaseDialog
 {
     define()
     {
-        if (!this.data.hasKey("min") || !this.data.hasKey("max")) {
+        if (!this.data.has("min") || !this.data.has("max")) {
             throw Core.ProgrammerException(A_ThisFunc, "Either 'min' or 'max' is not defined")
         }
         options := "Range" this.data["min"] "-" this.data["max"]
