@@ -100,9 +100,6 @@ class InspectionReport extends Actions.Base
         }
 
         try {
-            #.Path.createLock(filepath)
-            #.log("queue").info(A_ThisFunc, "Acquired file lock")
-
             xlApp := ComObjCreate("Excel.Application")
             ; xlHwnd := xlApp.hwnd
             ; DetectHiddenWindows, On
@@ -125,10 +122,7 @@ class InspectionReport extends Actions.Base
             #.log("queue").info(A_ThisFunc, "Quit Excel App")
             xlApp := "", CurrWbk := "", CurrSht := "", xlHwnd := ""
 
-            #.Path.freeLock(filepath)
-            #.log("queue").info(A_ThisFunc, "Released file lock")
         } catch e {
-            #.Path.freeLock(filePath)
             throw e
         }
         return true

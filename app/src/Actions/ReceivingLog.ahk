@@ -82,9 +82,6 @@ class ReceivingLog extends Actions.Base
         this._prepareFile(fileDestination, filePath, templateFile)
 
         try {
-            #.Path.createLock(filePath)
-            #.log("queue").info(A_ThisFunc, "Acquired file lock")
-
             xlApp := ""
             xlWorkbooks := ""
             xlWorkBook := ""
@@ -160,9 +157,6 @@ class ReceivingLog extends Actions.Base
             xlWorkBook := ""
             xlWorkbooks := ""
             xlApp := ""
-
-            #.Path.freeLock(filePath)
-            #.log("queue").info(A_ThisFunc, "Released file lock")
         }
 
         return true
