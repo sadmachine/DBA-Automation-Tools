@@ -57,7 +57,8 @@ class PoLookupResults extends UI.Base
 
         for index,record in receiver.related["podetl"]
         {
-            LV_Add("", Floor(record.line), record.reference, Floor(record.qty), Floor(record.qtyr))
+            record := this.prepareRecord(record) 
+            LV_Add("", record.line, record.reference, record.qty, record.qtyr)
         }
 
         Loop % columnCount
@@ -72,6 +73,28 @@ class PoLookupResults extends UI.Base
         this.Show()
         ; this.FocusControl(ResultsListView)
         this.WaitClose()
+    }
+
+    prepareRecord(record)
+    {
+        newRecord := {}
+        newRecord.line := Floor(record.line)
+
+        newRecord.reference := record.reference
+
+        if (record.qty == Floor(record.qty)) {
+            newRecord.qty := Floor(record.qty)
+        } else {
+            newRecord.qty := Format("{:.3f}", record.qty)
+        }
+
+        if (record.qtyr == Floor(record.qtyr)) {
+            newRecord.qtyr := Floor(record.qtyr)
+        } else {
+            newRecord.qtyr := Format("{:.3f}", record.qtyr)
+        }
+
+        return newRecord
     }
 
     getSelectedLine() {
