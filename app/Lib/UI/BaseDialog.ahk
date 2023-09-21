@@ -43,7 +43,7 @@ class BaseDialog extends UI.Base
         if (RegExMatch(options, "v[a-zA-Z0-9_]+")) {
             options := RegexReplace(options, "v[a-zA-Z0-9_]+", resultVarOptionString)
         } else {
-            options .= resultVarOptionString
+            options .= " " resultVarOptionString
         }
 
         ; If text was not passed in, and our data has a "value" key, use that for text
