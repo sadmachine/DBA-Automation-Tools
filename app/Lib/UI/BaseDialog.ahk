@@ -23,6 +23,7 @@ class BaseDialog extends UI.Base
     data := ""
     resultVar := ""
     controls := []
+    resultVarUsed := false
 
     __New(title, data := "")
     {
@@ -39,12 +40,16 @@ class BaseDialog extends UI.Base
 
     addControl(controlType, options := "", text := "")
     {
-        resultVarOptionString := "v" this.resultVar
-        if (RegExMatch(options, "v[a-zA-Z0-9_]+")) {
-            options := RegexReplace(options, "v[a-zA-Z0-9_]+", resultVarOptionString)
-        } else {
-            options .= " " resultVarOptionString
+        if (!this.resultVarUsed) {
+            resultVarOptionString := "v" this.resultVar
+            if (RegExMatch(options, "v[a-zA-Z0-9_]+")) {
+                options := RegexReplace(options, "v[a-zA-Z0-9_]+", resultVarOptionString)
+            } else {
+                options .= " " resultVarOptionString
+            }
         }
+
+        this.resultVarUsed := true
 
         ; If text was not passed in, and our data has a "value" key, use that for text
         if (text == "" && this.data.hasKey("value")) {
