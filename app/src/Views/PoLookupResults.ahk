@@ -102,6 +102,12 @@ class PoLookupResults extends UI.Base
         this.Default()
 
         selected_row := LV_GetNext()
+        if (this.receiver.related["podetl"][selected_row].finaldeli == "T") {
+            MsgBox, 0x1004, % "Final Receipt", % "The line you've selected has been marked as final receipt, would you like to continue?"
+
+            IfMsgBox No
+                return -1
+        }
         LV_GetText(lineNumber, selected_row)
         this.Destroy()
         return lineNumber

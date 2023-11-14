@@ -94,7 +94,11 @@ class Receiving extends Controllers.Base
     {
         try {
 
-            this.receiver.lineReceived := this.receivingResults.getSelectedLine()
+            lineReceived := this.receivingResults.getSelectedLine()
+            if (lineReceived == -1) {
+                return
+            }
+            this.receiver.lineReceived := lineReceived
             #.log("app").info(A_ThisFunc, "Line Received: " this.receiver.lineReceived)
             receiver := this.receiver
 
