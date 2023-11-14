@@ -83,11 +83,13 @@ class ReceivingTransaction extends Actions.Base
     {
         Global
         lineNumber := this.receiver.lineReceived
-        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND closed IS NULL", "line ASC")
+        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND closed='F'", "line ASC")
         ; TODO: Error message if empty
         for n, record in records {
             curLine := Floor(record.line)
             if (lineNumber == curLine) {
+                StringLower, finalReceipt, % record.finaldeli
+                this.receiver.finalReceipt := (finalReceipt == "f" ? false : true)
                 return n
             }
         }
@@ -132,6 +134,12 @@ class ReceivingTransaction extends Actions.Base
         Send {Tab}
         Sleep 100
         Send {Tab}
+
+        if (this.receiver.finalReceipt) {
+            MsgBox, 0x1001, % "Final Receipt", % "'Final Receipt' is checked for the current line.`n`nIf you would still like to receive against this line, please uncheck the 'Final Receipt' checkbox and click 'Ok' to continue.`n`nIf you would like to quit the process and receive on another line, please click 'Cancel'"
+            IfMsgBox Cancel
+                ExitApp
+        }
     }
 
     _saveAndExitPoWindow()
