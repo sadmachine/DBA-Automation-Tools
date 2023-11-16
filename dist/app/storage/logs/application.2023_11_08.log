@@ -1,0 +1,2 @@
+2023-11-08 15:36:49 [INFO] [austi] [C:\Users\austi\Documents\Pragmatic\Projects\DBA-Automation-Tools\dist\app\modules\PO_Verification.exe] Finished Bootstrapping 'PO_Verification.exe'
+2023-11-08 15:36:49 [!ERR] [austi] [Config._assertConfigDirectoriesExist] <FilesystemException> The directory ERROR does not exist.
