@@ -83,7 +83,7 @@ class ReceivingTransaction extends Actions.Base
     {
         Global
         lineNumber := this.receiver.lineReceived
-        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND closed!='T'", "line ASC")
+        records := Models.DBA.podetl.build("ponum='" this.receiver.poNumber "' AND (closed='F' OR closed='' OR closed IS NULL)", "line ASC")
         ; TODO: Error message if empty
         for n, record in records {
             curLine := Floor(record.line)
