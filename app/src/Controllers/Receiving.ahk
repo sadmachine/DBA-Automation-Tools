@@ -109,8 +109,13 @@ class Receiving extends Controllers.Base
             new Actions.PrintLabels(receiver)
             for n, lot in receiver.lots {
                 ; Queue.createJob(new Actions.PrintLabels(receiver, n))
-                #.Queue.createJob(new Actions.ReceivingLog(receiver, n))
-                #.Queue.createJob(new Actions.InspectionReport(receiver, n))
+                ; Loop until job creation is successful and verified
+                while (!#.Queue.createJob(new Actions.ReceivingLog(receiver, n))) {
+                    sleep 10
+                }
+                while (!#.Queue.createJob(new Actions.InspectionReport(receiver, n))) { 
+                    sleep 10
+                }
             }
             this.receiver := receiver
         } catch e {

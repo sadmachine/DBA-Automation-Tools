@@ -63,7 +63,17 @@ class Queue
         namespace := jobInstance.getNamespace()
         data := jobInstance.create()
         #.log("queue").info(A_ThisFunc, "Creating Job", {namespace: namespace, data: data})
-        this.fileDriver.createFile(namespace, data)
+
+        validData := false
+
+        filepath := this.fileDriver.createFile(namespace, data)
+        writtenData := this.fileDriver.readFile(filepath)
+        if (!jobInstance.verify(writtenData)) {
+            this.fileDriver.deleteFile(filepath)
+            return false
+        }
+
+        return true
     }
 
     getWaitingJobs()

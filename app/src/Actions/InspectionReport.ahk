@@ -43,6 +43,8 @@
 ; Actions.InspectionReport
 class InspectionReport extends Actions.Base
 {
+    static expectedDataKeys = ["inspectionFormNumber", "reportDate", "stelrayMaterialNumber", "materialDescription", "lotNumber", "poNumber", "vendorName", "quantityOnPo", "quantityReceived"]
+
     /*
         @var string partNumber
         @var string partDescription
@@ -77,6 +79,19 @@ class InspectionReport extends Actions.Base
         this.data["data"]["quantityReceived"] := lot.quantity
 
         return this.data
+    }
+
+    verify(data)
+    {
+        data := data["data"]
+        
+        for index, expectedKey in this.expectedDataKeys {
+            if (!data.hasKey(expectedKey)) {
+                return false
+            }
+        }
+
+        return true
     }
 
     execute()

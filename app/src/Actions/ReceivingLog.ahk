@@ -43,6 +43,8 @@
 ; Actions.ReceivingLog
 class ReceivingLog extends Actions.Base
 {
+    static expectedDataKeys = ["date", "stelrayItemNumber", "materialDescription", "materialLotNumber", "lotQuantity", "poNumber", "inspectionNumber", "cOfCReceived", "receiverId"]
+
     __New(receiver, lotIndex)
     {
         this.receiver := receiver
@@ -66,6 +68,19 @@ class ReceivingLog extends Actions.Base
         this.data["data"]["receiverId"] := this.receiver.identification
 
         return this.data
+    }
+
+    verify(data)
+    {
+        data := data["data"]
+        
+        for index, expectedKey in this.expectedDataKeys {
+            if (!data.hasKey(expectedKey)) {
+                return false
+            }
+        }
+
+        return true
     }
 
     execute()
