@@ -35,18 +35,52 @@ class Ini extends #.Queue.FileDrivers.Base
     {
         local file
         filePath := this._getUniqueFilename(namespace)
-
+        this._createLock(namespace)
         file := new #.IniFile(filePath)
         file.writeObject(data)
+        this._deleteLock(namespace)
+        return filePath
     }
 
     readFile(filePath)
     {
         local file
+        while (this._isLocked(filePath)) {
+            Sleep 100
+        }
         file := new #.IniFile(filePath)
         data := file.readObject()
         return data
     }
+
+    _isLocked(filePath)
+    {
+        SplitPath, % filePath,,OutDir
+        lockFilePath := #.Path.concat(OutDir, "lockfile")
+        return FileExist(lockFilePath)
+    }
+
+    _createLock(namespace)
+    {
+        lockfilePath := this._getLockfilePath(namespace)
+        if (!FileExist(lockfilePath)) {
+            FileAppend, , % lockfilePath
+        }
+    }
+
+    _deleteLock(namespace)
+    {
+        lockfilePath := this._getLockfilePath(namespace)
+        if (FileExist(lockfilePath)) {
+            FileDelete, % lockfilePath
+        }
+    }
+
+    _getLockfilePath(namespace)
+    {
+        return #.Path.concat(this.getNamespacePath(namespace), "lockfile")
+    }
+
 
     _getUniqueFilename(namespace)
     {
