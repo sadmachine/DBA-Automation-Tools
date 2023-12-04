@@ -59,7 +59,11 @@ class Base
 
     deleteFile(filePath)
     {
-        FileDelete % filePath
+        if (FileExist(filePath)) {
+            FileDelete % filePath
+        } else {
+            throw new @.FilesystemException(A_ThisFunc, "File did not exist", {filePath: filePath})
+        }
     }
 
     getFileExtension()

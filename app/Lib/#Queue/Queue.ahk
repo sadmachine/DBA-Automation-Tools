@@ -69,7 +69,11 @@ class Queue
         filepath := this.fileDriver.createFile(namespace, data)
         writtenData := this.fileDriver.readFile(filepath)
         if (!jobInstance.verify(writtenData)) {
-            this.fileDriver.deleteFile(filepath)
+            try {
+                this.fileDriver.deleteFile(filepath)
+            } catch e {
+                this.handleException(e) 
+            }
             return false
         }
 
@@ -100,14 +104,19 @@ class Queue
                             this.fileDriver.deleteFile(jobFile)
                         }
                     } catch e {
-                        if (@.inheritsFrom(e, "ExpectedException")) {
-                            #.log("queue").warning(e.where, e.what ": " e.message, e.data)
-                        } else {
-                            #.log("queue").error(e.where, e.what ": " e.message, e.data)
-                        }
+                        this.handleException(e)
                     }
                 }
             }
+        }
+    }
+
+    handleException(e)
+    {
+        if (@.inheritsFrom(e, "ExpectedException")) {
+            #.log("queue").warning(e.where, e.what ": " e.message, e.data)
+        } else {
+            #.log("queue").error(e.where, e.what ": " e.message, e.data)
         }
     }
 }
