@@ -37,6 +37,12 @@ if errorlevel 1 (
   echo ^> Killing existing 'PO_Verification.exe' process...
 )
 
+tasklist /fi "imagename eq Job_Issuing.exe" |find ":" > nul
+if errorlevel 1 (
+  taskkill /f /im "PO_Verification.exe"
+  echo ^> Killing existing 'PO_Verification.exe' process...
+)
+
 tasklist /fi "imagename eq tmp.exe" |find ":" > nul
 if errorlevel 1 (
   taskkill /f /im "tmp.exe"
@@ -55,6 +61,7 @@ if errorlevel 1 (
 %COMPILER% /base %BINFILE% /in "%CD%\app\DBA AutoTools.ahk" /out "%CD%\dist\DBA AutoTools.exe" /icon "%CD%\assets\Prag Logo.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\QueueManager.ahk" /out "%CD%\dist\QueueManager.exe" /icon "%CD%\assets\Prag Logo.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\PO_Verification.ahk" /out "%CD%\dist\app\modules\PO_Verification.exe" /icon "%CD%\assets\Prag Logo.ico" 
+%COMPILER% /base %BINFILE% /in "%CD%\app\Job_Issuing.ahk" /out "%CD%\dist\app\modules\Job_Issuing.exe" /icon "%CD%\assets\Prag Logo.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\tmp.ahk" /out "%CD%\tmp.exe" /icon "%CD%\assets\Prag Logo.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\Settings.ahk" /out "%CD%\dist\Settings.exe" /icon "%CD%\assets\Settings5.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\Installer.ahk" /out "%CD%\installers\Installer-DBA-AutoTools-%CURRENT_VERSION%.exe" /icon "%CD%\assets\Installer.ico" 
