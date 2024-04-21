@@ -37,57 +37,28 @@ class JobIssuing extends Controllers.Base
     getInputs(jobIssue)
     {
         jobIssue.jobNumber := UI.Required.InputBox("Enter Job #")
-        this.Validate.jobNumber(jobIssue)
         #.log("app").info(A_ThisFunc, "Job #: " jobIssue.jobNumber)
 
         jobIssue.partNumber := UI.Required.InputBox("Enter Part #")
-        this.Validate.partNumber(jobIssue)
         #.log("app").info(A_ThisFunc, "Part #: " jobIssue.partNumber)
 
-        jobIssue.lotNumber := UI.Required.InputBox("Enter Lot #")
-        this.Validate.lotNumber(jobIssue)
-        #.log("app").info(A_ThisFunc, "Lot #: " jobIssue.lotNumber)
+        if (jobIssue.needsLotNumber) {
+            jobIssue.lotNumber := UI.Required.InputBox("Enter Lot #")
+            #.log("app").info(A_ThisFunc, "Lot #: " jobIssue.lotNumber)
+        }
 
         jobIssue.location := UI.Required.InputBox("Enter Location")
-        this.Validate.location(jobIssue)
         #.log("app").info(A_ThisFunc, "Lot #: " jobIssue.lotNumber)
 
         jobIssue.quantity := UI.Required.InputBox("Enter Quantity to Issue")
-        this.Validate.quantity(jobIssue)
         #.log("app").info(A_ThisFunc, "Quantity: " jobIssue.quantity)
 
         this.jobIssue := jobIssue
     }
 
 
-    class Validate 
+    automate()
     {
-        jobNumber(jobIssue)
-        {
-            jobNumber := jobIssue.jobNumber
-
-            results := DBA.QueryBuilder
-                .select("jobstats")
-                .from("jobs")
-                .where("jobno = " jobNumber)
-                .limit(1)
-                .run()
-
-            jobStatus := results.row(1)["jobstats"]
-            
-            if (jobStatus != "RELEASED") {
-                throw new @.ValidationException(A_ThisFunc, "The Job # you entered does not have status RELEASE, and cannot be issued to.", {jobNumber: jobNumber, jobStatus: jobStatus})
-            }
-        }
-
-        partNumber(jobIssue)
-        {
-
-        }
-
-        lotNumber(jobIssue)
-        {
-
-        }
+        
     }
 }
