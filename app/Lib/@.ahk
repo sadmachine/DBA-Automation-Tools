@@ -108,15 +108,19 @@ Class @
         return false
     }
 
-    friendlyException(e)
+    friendlyException(e, showData := false)
     {
         if ($["DEBUG_MODE"] || @.inheritsFrom(e, "UnexpectedException")) {
             if (!@.handleException(e)) {
                 throw e
             }
         } else {
+            message := e.message
+            if (showData) {
+                message .= "`n`n" @.vardump(e.data)
+            }
             if (@.subclassOf(e, "@")) {
-                UI.MsgBox(e.message, e.what)
+                UI.MsgBox(message, e.what)
             } else {
                 throw e
             }
@@ -150,9 +154,12 @@ Class @
     vardump(data, level := 0)
     {
         if (!IsObject(data)) {
+            if (@.typeOf(data) == "Empty") {
+                return ""
+            }
             if (@.typeof(data) == "String") {
                 return """" data """,`n"
-            }
+            } 
             return data ",`n"
         }
 
@@ -175,6 +182,7 @@ Class @
             dataStr .= ","
         }
         dataStr .= "`n"
+
         return dataStr
     }
 }

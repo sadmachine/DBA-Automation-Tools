@@ -8,6 +8,6 @@ class BaseException
         this.where := where
         this.message := message
         this.type := type
-        this.data := ""
+        this.data := data 
     }
 }

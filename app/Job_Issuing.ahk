@@ -25,7 +25,7 @@ try {
 
     jobIssuingController.automate()
 } catch e {
-    @.friendlyException(e)
+    @.friendlyException(e, true)
     jobIssuingController.cleanup()
 }
 
