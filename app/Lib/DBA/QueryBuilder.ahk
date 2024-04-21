@@ -6,6 +6,8 @@ class QueryBuilder
     _table := ""
     _conditions := ""
     _ordering := ""
+    _grouping := ""
+    _having := ""
     _limit := ""
     _page := ""
 
@@ -51,19 +53,51 @@ class QueryBuilder
         if (IsObject(conditions)) {
             for field, value in conditions {
                 if (A_Index != 1) {
-                    this._conditions .= "AND "
+                    this._conditions .= " AND "
                 }
-                this._conditions .= field "'" value "' "
+                preparedValue := "'" value "'"
+                StringUpper, testValue, value
+                if (InStr("IS NULL, IS NOT NULL", testValue)) {
+                    preparedValue := value
+                }
+                this._conditions .= field " " preparedValue 
             }
         } else {
             this._conditions := conditions
         }
         return this
     }
-
+    
     OrderBy(ordering)
     {
         this._ordering := ordering
+        return this
+    }
+
+    GroupBy(grouping)
+    {
+        this._grouping := grouping
+        return this
+    }
+
+    Having(having)
+    {
+        this._having := ""
+        if (IsObject(having)) {
+            for field, value in having {
+                if (A_Index != 1) {
+                    this._having .= " AND "
+                }
+                preparedValue := "'" value "'"
+                StringUpper, testValue, value
+                if (InStr("IS NULL, IS NOT NULL", testValue)) {
+                    preparedValue := value
+                }
+                this._having .= field " " preparedValue 
+            }
+        } else {
+            this._having := having
+        }
         return this
     }
 
@@ -94,6 +128,16 @@ class QueryBuilder
 
         ; Get all columns from the specified table name
         query .= " " this._fields " FROM " this._table
+
+        ; Add our group by statement, if specified
+        if (this._grouping != "") {
+            query .= " GROUP BY " this._grouping
+        }
+
+        ; Add our having statements, if specified
+        if (this._having != "") {
+            query .= " HAVING " this._having
+        }
 
         ; Add our where statement, if specified
         if (this._conditions != "") {
