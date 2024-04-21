@@ -80,6 +80,7 @@ class Dashboard
         Gui, dashboard:Margin, 0, 0
         Gui, dashboard:Font, s12
         this._buildReceivingSection()
+        this._buildJobsSection()
         Gui, dashboard: +OwnDialogs +AlwaysOnTop HWNDhChild
 
         ; Build/Add menus
@@ -123,6 +124,16 @@ class Dashboard
             options := "gLaunchModule"
         }
         Gui, dashboard:Add, Button, xs+5 ys+20 %options%, PO Verification
+    }
+
+    _buildJobsSection()
+    {
+        Gui, dashboard:Add, GroupBox, Section w132 h60 x0, Jobs
+        options := "+Disabled"
+        if (ModuleLoader.has("Job Issuing")) {
+            options := "gLaunchModule"
+        }
+        Gui, dashboard:Add, Button, xs+5 ys+20 %options%, Job Issuing
     }
 
     _setupApplicationMenu()
