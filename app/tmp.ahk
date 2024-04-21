@@ -17,4 +17,11 @@
 ; ==============================================================================
 #Include src/Autoload.ahk
 
-MsgBox % #.log("app")._prepareData(data)
+location := "20-Z"
+
+obj := {"locid=": location, "test>": "test"}
+
+for field, value in obj
+{
+    MsgBox % field value
+}
