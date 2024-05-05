@@ -169,7 +169,19 @@ class JobIssuing extends Controllers.Base
     selectLineIndex()
     {
         this.activateJobIssues()
-        downCount := this.jobIssue.lineIndex - 1
+        if (IsObject(this.jobIssue.lineNo)) {
+            ddlBox := new UI.DropdownDialog("Choose Line Number", {choices: this.jobIssue.lineNo, selected: this.jobIssue.lineNo[1]})
+            result := ddlBox.prompt("There are multiple lines with the given part number. Please select the desired line number to issue.")
+            if (result.canceled) {
+                this.closeExistingWindows()
+                throw new @.ValidationException(A_ThisFunc, "You must select a line number to issue to. The program will now exit.")
+            }
+            downCount := (result.value / 10) - 1
+            this.normalizeTabFocus()
+        } else {
+            downCount := (this.jobIssue.lineNo / 10) - 1
+        }
+        this.activateJobIssues()
         Send % "{Down " downCount "}"
         #.log("app").info(A_ThisFunc, "Complete")
     }
