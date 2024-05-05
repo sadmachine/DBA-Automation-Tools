@@ -9,6 +9,7 @@ class QueryBuilder
     _grouping := ""
     _having := ""
     _limit := ""
+    _joins := ""
     _page := ""
 
     connection[]
@@ -44,6 +45,13 @@ class QueryBuilder
     Select(fields)
     {
         this._fields := fields
+        return this
+    }
+
+    Join(table, on, type := "LEFT")
+    {
+        this._joins := RTrim(this._joins)
+        this._joins .= " " type " JOIN " table " ON " on " "
         return this
     }
 
@@ -128,6 +136,10 @@ class QueryBuilder
 
         ; Get all columns from the specified table name
         query .= " " this._fields " FROM " this._table
+
+        if (this._joins != "") {
+            query .= " " this._joins
+        }
 
         ; Add our group by statement, if specified
         if (this._grouping != "") {
