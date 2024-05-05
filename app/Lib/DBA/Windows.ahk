@@ -2,6 +2,8 @@ class Windows {
     static Main := "ahk_exe ejsme.exe ahk_class TfrmAppMain"
     static POReceiptLookup := "ahk_exe ejsme.exe ahk_class TFrmPopDrpPORecLook"
     static POReceipts := "ahk_exe ejsme.exe ahk_class TFrmPOReceipts"
+    static Jobs := "Jobs ahk_exe ejsme.exe ahk_class TfrmGarageProxy"
+    static JobIssues := "Job Issues ahk_exe ejsme.exe ahk_class TFrmJobIssues"
 
     getDimensions(winTitle) 
     {
