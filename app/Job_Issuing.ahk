@@ -18,6 +18,8 @@
 
 #Include src/Bootstrap.ahk
 
+
+
 try {
     jobIssuingController := new Controllers.JobIssuing()
 
@@ -33,5 +35,30 @@ try {
 
 ExitApp
 
-; --- Functions ----------------------------------------------------------------
+#If $["DEVELOPER_MODE"]
+!`::DeveloperConsole()
 
+; --- Functions ----------------------------------------------------------------
+DeveloperConsole()
+{
+    Gui, devConsole:New, % "+ToolWindow +AlwaysOnTop", % "Developer Console"
+    Gui, devConsole:Add, Button, gDoListVars, List Vars
+    Gui, devConsole:Add, Button, x+5 gDoListLines, List Lines
+    Gui, devConsole:Add, Button, x+5 gDoKeyHistory, Key History
+    Gui, devConsole:Show
+}
+
+DoListVars()
+{
+    ListVars
+}
+
+DoListLines()
+{
+    ListLines
+}
+
+DoKeyHistory()
+{
+    KeyHistory
+}
