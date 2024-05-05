@@ -25,7 +25,21 @@ class JobIssue
     lineIndex[]
     {
         get {
+            if (IsObject(this.data.lineNo)) {
+                ret := []
+                for index, lineNo in this.data.lineNo {
+                    ret.push(lineNo / 10)
+                }
+                return ret
+            }
             return this.data.lineNo / 10
+        }
+    }
+
+    lineNo[]
+    {
+        get {
+            return this.data.lineNo
         }
     }
 
@@ -71,15 +85,21 @@ class JobIssue
             results := DBA.QueryBuilder
                         .from("jobdetl")
                         .select("refid, sortno")
-                        .where({"refid=": partNumber, "jobno=": this.data.jobNumber})
-                        .limit(1)
+                        .where({"refid=": partNumber, "jobno=": this.data.jobNumber}) 
                         .run()
             
-            if (results.count() != 1 || results.row(1)["refid"] != partNumber) {
+            if (results.data().count() < 1 || results.row(1)["refid"] != partNumber) {
                 throw new @.ValidationException(A_ThisFunc, "The Part # provided could not be found on the Job #.", {partNumber: partNumber, jobNumber: this.data.jobNumber})
             }
 
-            this.data.lineNo := results.row(1)["sortno"]
+            if (results.data().count() == 1) {
+                this.data.lineNo := results.row(1)["sortno"]
+            } else {
+                this.data.lineNo := []
+                for rowNumber, row in results.data() {
+                    this.data.lineNo.push(row["sortno"])
+                }
+            }
 
             results := DBA.QueryBuilder
                         .from("item_char_def_hist")
