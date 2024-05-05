@@ -38,7 +38,7 @@ class DotEnv
         {
             line := Trim(A_LoopReadLine)
 
-            if (SubStr(line, 1, 1) == "#") {
+            if (SubStr(line, 1, 1) == "#" || !InStr(line, "=")) {
                 continue
             }
             parts := StrSplit(line, "=")
