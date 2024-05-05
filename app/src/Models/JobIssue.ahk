@@ -22,6 +22,13 @@ class JobIssue
     data := {}
     needsLotNumber := false
 
+    lineIndex[]
+    {
+        get {
+            return this.data.lineNo / 10
+        }
+    }
+
     jobNumber[]
     {
         get {
@@ -63,7 +70,7 @@ class JobIssue
 
             results := DBA.QueryBuilder
                         .from("jobdetl")
-                        .select("refid")
+                        .select("refid, sortno")
                         .where({"refid=": partNumber, "jobno=": this.data.jobNumber})
                         .limit(1)
                         .run()
@@ -71,6 +78,8 @@ class JobIssue
             if (results.count() != 1 || results.row(1)["refid"] != partNumber) {
                 throw new @.ValidationException(A_ThisFunc, "The Part # provided could not be found on the Job #.", {partNumber: partNumber, jobNumber: this.data.jobNumber})
             }
+
+            this.data.lineNo := results.row(1)["sortno"]
 
             results := DBA.QueryBuilder
                         .from("item_char_def_hist")
@@ -95,7 +104,7 @@ class JobIssue
         
         set {
             ; implement
-            lotNumber := value
+            lotNumber := value ""
 
             results := DBA.QueryBuilder
                         .from("itemh")
@@ -109,7 +118,7 @@ class JobIssue
                 throw new @.ValidationException(A_ThisFunc, "The Lot # provided isn't attached to the Part # provided.", {lotNumber: lotNumber, partNumber: this.data.partNumber})
             }
 
-            return this.data.lotNumber := lotNumber
+            return this.data.lotNumber := lotNumber ""
         }
     }
 
@@ -182,12 +191,14 @@ class JobIssue
                         .limit(1)
                         .run()
 
-            quantityDB := Trim(results.row(1)["qty"]) * 1.0
+            databaseQuantity := Trim(results.row(1)["qty"]) * 1.0
             quantity := Trim(quantity) * 1.0
 
-            if (results.count() != 1 || quantityDB > quantity) {
+            if (results.count() != 1 || databaseQuantity < quantity) {
                 throw new @.ValidationException(A_ThisFunc, "The quantity you are trying to issue is more than what exists at the location for the given part/lot # combination.", {partNumber: this.data.partNumber, lotNumber: this.data.lotNumber, location: this.data.location, quantity: quantity})
             }
+
+            ; TODO: Check if quantity remaining on job is greater than quantity issued
 
             return this.data.quantity := quantity
         }
