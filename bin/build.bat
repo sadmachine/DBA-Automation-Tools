@@ -39,8 +39,8 @@ if errorlevel 1 (
 
 tasklist /fi "imagename eq Job_Issuing.exe" |find ":" > nul
 if errorlevel 1 (
-  taskkill /f /im "PO_Verification.exe"
-  echo ^> Killing existing 'PO_Verification.exe' process...
+  taskkill /f /im "Job_Issuing.exe"
+  echo ^> Killing existing 'Job_Issuing.exe' process...
 )
 
 tasklist /fi "imagename eq tmp.exe" |find ":" > nul
