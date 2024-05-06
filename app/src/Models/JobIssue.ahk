@@ -49,7 +49,7 @@ class JobIssue
             return this.data.jobNumber
         }
         set {
-            jobNumber := value
+            jobNumber := value ""
 
             results := DBA.QueryBuilder
                 .from("jobs")
@@ -68,7 +68,7 @@ class JobIssue
                 throw new @.ValidationException(A_ThisFunc, "The Job # you entered does not have status RELEASE, and cannot be issued to.", {jobNumber: jobNumber, jobStatus: jobStatus})
             }
 
-            return this.data.jobNumber := jobNumber
+            return this.data.jobNumber := jobNumber ""
         }
     }
 
@@ -80,7 +80,7 @@ class JobIssue
 
         set {
             ; implement
-            partNumber := value
+            partNumber := value ""
 
             results := DBA.QueryBuilder
                         .from("jobdetl")
@@ -112,7 +112,7 @@ class JobIssue
                 this.needsLotNumber := true
             }
 
-            return this.data.partNumber := partNumber
+            return this.data.partNumber := partNumber ""
         }
     }
 
@@ -149,7 +149,7 @@ class JobIssue
         }
         
         set {
-            location := value
+            location := value ""
 
             results := DBA.QueryBuilder
                         .from("locations")
@@ -182,7 +182,7 @@ class JobIssue
                 throw new @.ValidationException(A_ThisFunc, "The Part/Lot # combination is not found at the provided location (within the database).", {partNumber: this.data.partNumber, lotNumber: this.data.lotNumber, location: location})
             }
 
-            return this.data.location := location
+            return this.data.location := location ""
         }
     }
 
