@@ -116,8 +116,8 @@ Class @
             }
         } else {
             message := e.message
-            if (showData) {
-                message .= "`n`n" @.vardump(e.data)
+            if (showData && e.data != "" && e.data != {}) {
+                message .= "`nContext:`n" Trim(@.vardump(e.data), "{}`n`s`r")
             }
             if (@.subclassOf(e, "@")) {
                 UI.MsgBox(message, e.what)
