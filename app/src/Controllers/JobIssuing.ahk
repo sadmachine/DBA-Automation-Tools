@@ -168,7 +168,6 @@ class JobIssuing extends Controllers.Base
 
     selectLineIndex()
     {
-        this.activateJobIssues()
         if (IsObject(this.jobIssue.lineNo)) {
             ddlBox := new UI.DropdownDialog("Choose Line Number", {choices: this.jobIssue.lineNo, selected: this.jobIssue.lineNo[1]})
             result := ddlBox.prompt("There are multiple lines with the given part number. Please select the desired line number to issue.")
