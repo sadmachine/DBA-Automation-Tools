@@ -13,6 +13,10 @@
 ; Revision 1 (04/14/2024)
 ; * Added This Banner
 ;
+; Revision 2 (05/06/2024)
+; * First demo complete
+; * Update font size to be 16
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 ; ! DO NOT INCLUDE DEPENDENCIES HERE, DO SO IN TOP-LEVEL PARENT
@@ -28,9 +32,11 @@ class JobIssuing extends Controllers.Base
 
     _bootstrap()
     {
-        UI.Base.defaultFont := {options: "s12", fontName: ""}
-        UI.Base.defaultMargin := 5
-        UI.MsgBoxObj.defaultWidth := 320
+        UI.Base.defaultFont := {options: "s16", fontName: ""}
+        UI.InputBoxObj.defaultMargin := 20
+        UI.MsgBoxObj.defaultMargin := 20
+        UI.InputBoxObj.defaultWidth := 300 
+        UI.MsgBoxObj.defaultWidth := 400
         if ($["JOB_ISSUES_KEY_DELAY"]) {
             SetKeyDelay % $["JOB_ISSUES_KEY_DELAY"]
         }
@@ -48,6 +54,7 @@ class JobIssuing extends Controllers.Base
 
     getInputs(jobIssue)
     {
+        UI.Required.strict := true
         jobIssue.jobNumber := UI.Required.InputBox("Enter Job #")
         #.log("app").info(A_ThisFunc, "Job #: " jobIssue.jobNumber)
 
@@ -168,19 +175,8 @@ class JobIssuing extends Controllers.Base
 
     selectLineIndex()
     {
-        if (IsObject(this.jobIssue.lineNo)) {
-            ddlBox := new UI.DropdownDialog("Choose Line Number", {choices: this.jobIssue.lineNo, selected: this.jobIssue.lineNo[1]})
-            result := ddlBox.prompt("There are multiple lines with the given part number. Please select the desired line number to issue.")
-            if (result.canceled) {
-                this.closeExistingWindows()
-                throw new @.ValidationException(A_ThisFunc, "You must select a line number to issue to. The program will now exit.")
-            }
-            downCount := (result.value / 10) - 1
-            this.normalizeTabFocus()
-        } else {
-            downCount := (this.jobIssue.lineNo / 10) - 1
-        }
         this.activateJobIssues()
+        downCount := this.jobIssue.lineIndex - 1
         Send % "{Down " downCount "}"
         #.log("app").info(A_ThisFunc, "Complete")
     }
@@ -233,14 +229,24 @@ class JobIssuing extends Controllers.Base
         ;             .orderBy("itemh.lotno, primaryloc DESC, itemh.itemloc")
         ;             .run()
 
-        results := DBA.QueryBuilder
-                    .from("itemh")
-                    .select("itemloc, lotno, MAX(created) as dt, SUM(itemh.qty) as qty")
-                    .groupBy("itemcode, itemloc, lotno")
-                    .having(having)
-                    .orderBy("lotno, dt, itemloc")
-                    .run()
-
+        if (this.jobIssue.needsLotNumber) {
+            results := DBA.QueryBuilder
+                        .from("itemh")
+                        .select("itemloc, lotno, MAX(created) as dt, SUM(itemh.qty) as qty")
+                        .groupBy("itemcode, itemloc, lotno")
+                        .having(having)
+                        .orderBy("lotno, dt, itemloc")
+                        .run()
+        } else {
+            results := DBA.QueryBuilder
+                        .from("itemh")
+                        .select("itemloc, MAX(created) as dt, SUM(itemh.qty) as qty")
+                        .groupBy("itemcode, itemloc")
+                        .having(having)
+                        .orderBy("itemloc, dt")
+                        .run()
+        }
+        
         Loop
         {
             row := results.row(A_Index)
@@ -263,10 +269,14 @@ class JobIssuing extends Controllers.Base
         {
             throw new @.WindowException(A_ThisFunc, "Job Issues Window never bexame active (waited 5 seconds).")
         }
-        Send % "{Down " this.selectIssueIndex() - 1 " }"
+        downCount := this.selectIssueIndex() - 1
+        if (downCount > 0) {
+            Send % "{Down " downCount " }"
+        }
         Send % this.jobIssue.quantity
-        result := UI.YesNoBox("Please verify the Job Issue is correct.`n Select 'Yes' to continue, select 'No' to cancel.")
+        result := UI.YesNoBox("Please verify the Job Issue is correct.`nSelect 'Yes' to continue, select 'No' to cancel.")
         if (result.value == "Yes") {
+            this.activateJobIssues()
             Send % "!u"
         } else {
             UI.MsgBox("The Job Issue transaction will now be canceled. If this was a data error, please try again, or contact the manufacturer for debugging steps.")
