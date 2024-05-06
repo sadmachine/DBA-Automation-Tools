@@ -1,10 +1,12 @@
 ; UI.Required
 class Required
 {
+    static strict := false
+
     InputBox(prompt, title := "", throwOnFailure := true)
     {
         result := UI.InputBox(prompt, title)
-        if (result.canceled)
+        if (result.canceled || (this.strict && Trim(result.value) == ""))
         {
             if (throwOnFailure) {
                 throw new @.ValidationException(A_ThisFunc, "You must supply an input for '" prompt "' to continue.")
