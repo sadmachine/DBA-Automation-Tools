@@ -255,6 +255,7 @@ class Base
         this.title := title
         thisLabel := this.label
         Gui, %thisLabel%:New, % this.options, % this.title
+        this.ApplyMargin()
         return this
     }
 
@@ -332,6 +333,13 @@ class Base
         global
         local thisLabel := this.label
         Gui %thisLabel%:Font, % this.font["options"], % this.font["fontName"]
+    }
+
+    ApplyMargin()
+    {
+        global
+        local thisLabel := this.label
+        Gui %thisLabel%:Margin, % this.margin
     }
 
     FocusControl(CtrlHwnd)
