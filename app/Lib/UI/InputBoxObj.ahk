@@ -35,16 +35,20 @@ class InputBoxObj extends UI.Base
     {
         Global
         this.ApplyFont()
-        this.Add("Text", "r1", this.promptMsg)
-        this.Add("Edit", "r1 w" this.width - (this.margin*2) - 10 " vInputBoxOutput")
-        cancelButtonPosFromRight := this.width - 60 - 10 - this.margin
-        SubmitButton := this.Add("Button", "w60 xm+10 Default", "OK")
-        CancelButton := this.Add("Button", "w60 yp x" cancelButtonPosFromRight, "Cancel")
+        this.Add("Text", "r1 xm", this.promptMsg)
+        this.Add("Edit", "r1 xm w" this.width " vInputBoxOutput")
+        SubmitButton := this.Add("Button", "w60 xm Default", "OK")
+        CancelButton := this.Add("Button", "w60 yp x+10", "Cancel")
 
         this.bind(SubmitButton, "SubmitEvent")
         this.bind(CancelButton, "CancelEvent")
 
         this.Show("w" this.width + (this.margin*2))
+
+        GuiControlGet, p, Pos, % %CancelButton%
+        positionFromRight := this.width + this.margin - pW
+        GuiControl, Move, % %CancelButton%, % "x" positionFromRight
+
 
         WinWaitClose, % this.title
         return % this.output
