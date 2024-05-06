@@ -36,9 +36,12 @@ class JobIssue
         }
     }
 
-    lineNo[]
+    lineNo[index := 0]
     {
         get {
+            if (index > 0) {
+                return this.data.lineNo[index]
+            }
             return this.data.lineNo
         }
     }
