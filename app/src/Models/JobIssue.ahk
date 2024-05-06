@@ -25,24 +25,7 @@ class JobIssue
     lineIndex[]
     {
         get {
-            if (IsObject(this.data.lineNo)) {
-                ret := []
-                for index, lineNo in this.data.lineNo {
-                    ret.push(lineNo / 10)
-                }
-                return ret
-            }
             return this.data.lineNo / 10
-        }
-    }
-
-    lineNo[index := 0]
-    {
-        get {
-            if (index > 0) {
-                return this.data.lineNo[index]
-            }
-            return this.data.lineNo
         }
     }
 
@@ -87,7 +70,8 @@ class JobIssue
 
             results := DBA.QueryBuilder
                         .from("jobdetl")
-                        .select("refid, sortno")
+                        .select("jobdetl.refid as refid, jobdetl.sortno as sortno, bomdel.fixorvar as fixorvar")
+                        .join("bomdel", "jobdetl.bomdno = bomdel.bomdno")
                         .where({"refid=": partNumber, "jobno=": this.data.jobNumber}) 
                         .run()
             
@@ -98,9 +82,10 @@ class JobIssue
             if (results.data().count() == 1) {
                 this.data.lineNo := Format("{1:u}", results.row(1)["sortno"])
             } else {
-                this.data.lineNo := []
                 for rowNumber, row in results.data() {
-                    this.data.lineNo.push(Format("{1:u}", row["sortno"]))
+                    if (row["fixorvar"] == "V") {
+                        this.data.lineNo := row["sortno"]
+                    }
                 }
             }
 
