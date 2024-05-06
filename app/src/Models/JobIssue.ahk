@@ -93,11 +93,11 @@ class JobIssue
             }
 
             if (results.data().count() == 1) {
-                this.data.lineNo := results.row(1)["sortno"]
+                this.data.lineNo := Format("{1:u}", results.row(1)["sortno"])
             } else {
                 this.data.lineNo := []
                 for rowNumber, row in results.data() {
-                    this.data.lineNo.push(row["sortno"])
+                    this.data.lineNo.push(Format("{1:u}", row["sortno"]))
                 }
             }
 
