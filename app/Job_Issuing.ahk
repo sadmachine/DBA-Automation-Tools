@@ -13,6 +13,10 @@
 ; Revision 1 (02/13/2023)
 ; * Added this banner
 ;
+; Revision 2 (05/13/2024)
+; * Update job issuing order to include job issuing "pick list"
+; * Process also allows for picking from one job multiple times now
+; 
 ; === TO-DOs ===================================================================
 ; ==============================================================================
 
@@ -23,9 +27,21 @@
 try {
     jobIssuingController := new Controllers.JobIssuing()
 
-    jobIssuingController.getInputs(new Models.JobIssue())
+    another := true
+    jobIssuingController.getJob(new Models.JobIssue())
 
-    jobIssuingController.automate()
+    while (another) {
+        another := jobIssuingController.showJobIssuesList()
+
+        if (!another) {
+            break
+        }
+
+        jobIssuingController.getIssueDetails()
+
+        jobIssuingController.automate()
+    }
+
 } catch e {
     @.friendlyException(e, true)
     jobIssuingController.cleanup()
