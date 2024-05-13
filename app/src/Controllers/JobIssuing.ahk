@@ -33,6 +33,7 @@ class JobIssuing extends Controllers.Base
     _bootstrap()
     {
         UI.Base.defaultFont := {options: "s16", fontName: ""}
+        UI.Required.strict := true
         UI.InputBoxObj.defaultMargin := 20
         UI.MsgBoxObj.defaultMargin := 20
         UI.InputBoxObj.defaultWidth := 300 
@@ -52,29 +53,35 @@ class JobIssuing extends Controllers.Base
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
-    getInputs(jobIssue)
+    getJob(jobIssue)
     {
-        UI.Required.strict := true
-        jobIssue.jobNumber := UI.Required.InputBox("Enter Job #")
-        #.log("app").info(A_ThisFunc, "Job #: " jobIssue.jobNumber)
-
-        jobIssue.partNumber := UI.Required.InputBox("Enter Part #")
-        #.log("app").info(A_ThisFunc, "Part #: " jobIssue.partNumber)
-
-        if (jobIssue.needsLotNumber) {
-            jobIssue.lotNumber := UI.Required.InputBox("Enter Lot #")
-            #.log("app").info(A_ThisFunc, "Lot #: " jobIssue.lotNumber)
-        }
-
-        jobIssue.location := UI.Required.InputBox("Enter Location")
-        #.log("app").info(A_ThisFunc, "Lot #: " jobIssue.lotNumber)
-
-        jobIssue.quantity := UI.Required.InputBox("Enter Quantity to Issue")
-        #.log("app").info(A_ThisFunc, "Quantity: " jobIssue.quantity)
-
         this.jobIssue := jobIssue
+        this.jobIssue.jobNumber := UI.Required.InputBox("Enter Job #")
+        #.log("app").info(A_ThisFunc, "Job #: " this.jobIssue.jobNumber)
     }
 
+    getIssueDetails()
+    {
+        this.jobIssue.partNumber := UI.Required.InputBox("Enter Part #")
+        #.log("app").info(A_ThisFunc, "Part #: " this.jobIssue.partNumber)
+
+        if (this.jobIssue.needsLotNumber) {
+            this.jobIssue.lotNumber := UI.Required.InputBox("Enter Lot #")
+            #.log("app").info(A_ThisFunc, "Lot #: " this.jobIssue.lotNumber)
+        }
+
+        this.jobIssue.location := UI.Required.InputBox("Enter Location")
+        #.log("app").info(A_ThisFunc, "Lot #: " this.jobIssue.lotNumber)
+
+        this.jobIssue.quantity := UI.Required.InputBox("Enter Quantity to Issue")
+        #.log("app").info(A_ThisFunc, "Quantity: " this.jobIssue.quantity)
+    }
+
+    showJobIssuesList()
+    {
+        jobIssueGui := new Views.JobIssuesList(this.jobIssue.jobNumber)
+        return jobIssueGui.show()
+    }
 
     automate()
     {
@@ -294,5 +301,10 @@ class JobIssuing extends Controllers.Base
             throw new @.WindowException(A_ThisFunc, "Job Issues Window never bexame active (waited 5 seconds).")
         }
         #.log("app").info(A_ThisFunc, "Complete")
+    }
+
+    cleanup()
+    {
+        this.closeExistingWindows()
     }
 }
