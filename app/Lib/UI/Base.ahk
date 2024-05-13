@@ -359,6 +359,12 @@ class Base
         Gui %thisLabel%: +OwnDialogs
     }
 
+    ListView(listView)
+    {
+        local thisLabel := this.label
+        Gui %thisLabel%:ListView, % %listView%
+    }
+
     updateText(ctrlHwnd, newText)
     {
         GuiControl, Text, % %ctrlHwnd%, % newText
