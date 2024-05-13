@@ -20,4 +20,5 @@
 class Views
 {
     #Include src/Views/PoLookupResults.ahk
+    #Include src/Views/JobIssuesList.ahk
 }
