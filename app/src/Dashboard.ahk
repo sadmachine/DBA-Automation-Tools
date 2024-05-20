@@ -118,7 +118,7 @@ class Dashboard
 
     _buildReceivingSection()
     {
-        Gui, dashboard:Add, GroupBox, Section w132 h60, Receiving
+        Gui, dashboard:Add, GroupBox, Section x0 w160 h60, Receiving
         options := "+Disabled"
         if (ModuleLoader.has("PO Verification")) {
             options := "gLaunchModule"
@@ -128,12 +128,18 @@ class Dashboard
 
     _buildJobsSection()
     {
-        Gui, dashboard:Add, GroupBox, Section w132 h60 x0, Jobs
+        Gui, dashboard:Add, GroupBox, Section x0 w160 h100, Jobs
         options := "+Disabled"
         if (ModuleLoader.has("Job Issuing")) {
             options := "gLaunchModule"
         }
         Gui, dashboard:Add, Button, xs+5 ys+20 %options%, Job Issuing
+
+        options := "+Disabled"
+        if (ModuleLoader.has("Job Issues Report")) {
+            options := "gLaunchModule"
+        }
+        Gui, dashboard:Add, Button, xs+5 ys+58 %options%, Job Issues Report
     }
 
     _setupApplicationMenu()
@@ -179,7 +185,7 @@ class Dashboard
     {
         tempDir := new #.Path.Temp("DBA AutoTools")
         tempApplicationLogPath := tempDir.concat("application.log")
-        applicationLogPath := #.Path.concat($["PROJECT_ROOT"], "modules\application.log")
+        applicationLogPath := #.Path.concat($["LOGS_PATH"], "application.log")
         #.Cmd.copy(applicationLogPath, tempApplicationLogPath)
         Run, % "notepad.exe """ tempApplicationLogPath """"
     }
