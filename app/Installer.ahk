@@ -137,10 +137,12 @@ InstallFiles()
     ; Files in modules folder
     FileInstall, ..\dist\app\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
     FileInstall, ..\dist\app\modules\Job_Issuing.exe, % #.Path.concat(modulesPath, "Job_Issuing.exe"), 1
+    FileInstall, ..\dist\app\modules\Job_Issues_Report.exe, % #.Path.concat(modulesPath, "Job_Issues_Report.exe"), 1
 
     ; Files in templates folder
     FileInstall, ..\dist\app\templates\Incoming Inspection Log Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
     FileInstall, ..\dist\app\templates\Incoming Inspection Report Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Report Template.xlsx"), 1
+    FileInstall, ..\dist\app\templates\Job Issues Report Template.xlsx, % #.Path.concat(templatesPath, "Job Issues Report Template.xlsx"), 1
 }
 
 SetupConfigIni()
