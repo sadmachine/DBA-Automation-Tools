@@ -34,6 +34,7 @@ $["LOGS_PATH"] := #.Path.concat($["STORAGE_PATH"], "logs")
 $["MODS_PATH"] := #.Path.concat($["APP_PATH"], "modules")
 $["SETTINGS_INI_FILE"] := #.Path.concat($["APP_PATH"], "settings.ini")
 $["MODS_INI_FILE"] := #.Path.concat($["APP_PATH"], "mods.ini")
+$["TEMPLATES_PATH"] := #.Path.concat($["APP_PATH"], "templates")
 
 $["DOTENV_PATH"]:= #.Path.concat($["PROJECT_ROOT"], ".env")
 if ((exists := FileExist($["DOTENV_PATH"])) && !InStr(exists, "D")) {
