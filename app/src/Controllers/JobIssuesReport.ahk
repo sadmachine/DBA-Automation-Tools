@@ -55,7 +55,7 @@ class JobIssuesReport extends Controllers.Base
     gatherData()
     {
         this.results := DBA.QueryBuilder.from("detlentr")
-            .select("jobdetl.sortno, detlentr.dateentr, itemh.itemcode, itemh.lotno, detlentr.qty, item.category, unames.lastname || ', ' || unames.firstname AS name")
+            .select("jobdetl.sortno, detlentr.dateentr, itemh.itemcode, itemh.lotno, detlentr.qty, item.category, item.descript, unames.lastname || ', ' || unames.firstname AS name")
             .join("itemh", "itemh.uniqforrec=detlentr.unumber")
             .join("item", "item.itemcode=itemh.itemcode")
             .join("jobdetl", "detlentr.jobdetno=jobdetl.jobdetno")
@@ -90,58 +90,27 @@ class JobIssuesReport extends Controllers.Base
                 currentPartNum := row["itemcode"]
             }
             if (currentPartNum != row["itemcode"]) {
-                xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
-                xlApp.ActiveCell.Font.Bold := true
-                xlApp.ActiveCell.Value := "Total:"
-                xlApp.ActiveCell.Offset(0, 1).Activate
-
-                xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
-                xlApp.ActiveCell.Font.Bold := true
-                xlApp.ActiveCell.Value := currentPartNum
-                xlApp.ActiveCell.Offset(0, 2).Activate
-
-                xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
-                xlApp.ActiveCell.Font.Bold := true
-                xlApp.ActiveCell.Value := currentTotalQuantity
-                xlApp.ActiveCell.Offset(2, (xlApp.ActiveCell.Column - 1) * -1).Activate
-
+                this._outputTotalRow(xlApp, currentPartNum, currentTotalQuantity)
                 currentTotalQuantity := 0
                 currentPartNum := row["itemcode"]
             }
-            xlApp.ActiveCell.Value := "'" row["dateentr"]
-            xlApp.ActiveCell.Offset(0, 1).Activate
+            this._enterValue(xlApp, row["dateentr"])
 
-            xlApp.ActiveCell.Value := "'" row["itemcode"]
-            xlApp.ActiveCell.Offset(0, 1).Activate
+            this._enterValue(xlApp, row["itemcode"])
 
-            xlApp.ActiveCell.Value := "'" row["lotno"]
-            xlApp.ActiveCell.Offset(0, 1).Activate
+            this._enterValue(xlApp, row["descript"])
 
-            xlApp.ActiveCell.Value := "'" row["qty"]
-            xlApp.ActiveCell.Offset(0, 1).Activate
+            this._enterValue(xlApp, row["lotno"])
 
-            xlApp.ActiveCell.Value := "'" row["category"]
-            xlApp.ActiveCell.Offset(0, 1).Activate
+            this._enterValue(xlApp, row["qty"])
 
-            xlApp.ActiveCell.Value := "'" row["name"]
-            xlApp.ActiveCell.Offset(1, (xlApp.ActiveCell.Column - 1) * -1).Activate
+            this._enterValue(xlApp, row["category"])
+
+            this._enterValueAndReset(xlApp, row["name"])
 
             currentTotalQuantity += row["qty"]
         }
-        xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
-        xlApp.ActiveCell.Font.Bold := true
-        xlApp.ActiveCell.Value := "Total:"
-        xlApp.ActiveCell.Offset(0, 1).Activate
-
-        xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
-        xlApp.ActiveCell.Font.Bold := true
-        xlApp.ActiveCell.Value := currentPartNum
-        xlApp.ActiveCell.Offset(0, 2).Activate
-
-        xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
-        xlApp.ActiveCell.Font.Bold := true
-        xlApp.ActiveCell.Value := currentTotalQuantity
-        xlApp.ActiveCell.Offset(2, (xlApp.ActiveCell.Column - 1) * -1).Activate
+        this._outputTotalRow(xlApp, currentPartNum, currentTotalQuantity)
 
 
         xlApp.ActiveCell.Offset(3, (xlApp.ActiveCell.Column - 1) * -1).Activate
@@ -174,5 +143,36 @@ class JobIssuesReport extends Controllers.Base
             Sleep 100
         }
         return generatedfile
+    }
+
+    _outputTotalRow(xlApp, currentPartNum, currentTotalQuantity)
+    {
+        xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
+        xlApp.ActiveCell.Font.Bold := true
+        xlApp.ActiveCell.Value := "Total:"
+        xlApp.ActiveCell.Offset(0, 1).Activate
+
+        xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
+        xlApp.ActiveCell.Font.Bold := true
+        xlApp.ActiveCell.Value := currentPartNum
+        xlApp.ActiveCell.Offset(0, 3).Activate
+
+        xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
+        xlApp.ActiveCell.Font.Bold := true
+        xlApp.ActiveCell.Value := currentTotalQuantity
+        xlApp.ActiveCell.Offset(2, (xlApp.ActiveCell.Column - 1) * -1).Activate
+
+    }
+
+    _enterValue(xlApp, value)
+    {
+        xlApp.ActiveCell.Value := "'" value
+        xlApp.ActiveCell.Offset(0, 1).Activate
+    }
+
+    _enterValueAndReset(xlApp, value)
+    {
+        xlApp.ActiveCell.Value := "'" value
+        xlApp.ActiveCell.Offset(1, (xlApp.ActiveCell.Column - 1) * -1).Activate
     }
 }
