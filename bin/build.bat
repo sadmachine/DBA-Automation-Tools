@@ -7,11 +7,20 @@ setlocal EnableDelayedExpansion
 PROMPT $G$S
 
 
+for /f "tokens=* USEBACKQ" %%F in (`inifile "%CD%\dist\app\version.ini" [version] build`) do (
+  set setBuildNumber=%%F
+)
+%setBuildNumber%
+ 
+set /a build=build+1
+
+inifile "%CD%\dist\app\version.ini" [version] build=%build%
+
 if "%1" NEQ "" (
   set CURRENT_VERSION=%1
 ) else (
   for /f %%i in ('%~dp0\current-version.bat') do (
-    set CURRENT_VERSION=%%i.beta
+    set CURRENT_VERSION=%%i
   )
 )
 
@@ -71,7 +80,7 @@ if errorlevel 1 (
 %COMPILER% /base %BINFILE% /in "%CD%\app\Job_Issues_Report.ahk" /out "%CD%\dist\app\modules\Job_Issues_Report.exe" /icon "%CD%\assets\Prag Logo.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\tmp.ahk" /out "%CD%\tmp.exe" /icon "%CD%\assets\Prag Logo.ico" 
 %COMPILER% /base %BINFILE% /in "%CD%\app\Settings.ahk" /out "%CD%\dist\Settings.exe" /icon "%CD%\assets\Settings5.ico" 
-%COMPILER% /base %BINFILE% /in "%CD%\app\Installer.ahk" /out "%CD%\installers\Installer-DBA-AutoTools-%CURRENT_VERSION%.exe" /icon "%CD%\assets\Installer.ico" 
+%COMPILER% /base %BINFILE% /in "%CD%\app\Installer.ahk" /out "%CD%\installers\DBA-AutoTools-%CURRENT_VERSION%-build%build%.exe" /icon "%CD%\assets\Installer.ico" 
 
 :: Reset the prompt
 @PROMPT %OLDPROMPT%
