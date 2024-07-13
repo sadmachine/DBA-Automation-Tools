@@ -20,7 +20,7 @@ if "%1" NEQ "" (
   set CURRENT_VERSION=%1
 ) else (
   for /f %%i in ('%~dp0\current-version.bat') do (
-    set CURRENT_VERSION=%%i
+    set CURRENT_VERSION=%%i-beta
   )
 )
 
