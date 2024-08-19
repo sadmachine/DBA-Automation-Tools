@@ -62,19 +62,63 @@ class JobIssuing extends Controllers.Base
 
     getIssueDetails()
     {
-        this.jobIssue.partNumber := UI.Required.InputBox("Enter Part #")
-        #.log("app").info(A_ThisFunc, "Part #: " this.jobIssue.partNumber)
-
-        if (this.jobIssue.needsLotNumber) {
-            this.jobIssue.lotNumber := UI.Required.InputBox("Enter Lot #")
-            #.log("app").info(A_ThisFunc, "Lot #: " this.jobIssue.lotNumber)
+        Loop {
+            try {
+                this.jobIssue.partNumber := UI.Required.InputBox("Enter Part #")
+                #.log("app").info(A_ThisFunc, "Part #: " this.jobIssue.partNumber)
+            } catch e {
+                if (@.typeOf(e) == @.ValidationException.__Class) {
+                    UI.MsgBox(e.message, "Try Again")
+                    continue
+                }
+                throw e
+            }
+            break
         }
 
-        this.jobIssue.location := UI.Required.InputBox("Enter Location")
-        #.log("app").info(A_ThisFunc, "Lot #: " this.jobIssue.lotNumber)
+        if (this.jobIssue.needsLotNumber) {
+            Loop {
+                try {
+                    this.jobIssue.lotNumber := UI.Required.InputBox("Enter Lot #")
+                    #.log("app").info(A_ThisFunc, "Lot #: " this.jobIssue.lotNumber)
+                } catch e {
+                    if (@.typeOf(e) == @.ValidationException.__Class) {
+                        UI.MsgBox(e.message, "Try Again")
+                        continue
+                    }
+                    throw e
+                }
+                break
+            }
+        }
 
-        this.jobIssue.quantity := UI.Required.InputBox("Enter Quantity to Issue")
-        #.log("app").info(A_ThisFunc, "Quantity: " this.jobIssue.quantity)
+        Loop {
+            try {
+                this.jobIssue.location := UI.Required.InputBox("Enter Location")
+                #.log("app").info(A_ThisFunc, "Lot #: " this.jobIssue.lotNumber)
+            } catch e {
+                if (@.typeOf(e) == @.ValidationException.__Class) {
+                    UI.MsgBox(e.message, "Try Again")
+                    continue
+                }
+                throw e
+            }
+            break
+        }
+
+        Loop {
+            try {
+                this.jobIssue.quantity := UI.Required.InputBox("Enter Quantity to Issue")
+                #.log("app").info(A_ThisFunc, "Quantity: " this.jobIssue.quantity)
+            } catch e {
+                if (@.typeOf(e) == @.ValidationException.__Class) {
+                    UI.MsgBox(e.message, "Try Again")
+                    continue
+                }
+                throw e
+            }
+            break
+        }
     }
 
     showJobIssuesList()
@@ -191,32 +235,51 @@ class JobIssuing extends Controllers.Base
     sortIssueLines()
     {
         this.activateJobIssues()
-        ControlFocus, % "TPageControl2", % DBA.Windows.JobIssues
-        ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
-        if (focusedControl == "TPageControl2") {
-            Send % "{Tab}"
-        } else {
-            throw new @.WindowException(A_ThisFunc, "Unable to focus on the correct control. Exiting.", {focusedControl: focusedControl, expectedControl: "TPageControl2"})
-        }
-        ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
-        Send % "{Home}"
-        if (this.jobIssue.needsLotNumber) {
-            Send % "{End}"
-        } else {
-            Send % "{Right}"
-        }
-        ControlGetPos, gridX, gridY, gridWidth, gridHeight, % focusedControl, % DBA.Windows.JobIssues
-        adjustedX := gridX+gridWidth
-        adjustedY := gridY+gridHeight
-        PixelSearch, findX, findY, % gridX, % gridY, % adjustedX, % adjustedY, 0xff8728, 2, % "Fast RGB" "FF8728"
-        clickX := findX + 10
-        clickY := gridY + 10 
+        try {
+            BlockInput, MouseMove
+            BlockInput, SendAndMouse
+            ControlFocus, % "TPageControl2", % DBA.Windows.JobIssues
+            ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
+            if (focusedControl == "TPageControl2") {
+                Send % "{Tab}"
+            } else {
+                throw new @.WindowException(A_ThisFunc, "Unable to focus on the correct control. Exiting.", {focusedControl: focusedControl, expectedControl: "TPageControl2"})
+            }
+            ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
+            Send % "{Home}"
+            if (this.jobIssue.needsLotNumber) {
+                Send % "{End}"
+            } else {
+                Send % "{Right}"
+            }
+            Sleep 100
+            ControlGetPos, gridX, gridY, gridWidth, gridHeight, % focusedControl, % DBA.Windows.JobIssues
+            adjustedX := gridX+gridWidth
+            adjustedY := gridY+gridHeight
+            PixelSearch, findX, findY, % gridX, % gridY, % adjustedX, % adjustedY, 0xff8728, 2, % "Fast RGB"
+            clickX := findX + 10
+            clickY := gridY + 10 
 
-        MouseMove % clickX, % clickY
-        Click
+            MouseMove % clickX, % clickY
+            Click
 
-        Send % "{Home}"
-        Send % "{PgUp}"
+            Sleep 100
+
+            ImageSearch, outX, outY, % gridX, % gridY, % adjustedX, % gridY + 30, % "*5 " #.Path.Concat($["ASSETS_PATH"], "up-arrow.png")
+
+            if (ErrorLevel) {
+                MsgBox % "Not able to properly sort grid, exiting"
+                ExitApp
+            }
+
+            Send % "{Home}"
+            Send % "{PgUp}"
+        } catch e {
+            throw e
+        } finally {
+            BlockInput, MouseMoveOff
+            BlockInput, Default
+        }
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
@@ -253,7 +316,7 @@ class JobIssuing extends Controllers.Base
                         .orderBy("itemloc, dt")
                         .run()
         }
-        
+
         Loop
         {
             row := results.row(A_Index)
@@ -276,9 +339,30 @@ class JobIssuing extends Controllers.Base
         {
             throw new @.WindowException(A_ThisFunc, "Job Issues Window never bexame active (waited 5 seconds).")
         }
+        ControlGetPos, gridX, gridY, gridWidth, gridHeight, % "TPageControl2", % DBA.Windows.JobIssues
+        adjustedX := gridX+gridWidth
+        adjustedY := gridY+gridHeight
+        oldX := oldY := 0
         downCount := this.selectIssueIndex() - 1
         if (downCount > 0) {
-            Send % "{Down " downCount " }"
+            count := 0
+            Loop {
+                PixelSearch, firstX, firstY, % gridX, % gridY, % adjustedX, % adjustedY, 0x0078D7, 2, % "Fast RGB" "0078D7"
+                Send % "{Down}"
+                PixelSearch, secondX, secondY, % gridX, % gridY, % adjustedX, % adjustedY, 0x0078D7, 2, % "Fast RGB" "0078D7"
+
+                if (firstY == secondY) {
+                    Send % "{Home}"
+                    Send % "{PgUp}"
+                    count := 0
+                    continue
+                }
+
+                count++
+                if (count == downCount) {
+                    break
+                }
+            }
         }
         Send % this.jobIssue.quantity
         result := UI.YesNoBox("Please verify the Job Issue is correct.`nSelect 'Yes' to continue, select 'No' to cancel.")
