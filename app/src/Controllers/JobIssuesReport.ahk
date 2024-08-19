@@ -136,8 +136,9 @@ class JobIssuesReport extends Controllers.Base
     {
         tempDir := new #.Path.Temp("job-issues-report")
         Random, randnum, 0, 10000
+        FormatTime genDate, , % "MMddyyyy-hhmmtt"
         templateFile := #.Path.concat($["TEMPLATES_PATH"], "Job Issues Report Template.xlsx")
-        generatedFile := tempDir.concat("generated-" randnum ".xlsx")
+        generatedFile := tempDir.concat("Job-Issues-" this.jobNumber "-" gendate ".xlsx")
         FileCopy % templateFile, % generatedFile, overwrite := 1
         while (!FileExist(generatedFile)) {
             Sleep 100
