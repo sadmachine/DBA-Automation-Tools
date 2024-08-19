@@ -106,6 +106,7 @@ CreateDirectories()
     templatesPath := #.Path.concat(appPath, "templates")
     storagePath := #.Path.concat(appPath, "storage")
     logsPath := #.Path.concat(storagePath, "logs")
+    assetsPath := #.Path.concat(storagePath, "assets")
     queuePath := #.Path.concat(appPath, "queue")
 
     _CreateDirIfNotExist(projectPath)
@@ -115,6 +116,7 @@ CreateDirectories()
     _CreateDirIfNotExist(templatesPath)
     _CreateDirIfNotExist(storagePath)
     _CreateDirIfNotExist(logsPath)
+    _CreateDirIfNotExist(assetsPath)
     _CreateDirIfNotExist(queuePath)
 }
 
@@ -138,6 +140,9 @@ InstallFiles()
     FileInstall, ..\dist\app\modules\PO_Verification.exe, % #.Path.concat(modulesPath, "PO_Verification.exe"), 1
     FileInstall, ..\dist\app\modules\Job_Issuing.exe, % #.Path.concat(modulesPath, "Job_Issuing.exe"), 1
     FileInstall, ..\dist\app\modules\Job_Issues_Report.exe, % #.Path.concat(modulesPath, "Job_Issues_Report.exe"), 1
+
+    ; Files in storage/assets
+    FileInstall, ..\dist\app\storage\assets\up-arrow.png, % #.Path.concat(assetsPath, "up-arrow.png"), 1
 
     ; Files in templates folder
     FileInstall, ..\dist\app\templates\Incoming Inspection Log Template.xlsx, % #.Path.concat(templatesPath, "Incoming Inspection Log Template.xlsx"), 1
