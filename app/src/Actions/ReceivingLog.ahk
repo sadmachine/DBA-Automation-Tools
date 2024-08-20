@@ -153,8 +153,6 @@ class ReceivingLog extends Actions.Base
             xlWorkbook.Save()
             #.log("queue").info(A_ThisFunc, "Saved Workbook")
 
-        } catch e {
-            throw e
         } finally {
             xlApp.DisplayAlerts := false
             xlWorkBook.Close()
