@@ -129,32 +129,31 @@ class JobIssuing extends Controllers.Base
 
     automate()
     {
-        this.closeExistingWindows()
+        BlockInput On
+        BlockInput MouseMove
 
-        this.openJobsWindow()
+        try {
+            this.closeExistingWindows()
 
-        this.selectJob()
+            this.openJobsWindow()
 
-        this.openJobIssuesWindow()
+            this.selectJob()
 
-        this.normalizeTabFocus()
+            this.openJobIssuesWindow()
 
-        this.selectLineIndex()
+            this.normalizeTabFocus()
 
-        this.sortIssueLines()
+            this.selectLineIndex()
 
-        this.issueQuantity()
+            this.sortIssueLines()
 
-        this.closeExistingWindows()
-        ;   1. Open Job Issues
-        ;       - Probably do this by opening Jobs, searching for job number, then going to links -> job issues
-        ;       - Validate Jobs and Job Issues is closed before opening
-        ;   2. Query for line number to select
-        ;   3. Select correct line number
-        ;   4. Sort issue detail by lot number > location
-        ;   5. Select the correct issue line and enter the quantity to issue
-        ;   6. Artificially click the "Update" button
-        ;   7. Close out of the Job Issues/Jobs screen
+            this.issueQuantity()
+
+            this.closeExistingWindows()
+        } finally {
+            BlockInput Off
+            BlockInput MouseMoveOff
+        }
     }
 
     closeExistingWindows()
@@ -235,51 +234,41 @@ class JobIssuing extends Controllers.Base
     sortIssueLines()
     {
         this.activateJobIssues()
-        try {
-            BlockInput, MouseMove
-            BlockInput, SendAndMouse
-            ControlFocus, % "TPageControl2", % DBA.Windows.JobIssues
-            ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
-            if (focusedControl == "TPageControl2") {
-                Send % "{Tab}"
-            } else {
-                throw new @.WindowException(A_ThisFunc, "Unable to focus on the correct control. Exiting.", {focusedControl: focusedControl, expectedControl: "TPageControl2"})
-            }
-            ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
-            Send % "{Home}"
-            if (this.jobIssue.needsLotNumber) {
-                Send % "{End}"
-            } else {
-                Send % "{Right}"
-            }
-            Sleep 100
-            ControlGetPos, gridX, gridY, gridWidth, gridHeight, % focusedControl, % DBA.Windows.JobIssues
-            adjustedX := gridX+gridWidth
-            adjustedY := gridY+gridHeight
-            PixelSearch, findX, findY, % gridX, % gridY, % adjustedX, % adjustedY, 0xff8728, 2, % "Fast RGB"
-            clickX := findX + 10
-            clickY := gridY + 10 
-
-            MouseMove % clickX, % clickY
-            Click
-
-            Sleep 100
-
-            ImageSearch, outX, outY, % gridX, % gridY, % adjustedX, % gridY + 30, % "*5 " #.Path.Concat($["ASSETS_PATH"], "up-arrow.png")
-
-            if (ErrorLevel) {
-                MsgBox % "Not able to properly sort grid, exiting"
-                ExitApp
-            }
-
-            Send % "{Home}"
-            Send % "{PgUp}"
-        } catch e {
-            throw e
-        } finally {
-            BlockInput, MouseMoveOff
-            BlockInput, Default
+        ControlFocus, % "TPageControl2", % DBA.Windows.JobIssues
+        ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
+        if (focusedControl == "TPageControl2") {
+            Send % "{Tab}"
+        } else {
+            throw new @.WindowException(A_ThisFunc, "Unable to focus on the correct control. Exiting.", {focusedControl: focusedControl, expectedControl: "TPageControl2"})
         }
+        ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
+        Send % "{Home}"
+        if (this.jobIssue.needsLotNumber) {
+            Send % "{End}"
+        } else {
+            Send % "{Right}"
+        }
+        Sleep 100
+        ControlGetPos, gridX, gridY, gridWidth, gridHeight, % focusedControl, % DBA.Windows.JobIssues
+        adjustedX := gridX+gridWidth
+        adjustedY := gridY+gridHeight
+        PixelSearch, findX, findY, % gridX, % gridY, % adjustedX, % adjustedY, 0xff8728, 2, % "Fast RGB"
+        clickX := findX + 10
+        clickY := gridY + 10 
+
+        MouseMove % clickX, % clickY
+        Click
+
+        Sleep 100
+
+        try {
+            ImageSearch, outX, outY, % gridX, % gridY, % adjustedX, % gridY + 30, % "*5 " #.Path.Concat($["ASSETS_PATH"], "up-arrow.png")
+        } catch e {
+
+        }
+
+        Send % "{Home}"
+        Send % "{PgUp}"
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
@@ -365,8 +354,12 @@ class JobIssuing extends Controllers.Base
             }
         }
         Send % this.jobIssue.quantity
+        BlockInput Off
+        BlockInput MouseMoveOff
         result := UI.YesNoBox("Please verify the Job Issue is correct.`nSelect 'Yes' to continue, select 'No' to cancel.")
         if (result.value == "Yes") {
+            BlockInput On
+            BlockInput MouseMove
             this.activateJobIssues()
             Send % "!u"
         } else {
