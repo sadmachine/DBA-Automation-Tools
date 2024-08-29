@@ -83,9 +83,21 @@ class JobIssue
                 this.data.lineNo := Format("{1:u}", results.row(1)["sortno"])
             } else {
                 for rowNumber, row in results.data() {
-                    if (row["fixorvar"] == "V") {
+                    if (row["fixorvar"] == "V" && row["sortno"] ) {
                         this.data.lineNo := row["sortno"]
+                        break
                     }
+                }
+                if (!(this.data.lineNo > 0)) {
+                    for rowNumber, row in results.data() {
+                        if (row["sortno"] > 0) {
+                            this.data.lineNo := row["sortno"]
+                            break
+                        }
+                    }
+                }
+                if (!(this.data.lineNo > 0)) {
+                    throw new @.NotFoundException(A_ThisFunc, "Could not find a row with a non-zero line number.", {partNumber: partNumber, jobNumber: this.data.jobNumber})
                 }
             }
 
