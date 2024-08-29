@@ -211,6 +211,8 @@ class JobIssuing extends Controllers.Base
     {
         Send !lo
         this.activateJobIssues()
+        ControlGet, topHwnd, Hwnd,, % "TdxDBGrid2", % DBA.Windows.JobIssues
+        this.topHwnd := topHwnd
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
@@ -227,21 +229,18 @@ class JobIssuing extends Controllers.Base
     {
         this.activateJobIssues()
         downCount := this.jobIssue.lineIndex - 1
-        Send % "{Down " downCount "}"
+        ControlFocus, , % "ahk_id " this.topHwnd
+        Loop % downCount {
+            Send % "{Down}"
+        }
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
     sortIssueLines()
     {
         this.activateJobIssues()
-        ControlFocus, % "TPageControl2", % DBA.Windows.JobIssues
-        ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
-        if (focusedControl == "TPageControl2") {
-            Send % "{Tab}"
-        } else {
-            throw new @.WindowException(A_ThisFunc, "Unable to focus on the correct control. Exiting.", {focusedControl: focusedControl, expectedControl: "TPageControl2"})
-        }
-        ControlGetFocus, focusedControl, % DBA.Windows.JobIssues
+        ControlGet, bottomHwnd, Hwnd,, % "TdxDBGrid1", % DBA.Windows.JobIssues
+        ControlFocus ,, % "ahk_id " bottomHwnd
         Send % "{Home}"
         if (this.jobIssue.needsLotNumber) {
             Send % "{End}"
