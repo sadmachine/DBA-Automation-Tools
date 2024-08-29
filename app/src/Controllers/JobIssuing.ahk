@@ -248,7 +248,7 @@ class JobIssuing extends Controllers.Base
             Send % "{Right}"
         }
         Sleep 100
-        ControlGetPos, gridX, gridY, gridWidth, gridHeight, % focusedControl, % DBA.Windows.JobIssues
+        ControlGetPos, gridX, gridY, gridWidth, gridHeight,, % "ahk_id " bottomHwnd
         adjustedX := gridX+gridWidth
         adjustedY := gridY+gridHeight
         PixelSearch, findX, findY, % gridX, % gridY, % adjustedX, % adjustedY, 0xff8728, 2, % "Fast RGB"
