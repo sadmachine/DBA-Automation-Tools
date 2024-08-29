@@ -72,7 +72,7 @@ class JobIssue
                         .from("jobdetl")
                         .select("jobdetl.refid as refid, jobdetl.sortno as sortno, bomdel.fixorvar as fixorvar")
                         .join("bomdel", "jobdetl.bomdno = bomdel.bomdno")
-                        .where({"refid=": partNumber, "jobno=": this.data.jobNumber}) 
+                        .where({"refid=": partNumber, "jobno=": this.data.jobNumber, "jobdetl.inout=": "Input"}) 
                         .run()
             
             if (results.data().count() < 1 || results.row(1)["refid"] != partNumber) {
@@ -83,12 +83,12 @@ class JobIssue
                 this.data.lineNo := Format("{1:u}", results.row(1)["sortno"])
             } else {
                 for rowNumber, row in results.data() {
-                    if (row["fixorvar"] == "V" && row["sortno"] ) {
+                    if (row["fixorvar"] == "V") {
                         this.data.lineNo := row["sortno"]
                         break
                     }
                 }
-                if (!(this.data.lineNo > 0)) {
+                if (!this.data.lineNo || !(this.data.lineNo > 0)) {
                     for rowNumber, row in results.data() {
                         if (row["sortno"] > 0) {
                             this.data.lineNo := row["sortno"]
@@ -96,7 +96,7 @@ class JobIssue
                         }
                     }
                 }
-                if (!(this.data.lineNo > 0)) {
+                if (!this.data.lineNo || !(this.data.lineNo > 0)) {
                     throw new @.NotFoundException(A_ThisFunc, "Could not find a row with a non-zero line number.", {partNumber: partNumber, jobNumber: this.data.jobNumber})
                 }
             }
