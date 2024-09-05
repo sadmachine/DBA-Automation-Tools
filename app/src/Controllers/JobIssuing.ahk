@@ -240,7 +240,7 @@ class JobIssuing extends Controllers.Base
             Send % "{Down}"
             }
             ControlGetText, foundPartNum, , % "ahk_id " partNumField
-            if (foundPartNum == this.jobIssue.partNumber) {
+            if (Trim(foundPartNum) == Trim(this.jobIssue.partNumber)) {
                 found := true
                 break
             }
