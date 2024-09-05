@@ -229,9 +229,24 @@ class JobIssuing extends Controllers.Base
     {
         this.activateJobIssues()
         downCount := this.jobIssue.lineIndex - 1
+        ControlGet, partNumField, Hwnd, , % "TdxDBEdit5", % DBA.Windows.JobIssues
+        found := false
+        Loop 3 {
         ControlFocus, , % "ahk_id " this.topHwnd
+            Send % "{Home}"
+            Send % "{PgUp}"
         Loop % downCount {
+                ControlFocus, , % "ahk_id " this.topHwnd
             Send % "{Down}"
+            }
+            ControlGetText, foundPartNum, , % "ahk_id " partNumField
+            if (foundPartNum == this.jobIssue.partNumber) {
+                found := true
+                break
+            }
+        }
+        if (!found) {
+            throw new @.WindowException(A_ThisFunc, "Could not properly select the line index to issues to.", {selected: foundPartNum, target: this.jobIssue.partNumber})
         }
         #.log("app").info(A_ThisFunc, "Complete")
     }
