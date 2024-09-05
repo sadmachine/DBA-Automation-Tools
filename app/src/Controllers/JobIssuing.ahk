@@ -337,6 +337,8 @@ class JobIssuing extends Controllers.Base
     issueQuantity()
     {
         this.activateJobIssues()
+        ControlGet, bottomHwnd, Hwnd,, % "TdxDBGrid1", % DBA.Windows.JobIssues
+        ControlFocus ,, % "ahk_id " bottomHwnd
         WinWaitActive, % DBA.Windows.JobIssues,, 5
         if ErrorLevel
         {
@@ -367,17 +369,25 @@ class JobIssuing extends Controllers.Base
                 }
             }
         }
-        Send % this.jobIssue.quantity
+        ControlFocus ,, % "ahk_id " bottomHwnd
+        Send % "{Home}"
+        Send % "{Enter}"
+        ControlSetText, % "TdxInplaceDBTreeListMaskEdit1", % this.jobIssue.quantity, % DBA.Windows.JobIssues
+        
         BlockInput Off
         BlockInput MouseMoveOff
-        result := UI.YesNoBox("Please verify the Job Issue is correct.`nSelect 'Yes' to continue, select 'No' to cancel.")
+        jiY := 0
+        WinGetPos, , jiY, , , % DBA.Windows.JobIssues
+        adjustedPosition := jiY - 50
+        mb := new UI.MsgBoxObj("Please verify the Job Issue is correct.`nSelect 'Yes' to continue, select 'No' to cancel.", "Verify")
+        result := mb.YesNo("xCenter y" adjustedPosition)
         if (result.value == "Yes") {
             BlockInput On
             BlockInput MouseMove
             this.activateJobIssues()
             Send % "!u"
         } else {
-            UI.MsgBox("The Job Issue transaction will now be canceled. If this was a data error, please try again, or contact the manufacturer for debugging steps.")
+            UI.MsgBox("The Job Issue transaction will now be canceled. If this was a data error, please try again, or contact the manufacturer with the following information:`n`n" @.vardump(this.jobIssue.data), "Debug Info")
             this.closeExistingWindows()
         }
         #.log("app").info(A_ThisFunc, "Complete")
