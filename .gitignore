@@ -13,3 +13,5 @@ dist/modules/data/templates/*Incoming Inspection Log.xlsx
 !*.example.ini
 !installers/*.exe
 !dist/**/*
+
+*-beta-*
