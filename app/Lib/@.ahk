@@ -40,6 +40,7 @@ Class @
     #Include <@Exceptions/SQLException>
     #Include <@Exceptions/UnexpectedException>
     #Include <@Exceptions/ValidationException>
+    #Include <@Exceptions/WindowException>
 
     static primitiveTypes := "Empty,Object,Array,Digit,Float,Hexadecimal,Integer,DateTime,String"
 
