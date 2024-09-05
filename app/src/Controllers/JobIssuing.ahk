@@ -95,7 +95,7 @@ class JobIssuing extends Controllers.Base
         Loop {
             try {
                 this.jobIssue.location := UI.Required.InputBox("Enter Location")
-                #.log("app").info(A_ThisFunc, "Lot #: " this.jobIssue.lotNumber)
+                #.log("app").info(A_ThisFunc, "Location: " this.jobIssue.location)
             } catch e {
                 if (@.typeOf(e) == @.ValidationException.__Class) {
                     UI.MsgBox(e.message, "Try Again")
