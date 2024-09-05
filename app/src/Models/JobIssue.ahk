@@ -104,10 +104,9 @@ class JobIssue
             results := DBA.QueryBuilder
                         .from("item_char_def_hist")
                         .select("start_dt, end_dt")
-                        .where({"itemcode=": partNumber, "start_dt": "IS NOT NULL", "end_dt": "IS NULL"})
+                        .where({"itemcode=": partNumber, "start_dt": "IS NOT NULL", "end_dt": "IS NULL", "charname=": "LOTNO"})
                         .limit(1)
                         .run()
-
             if (results.count() == 1) {
                 this.needsLotNumber := true
             }
