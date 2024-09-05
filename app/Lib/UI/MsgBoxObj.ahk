@@ -52,14 +52,13 @@ class MsgBoxObj extends UI.Base
         this.Add("Text", "w" this.width, this.promptMsg)
     }
 
-    _Show()
+    _Show(options := "")
     {
         Global
         if (!this.autoSize) {
-            this.Show("w" this.width)
-        } else {
-            this.Show()
+            options .= " w" this.width
         }
+        this.Show(options)
 
         if (this.type == "OK") {
             this._CenterOkButton()
@@ -76,7 +75,7 @@ class MsgBoxObj extends UI.Base
         GuiControl, MoveDraw, % %okButtonHwnd%, % "x" (guiWidth-60)//2
     }
 
-    OK()
+    OK(showOptions := "")
     {
         this._Setup()
 
@@ -85,10 +84,10 @@ class MsgBoxObj extends UI.Base
 
         this.bind(this.actions["OkButton"], "OkEvent")
 
-        return this._Show()
+        return this._Show(showOptions)
     }
 
-    YesNo()
+    YesNo(showOptions := "")
     {
         this._Setup()
 
@@ -100,6 +99,6 @@ class MsgBoxObj extends UI.Base
         this.bind(YesButton, "YesEvent")
         this.bind(NoButton, "NoEvent")
 
-        return this._Show()
+        return this._Show(showOptions)
     }
 }
