@@ -122,7 +122,9 @@ Class @
             }
             if (@.subclassOf(e, "@")) {
                 UI.MsgBox(message, e.what)
+                #.log("app").warning(e.where, "<" e.what "> " e.message)
             } else {
+                #.log("app").error(e.file "[" e.line "]::" e.what, "<" e.message ">" e.extra)
                 throw e
             }
         }
