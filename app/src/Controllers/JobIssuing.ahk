@@ -211,17 +211,20 @@ class JobIssuing extends Controllers.Base
     {
         Send !lo
         this.activateJobIssues()
-        ControlGet, topHwnd, Hwnd,, % "TdxDBGrid2", % DBA.Windows.JobIssues
-        this.topHwnd := topHwnd
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
     normalizeTabFocus()
     {
         this.activateJobIssues()
-        ControlFocus, % "TPageControl1", % DBA.Windows.JobIssues
 
+
+        ControlFocus, % "TPageControl1", % DBA.Windows.JobIssues
         Send % "{Tab}"
+        ControlGetFocus, topHwndName, % DBA.Windows.JobIssues
+        ControlGet, topHwnd, Hwnd,, % topHwndName, % DBA.Windows.JobIssues
+        this.topHwnd := topHwnd
+
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
@@ -229,24 +232,24 @@ class JobIssuing extends Controllers.Base
     {
         this.activateJobIssues()
         downCount := this.jobIssue.lineIndex - 1
-        ControlGet, partNumField, Hwnd, , % "TdxDBEdit5", % DBA.Windows.JobIssues
         found := false
         Loop 3 {
-        ControlFocus, , % "ahk_id " this.topHwnd
+            ControlFocus, , % "ahk_id " this.topHwnd
             Send % "{Home}"
             Send % "{PgUp}"
-        Loop % downCount {
+            Loop % downCount {
                 ControlFocus, , % "ahk_id " this.topHwnd
-            Send % "{Down}"
+                Send % "{Down}"
             }
-            ControlGetText, foundPartNum, , % "ahk_id " partNumField
-            if (Trim(foundPartNum) == Trim(this.jobIssue.partNumber)) {
+            savedTitleMatchMode := A_TitleMatchMode
+            WinGetText, foundText, % DBA.Windows.JobIssues
+            if (InStr(foundText, this.jobIssue.partNumber "`r`n")) {
                 found := true
                 break
             }
         }
         if (!found) {
-            throw new @.WindowException(A_ThisFunc, "Could not properly select the line index to issues to.", {selected: foundPartNum, target: this.jobIssue.partNumber})
+            throw new @.WindowException(A_ThisFunc, "Could not properly select the line index to issue to.")
         }
         #.log("app").info(A_ThisFunc, "Complete")
     }
@@ -254,8 +257,14 @@ class JobIssuing extends Controllers.Base
     sortIssueLines()
     {
         this.activateJobIssues()
-        ControlGet, bottomHwnd, Hwnd,, % "TdxDBGrid1", % DBA.Windows.JobIssues
-        ControlFocus ,, % "ahk_id " bottomHwnd
+
+        ControlFocus, % "TPageControl2", % DBA.Windows.JobIssues
+        Send % "{Tab}"
+        ControlGetFocus, bottomHwndName, % DBA.Windows.JobIssues
+        ControlGet, bottomHwnd, Hwnd,, % bottomHwndName, % DBA.Windows.JobIssues
+        this.bottomHwnd := bottomHwnd
+
+        ControlFocus ,, % "ahk_id " this.bottomHwnd
         Send % "{Home}"
         if (this.jobIssue.needsLotNumber) {
             Send % "{End}"
@@ -263,7 +272,7 @@ class JobIssuing extends Controllers.Base
             Send % "{Right}"
         }
         Sleep 100
-        ControlGetPos, gridX, gridY, gridWidth, gridHeight,, % "ahk_id " bottomHwnd
+        ControlGetPos, gridX, gridY, gridWidth, gridHeight,, % "ahk_id " this.bottomHwnd
         adjustedX := gridX+gridWidth
         adjustedY := gridY+gridHeight
         PixelSearch, findX, findY, % gridX, % gridY, % adjustedX, % adjustedY, 0xff8728, 2, % "Fast RGB"
@@ -278,7 +287,7 @@ class JobIssuing extends Controllers.Base
         try {
             ImageSearch, outX, outY, % gridX, % gridY, % adjustedX, % gridY + 30, % "*5 " #.Path.Concat($["ASSETS_PATH"], "up-arrow.png")
         } catch e {
-
+            #.log("app").warning(A_ThisFunc, "Did not find sorting array")
         }
 
         Send % "{Home}"
@@ -337,8 +346,7 @@ class JobIssuing extends Controllers.Base
     issueQuantity()
     {
         this.activateJobIssues()
-        ControlGet, bottomHwnd, Hwnd,, % "TdxDBGrid1", % DBA.Windows.JobIssues
-        ControlFocus ,, % "ahk_id " bottomHwnd
+        ControlFocus ,, % "ahk_id " this.bottomHwnd
         WinWaitActive, % DBA.Windows.JobIssues,, 5
         if ErrorLevel
         {
@@ -351,10 +359,11 @@ class JobIssuing extends Controllers.Base
         downCount := this.selectIssueIndex() - 1
         if (downCount > 0) {
             count := 0
-            Loop {
-                PixelSearch, firstX, firstY, % gridX, % gridY, % adjustedX, % adjustedY, 0x0078D7, 2, % "Fast RGB" "0078D7"
+            found := false
+            Loop 5 {
+                PixelSearch, firstX, firstY, % gridX, % gridY, % adjustedX, % adjustedY, 0x0078D7, 3, % "Fast RGB" "0078D7"
                 Send % "{Down}"
-                PixelSearch, secondX, secondY, % gridX, % gridY, % adjustedX, % adjustedY, 0x0078D7, 2, % "Fast RGB" "0078D7"
+                PixelSearch, secondX, secondY, % gridX, % gridY, % adjustedX, % adjustedY, 0x0078D7, 3, % "Fast RGB" "0078D7"
 
                 if (firstY == secondY) {
                     Send % "{Home}"
@@ -365,14 +374,33 @@ class JobIssuing extends Controllers.Base
 
                 count++
                 if (count == downCount) {
+                    found := true
                     break
                 }
             }
+            if (!found) {
+                throw new @.WindowException(A_ThisFunc, "Could not select the correct Location line to issue.")
+            }
         }
-        ControlFocus ,, % "ahk_id " bottomHwnd
+        ControlFocus ,, % "ahk_id " this.bottomHwnd
         Send % "{Home}"
         Send % "{Enter}"
-        ControlSetText, % "TdxInplaceDBTreeListMaskEdit1", % this.jobIssue.quantity, % DBA.Windows.JobIssues
+        Sleep 100
+        found := false
+        Loop 3 {
+            ControlSend, % "TdxInplaceDBTreeListMaskEdit1", % this.jobIssue.quantity, % DBA.Windows.JobIssues
+            Sleep 100
+            ControlGetText, foundText, % "TdxInplaceDBTreeListMaskEdit1", % DBA.Windows.JobIssues
+            if (foundText == this.jobIssue.quantity) {
+                found := true
+                break
+            }
+            ControlSend, % "TdxInplaceDBTreeListMaskEdit1", % "{Ctrl Down}a{Ctrl Up}", % DBA.Windows.JobIssues
+        }
+        if (!found) {
+            throw new @.WindowException(A_ThisFunc, "Could not properly set the issue quantity.")
+        }
+        ControlSend, % "TdxInplaceDBTreeListMaskEdit1", % "{Enter}", % DBA.Windows.JobIssues
         
         BlockInput Off
         BlockInput MouseMoveOff
