@@ -25,7 +25,33 @@ class JobIssue
     lineIndex[]
     {
         get {
-            return this.data.lineNo / 10
+            return this.data.lineIndex
+        }
+        set {
+            result := DBA.QueryBuilder
+                .from("jobdetl")
+                .select("sortno")
+                .where({"jobno=": this.data.jobNumber, "jobdetl.inout=": "Input"}) 
+                .run()
+
+            for index, row in result.data() 
+            {
+                if (row["sortno"] == value) {
+                    return this.data.lineIndex := index
+                }
+            }
+            throw new @.ValidationException(A_ThisFunc, "Could not properly set the lineIndex for the given lineNo", {lineNo: value})
+        }
+    }
+
+    lineNo[]
+    {
+        get {
+            return this.data.lineNo
+        }
+        set {
+            this.lineIndex := value
+            return this.data.lineNo := value
         }
     }
 
@@ -80,23 +106,23 @@ class JobIssue
             }
 
             if (results.data().count() == 1) {
-                this.data.lineNo := Format("{1:u}", results.row(1)["sortno"])
+                this.lineNo := Format("{1:u}", results.row(1)["sortno"])
             } else {
                 for rowNumber, row in results.data() {
                     if (row["fixorvar"] == "V") {
-                        this.data.lineNo := row["sortno"]
+                        this.lineNo := row["sortno"]
                         break
                     }
                 }
-                if (!this.data.lineNo || !(this.data.lineNo > 0)) {
+                if (!this.lineNo || !(this.lineNo > 0)) {
                     for rowNumber, row in results.data() {
                         if (row["sortno"] > 0) {
-                            this.data.lineNo := row["sortno"]
+                            this.lineNo := row["sortno"]
                             break
                         }
                     }
                 }
-                if (!this.data.lineNo || !(this.data.lineNo > 0)) {
+                if (!this.lineNo || !(this.lineNo > 0)) {
                     throw new @.NotFoundException(A_ThisFunc, "Could not find a row with a non-zero line number.", {partNumber: partNumber, jobNumber: this.data.jobNumber})
                 }
             }
