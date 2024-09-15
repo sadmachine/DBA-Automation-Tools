@@ -44,6 +44,15 @@
 
 @.registerExceptionHandler()
 
+Process, Exist, % "DBA AutoTools.exe"
+
+; If DBA AutoTools is running, display message to close the application to continue
+if (ErrorLevel != 0)
+{
+    Msgbox, 16, % "Error", % "DBA AutoTools.exe is currently running and must be closed for the installation to continue.`n`nThe easiest way to close the application is from the Task Manager thats built into windows."
+    ExitApp
+}
+
 GetInstallationLocation()
 
 CreateDirectories()
