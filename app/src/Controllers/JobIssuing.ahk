@@ -258,12 +258,8 @@ class JobIssuing extends Controllers.Base
     sortIssueLines()
     {
         this.activateJobIssues()
-
-        ControlFocus, % "TPageControl2", % DBA.Windows.JobIssues
         ControlGet, bottomPageControl, Hwnd,, % "TPageControl2", % DBA.Windows.JobIssues
-        ControlGetPos, tpcX, tpcY, , , % "ahk_id " bottomPageControl
-        MouseMove, % tpcX + 5, % tpcY + 5
-        Click
+        ControlClick, , % "ahk_id " bottomPageControl, , , , % "NA X5 Y5"
         Sleep 100
         Send % "{Tab}"
         ControlGetFocus, bottomHwndName, % DBA.Windows.JobIssues
