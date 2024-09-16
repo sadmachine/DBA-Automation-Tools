@@ -260,6 +260,11 @@ class JobIssuing extends Controllers.Base
         this.activateJobIssues()
 
         ControlFocus, % "TPageControl2", % DBA.Windows.JobIssues
+        ControlGet, bottomPageControl, Hwnd,, % "TPageControl2", % DBA.Windows.JobIssues
+        ControlGetPos, tpcX, tpcY, , , % "ahk_id " bottomPageControl
+        MouseMove, % tpcX + 5, % tpcY + 5
+        Click
+        Sleep 100
         Send % "{Tab}"
         ControlGetFocus, bottomHwndName, % DBA.Windows.JobIssues
         ControlGet, bottomHwnd, Hwnd,, % bottomHwndName, % DBA.Windows.JobIssues
