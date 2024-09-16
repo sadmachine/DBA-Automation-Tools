@@ -62,6 +62,7 @@ class JobIssuing extends Controllers.Base
 
     getIssueDetails()
     {
+        this.jobIssue.resetIssueDetails()
         Loop {
             try {
                 this.jobIssue.partNumber := UI.Required.InputBox("Enter Part #")
