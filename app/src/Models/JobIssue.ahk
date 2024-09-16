@@ -248,4 +248,12 @@ class JobIssue
             return this.data.quantity := quantity
         }
     }
+
+    resetIssueDetails()
+    {
+        this.needsLotNumber := false
+        savedJobNumber := this.jobNumber
+        this.data := {}
+        this.jobNumber := savedJobNumber
+    }
 }
