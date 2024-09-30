@@ -22,7 +22,7 @@ class $
 {
     __Get(key, default := "")
     {
-        this.get(key, default)
+        return this.get(key, default)
     }
 
     get(key, default := "")
