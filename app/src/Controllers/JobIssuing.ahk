@@ -225,6 +225,21 @@ class JobIssuing extends Controllers.Base
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
+    focusBottomGrid()
+    {
+        this.activateJobIssues()
+
+        ControlGet, bottomPageControl, Hwnd,, % "TPageControl2", % DBA.Windows.JobIssues
+        ControlClick, , % "ahk_id " bottomPageControl, , , , % "NA X5 Y5"
+        Sleep 100
+        Send % "{Tab}"
+        ControlGetFocus, bottomHwndName, % DBA.Windows.JobIssues
+        ControlGet, bottomHwnd, Hwnd,, % bottomHwndName, % DBA.Windows.JobIssues
+        this.bottomHwnd := bottomHwnd
+
+        #.log("app").info(A_ThisFunc, "Complete")
+    }
+
     selectLineIndex()
     {
         this.activateJobIssues()
@@ -254,15 +269,9 @@ class JobIssuing extends Controllers.Base
     sortIssueLines()
     {
         this.activateJobIssues()
-        ControlGet, bottomPageControl, Hwnd,, % "TPageControl2", % DBA.Windows.JobIssues
-        ControlClick, , % "ahk_id " bottomPageControl, , , , % "NA X5 Y5"
-        Sleep 100
-        Send % "{Tab}"
-        ControlGetFocus, bottomHwndName, % DBA.Windows.JobIssues
-        ControlGet, bottomHwnd, Hwnd,, % bottomHwndName, % DBA.Windows.JobIssues
-        this.bottomHwnd := bottomHwnd
 
-        ControlFocus ,, % "ahk_id " this.bottomHwnd
+        this.focusBottomGrid()
+
         Send % "{Home}"
         if (this.jobIssue.needsLotNumber) {
             Send % "{End}"
@@ -344,7 +353,7 @@ class JobIssuing extends Controllers.Base
     issueQuantity()
     {
         this.activateJobIssues()
-        ControlFocus ,, % "ahk_id " this.bottomHwnd
+        this.focusBottomGrid()
         WinWaitActive, % DBA.Windows.JobIssues,, 5
         if ErrorLevel
         {
@@ -380,7 +389,6 @@ class JobIssuing extends Controllers.Base
                 throw new @.WindowException(A_ThisFunc, "Could not select the correct Location line to issue.")
             }
         }
-        ControlFocus ,, % "ahk_id " this.bottomHwnd
         Send % "{Home}"
         Send % "{Enter}"
         Sleep 100
