@@ -142,7 +142,7 @@ class JobIssuing extends Controllers.Base
 
             this.openJobIssuesWindow()
 
-            this.normalizeTabFocus()
+            this.focusTopGrid()
 
             this.selectLineIndex()
 
@@ -215,16 +215,12 @@ class JobIssuing extends Controllers.Base
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
-    normalizeTabFocus()
+    focusTopGrid()
     {
         this.activateJobIssues()
 
-
         ControlFocus, % "TPageControl1", % DBA.Windows.JobIssues
         Send % "{Tab}"
-        ControlGetFocus, topHwndName, % DBA.Windows.JobIssues
-        ControlGet, topHwnd, Hwnd,, % topHwndName, % DBA.Windows.JobIssues
-        this.topHwnd := topHwnd
 
         #.log("app").info(A_ThisFunc, "Complete")
     }
@@ -232,14 +228,14 @@ class JobIssuing extends Controllers.Base
     selectLineIndex()
     {
         this.activateJobIssues()
+        Sleep 100
         downCount := this.jobIssue.lineIndex - 1
         found := false
         Loop 3 {
-            ControlFocus, , % "ahk_id " this.topHwnd
+            this.focusTopGrid()
             Send % "{Home}"
             Send % "{PgUp}"
             Loop % downCount {
-                ControlFocus, , % "ahk_id " this.topHwnd
                 Send % "{Down}"
             }
             savedTitleMatchMode := A_TitleMatchMode
@@ -250,7 +246,7 @@ class JobIssuing extends Controllers.Base
             }
         }
         if (!found) {
-            throw new @.WindowException(A_ThisFunc, "Could not properly select the line index to issue to.")
+            throw new @.WindowException(A_ThisFunc, "Could not properly select the line index to issue to.", {jobIssue: this.jobIssue.data})
         }
         #.log("app").info(A_ThisFunc, "Complete")
     }

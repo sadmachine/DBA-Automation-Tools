@@ -31,7 +31,7 @@ class JobIssue
             result := DBA.QueryBuilder
                 .from("jobdetl")
                 .select("sortno")
-                .where({"jobno=": this.data.jobNumber, "jobdetl.inout=": "Input"}) 
+                .where({"jobno=": this.data.jobNumber, "inout=": "Input"}) 
                 .run()
 
             for index, row in result.data() 
@@ -135,6 +135,8 @@ class JobIssue
                         .run()
             if (results.count() == 1) {
                 this.needsLotNumber := true
+            } else {
+                this.needsLotNumber := false
             }
 
             return this.data.partNumber := partNumber ""
