@@ -6,9 +6,9 @@ class Logger
 
     static channels := {}
 
-    addChannel(slug, logPath, logFilename)
+    addChannel(slug, logPath, logFilename, logLifeTime := "")
     {
-        this.channels[slug] := new #.Logger.Channel(logPath, logFilename)
+        this.channels[slug] := new #.Logger.Channel(logPath, logFilename, logLifeTime)
     }
 
     getChannel(slug)

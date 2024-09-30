@@ -18,6 +18,6 @@
 ;
 ; === TO-DOs ===================================================================
 ; ==============================================================================
-#.Logger.addChannel("app", $["LOGS_PATH"], "application.log")
-#.Logger.addChannel("queue", $["LOGS_PATH"], "queue.log")
-#.log("app").info(A_LineFile, "Finished Bootstrapping '" A_ScriptName "'", "")
+#.Logger.addChannel("app", $["LOGS_PATH"], "application.log", $.get("LOG_LIFETIME", ""))
+#.Logger.addChannel("queue", $["LOGS_PATH"], "queue.log", $.get("LOG_LIFETIME", ""))
+#.log("app").info(A_LineFile, "Logging Initialized '" A_ScriptName "'", "")
