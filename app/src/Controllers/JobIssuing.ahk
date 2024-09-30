@@ -60,16 +60,26 @@ class JobIssuing extends Controllers.Base
         #.log("app").info(A_ThisFunc, "Job #: " this.jobIssue.jobNumber)
     }
 
+    tryAgain(e)
+    {
+        if (@.typeOf(e) == @.ValidationException.__Class) {
+            #.log("app").warning(e.where, "<" e.what "> " e.message)
+            UI.MsgBox(e.message, "Try Again")
+            return true
+        }
+        return false
+    }
+
     getIssueDetails()
     {
         this.jobIssue.resetIssueDetails()
         Loop {
             try {
+                #.log("app").info(A_ThisFunc, "Asking for Part #")
                 this.jobIssue.partNumber := UI.Required.InputBox("Enter Part #")
                 #.log("app").info(A_ThisFunc, "Part #: " this.jobIssue.partNumber)
             } catch e {
-                if (@.typeOf(e) == @.ValidationException.__Class) {
-                    UI.MsgBox(e.message, "Try Again")
+                if (this.tryAgain(e)) {
                     continue
                 }
                 throw e
@@ -80,11 +90,11 @@ class JobIssuing extends Controllers.Base
         if (this.jobIssue.needsLotNumber) {
             Loop {
                 try {
+                    #.log("app").info(A_ThisFunc, "Asking for Lot #")
                     this.jobIssue.lotNumber := UI.Required.InputBox("Enter Lot #")
                     #.log("app").info(A_ThisFunc, "Lot #: " this.jobIssue.lotNumber)
                 } catch e {
-                    if (@.typeOf(e) == @.ValidationException.__Class) {
-                        UI.MsgBox(e.message, "Try Again")
+                    if (this.tryAgain(e)) {
                         continue
                     }
                     throw e
@@ -95,11 +105,11 @@ class JobIssuing extends Controllers.Base
 
         Loop {
             try {
+                #.log("app").info(A_ThisFunc, "Asking for Location")
                 this.jobIssue.location := UI.Required.InputBox("Enter Location")
                 #.log("app").info(A_ThisFunc, "Location: " this.jobIssue.location)
             } catch e {
-                if (@.typeOf(e) == @.ValidationException.__Class) {
-                    UI.MsgBox(e.message, "Try Again")
+                if (this.tryAgain(e)) {
                     continue
                 }
                 throw e
@@ -109,11 +119,11 @@ class JobIssuing extends Controllers.Base
 
         Loop {
             try {
+                #.log("app").info(A_ThisFunc, "Asking for Quantity")
                 this.jobIssue.quantity := UI.Required.InputBox("Enter Quantity to Issue")
                 #.log("app").info(A_ThisFunc, "Quantity: " this.jobIssue.quantity)
             } catch e {
-                if (@.typeOf(e) == @.ValidationException.__Class) {
-                    UI.MsgBox(e.message, "Try Again")
+                if (this.tryAgain(e)) {
                     continue
                 }
                 throw e
