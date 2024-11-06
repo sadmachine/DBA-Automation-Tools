@@ -213,8 +213,22 @@ class JobIssuing extends Controllers.Base
 
     selectJob()
     {
+        ControlFocus, % "TEdit1", % DBA.Windows.Jobs
+        ControlGetFocus, focused, % DBA.Windows.Jobs
+        if (focused != "TEdit1") {
+            ControlFocus, % "TEdit1", % DBA.Windows.Jobs
+        }
         Send % this.jobIssue.jobNumber
         Sleep 100
+        Send % "!r"
+        Sleep 100
+        oldMatchMode := A_TitleMatchModeSpeed
+        SetTitleMatchMode, Slow
+        WinWaitActive, % DBA.Windows.Jobs, % "Job No: " this.jobIssue.jobNumber, 5
+        SetTitleMatchMode, % oldMatchMode
+        if (ErrorLevel) {
+            throw new @.WindowException(A_ThisFunc, "The job number entered could not be selected. Please close the Jobs window and try the process again. If the problem persists, notify the programmer.")
+        }
         #.log("app").info(A_ThisFunc, "Complete")
     }
 
