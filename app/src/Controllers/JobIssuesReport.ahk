@@ -55,13 +55,13 @@ class JobIssuesReport extends Controllers.Base
     gatherData()
     {
         this.results := DBA.QueryBuilder.from("detlentr")
-            .select("jobdetl.sortno, detlentr.dateentr, itemh.itemcode, itemh.lotno, detlentr.qty, item.category, item.descript, unames.lastname || ', ' || unames.firstname AS name")
+            .select("jobdetl.sortno, detlentr.dateentr, itemh.itemcode, itemh.lotno, itemh.qty, item.category, item.descript, unames.lastname || ', ' || unames.firstname AS name")
             .join("itemh", "itemh.uniqforrec=detlentr.unumber")
             .join("item", "item.itemcode=itemh.itemcode")
             .join("jobdetl", "detlentr.jobdetno=jobdetl.jobdetno")
             .join("unames", "unames.unam_uniqno=itemh.itemh_userid")
             .where({"detlentr.jobno=": this.jobNumber, "itemh.types=": "ISSUE"})
-            .orderBy("jobdetl.sortno, detlentr.dateentr")
+            .orderBy("jobdetl.sortno asc, detlentr.dateentr asc")
             .run()
     }
 
@@ -82,23 +82,37 @@ class JobIssuesReport extends Controllers.Base
         xlApp.Range("A1").Value := StrReplace(xlApp.Range("A1").Value, "{{jobno}}", this.jobNumber)
         xlApp.Range("A3").Activate
 
+        currentSortNo := -1
         currentPartNum := -1
         currentTotalQuantity := 0
         for rowNum, row in this.results.data()
         {
-            if (currentPartNum == -1) {
+            row["sortno"] := floor(row["sortno"])
+            row["qty"] := row["qty"] * -1
+            row["descript"] := Trim(row["descript"], " `t`r`n")
+            if (StrLen(row["descript"]) > 26) {
+                row["descript"] := SubStr(row["descript"], 1, 26) "..."
+            }
+            if (currentSortNo == -1) {
+                currentSortNo := row["sortno"]
                 currentPartNum := row["itemcode"]
             }
-            if (currentPartNum != row["itemcode"]) {
-                this._outputTotalRow(xlApp, currentPartNum, currentTotalQuantity)
+            if (currentSortNo != row["sortNo"]) {
+                this._outputTotalRow(xlApp, currentSortNo, currentPartNum, currentTotalQuantity)
                 currentTotalQuantity := 0
+                currentSortNo := row["sortno"]
                 currentPartNum := row["itemcode"]
             }
+
+            xlApp.ActiveCell.Row.RowHeight := 15
+
             this._enterValue(xlApp, row["dateentr"])
+
+            this._enterValue(xlApp, row["sortno"])
 
             this._enterValue(xlApp, row["itemcode"])
 
-            this._enterValue(xlApp, row["descript"])
+            this._enterValue(xlApp, row["descript"], " `r`n`t")
 
             this._enterValue(xlApp, row["lotno"])
 
@@ -110,7 +124,7 @@ class JobIssuesReport extends Controllers.Base
 
             currentTotalQuantity += row["qty"]
         }
-        this._outputTotalRow(xlApp, currentPartNum, currentTotalQuantity)
+        this._outputTotalRow(xlApp, currentSortNo, currentPartNum, currentTotalQuantity)
 
 
         xlApp.ActiveCell.Offset(3, (xlApp.ActiveCell.Column - 1) * -1).Activate
@@ -122,6 +136,10 @@ class JobIssuesReport extends Controllers.Base
         xlApp.ActiveSheet.ExportAsFixedFormat(0,reportFilePDF)
         while(!FileExist(reportFilePDF)) {
             Sleep 100
+        }
+        if ($["DEVELOPER_MODE"]) {
+            xlApp.Visible := true
+            MsgBox % "Check it out"
         }
         xlApp.ActiveWorkBook.Save()
         xlApp.ActiveWorkBook.Close()
@@ -146,11 +164,18 @@ class JobIssuesReport extends Controllers.Base
         return generatedfile
     }
 
-    _outputTotalRow(xlApp, currentPartNum, currentTotalQuantity)
+    _outputTotalRow(xlApp, currentSortNo, currentPartNum, currentTotalQuantity)
     {
+        xlApp.ActiveCell.Row.RowHeight := 15
+
         xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
         xlApp.ActiveCell.Font.Bold := true
         xlApp.ActiveCell.Value := "Total:"
+        xlApp.ActiveCell.Offset(0, 1).Activate
+
+        xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
+        xlApp.ActiveCell.Font.Bold := true
+        xlApp.ActiveCell.Value := currentSortNo
         xlApp.ActiveCell.Offset(0, 1).Activate
 
         xlApp.ActiveCell.Font.Size := xlApp.ActiveCell.Font.Size+2
